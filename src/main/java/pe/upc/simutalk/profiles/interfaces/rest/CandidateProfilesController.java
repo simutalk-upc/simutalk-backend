@@ -1,21 +1,28 @@
 package pe.upc.simutalk.profiles.interfaces.rest;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import pe.upc.simutalk.profiles.domain.model.queries.GetAllCandidateProfilesQuery;
 import pe.upc.simutalk.profiles.domain.model.queries.GetCandidateProfileByIdQuery;
 import pe.upc.simutalk.profiles.domain.model.queries.GetCandidateProfileByUserIdQuery;
 import pe.upc.simutalk.profiles.domain.services.CandidateProfileCommandService;
 import pe.upc.simutalk.profiles.domain.services.CandidateProfileQueryService;
+import pe.upc.simutalk.profiles.interfaces.rest.authorization.ProfileAccessPolicy;
 import pe.upc.simutalk.profiles.interfaces.rest.resources.CandidateProfileResource;
 import pe.upc.simutalk.profiles.interfaces.rest.resources.CreateCandidateProfileResource;
 import pe.upc.simutalk.profiles.interfaces.rest.resources.UpdateCandidateProfileResource;
@@ -23,9 +30,11 @@ import pe.upc.simutalk.profiles.interfaces.rest.transform.CandidateProfileResour
 import pe.upc.simutalk.profiles.interfaces.rest.transform.CreateCandidateProfileCommandFromResourceAssembler;
 import pe.upc.simutalk.profiles.interfaces.rest.transform.UpdateCandidateProfileCommandFromResourceAssembler;
 import pe.upc.simutalk.shared.domain.exceptions.ResourceNotFoundException;
+import pe.upc.simutalk.shared.interfaces.rest.resources.PageResource;
 
 @RestController
 @RequestMapping(value = "/api/v1/candidate-profiles", produces = MediaType.APPLICATION_JSON_VALUE)
+@Validated
 @RequiredArgsConstructor
 @SecurityRequirement(name = "bearerAuth")
 @Tag(name = "Candidate Profiles", description = "Perfiles de postulante")
@@ -33,6 +42,7 @@ public class CandidateProfilesController {
 
     private final CandidateProfileCommandService candidateProfileCommandService;
     private final CandidateProfileQueryService candidateProfileQueryService;
+    private final ProfileAccessPolicy profileAccessPolicy;
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN') or (hasRole('CANDIDATE') and @profileAccess.isCurrentUser(#resource.userId, authentication))")
@@ -53,21 +63,38 @@ public class CandidateProfilesController {
                 .body(CandidateProfileResourceFromEntityAssembler.toResourceFromEntity(candidate));
     }
 
+    /* "/me" is declared before "/{candidateId}". Spring MVC would still prefer the literal
+       path over the variable, but keeping the order makes the intent explicit. */
+    @GetMapping("/me")
+    @Operation(summary = "Mi perfil de postulante", description = "Perfil del usuario autenticado; 404 si no tiene.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Perfil encontrado"),
+            @ApiResponse(responseCode = "404", description = "El usuario autenticado no tiene perfil de postulante")
+    })
+    public ResponseEntity<CandidateProfileResource> getMyCandidateProfile() {
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+        var candidate = profileAccessPolicy.findCurrentUserId(authentication)
+                .flatMap(userId -> candidateProfileQueryService.handle(new GetCandidateProfileByUserIdQuery(userId)))
+                .orElseThrow(() -> new ResourceNotFoundException("The authenticated user has no candidate profile"));
+        return ResponseEntity.ok(CandidateProfileResourceFromEntityAssembler.toResourceFromEntity(candidate));
+    }
+
+    @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Listar perfiles de postulante", description = "Solo ROLE_ADMIN. Paginado (page desde 0).")
+    public ResponseEntity<PageResource<CandidateProfileResource>> getAllCandidateProfiles(
+            @Parameter(description = "Página, desde 0") @RequestParam(defaultValue = "0") @Min(0) int page,
+            @Parameter(description = "Tamaño de página, 1 a 100") @RequestParam(defaultValue = "20") @Min(1) @Max(100) int size) {
+        var candidates = candidateProfileQueryService.handle(new GetAllCandidateProfilesQuery(page, size));
+        return ResponseEntity.ok(PageResource.from(candidates, CandidateProfileResourceFromEntityAssembler::toResourceFromEntity));
+    }
+
     @GetMapping("/{candidateId}")
     @PreAuthorize("hasAnyRole('ADMIN', 'RECRUITER') or @profileAccess.ownsCandidate(#candidateId, authentication)")
     @Operation(summary = "Obtener perfil de postulante", description = "Admin, recruiter o el propio candidato.")
     public ResponseEntity<CandidateProfileResource> getCandidateProfileById(@PathVariable Long candidateId) {
         var candidate = candidateProfileQueryService.handle(new GetCandidateProfileByIdQuery(candidateId))
                 .orElseThrow(() -> new ResourceNotFoundException("Candidate profile", candidateId));
-        return ResponseEntity.ok(CandidateProfileResourceFromEntityAssembler.toResourceFromEntity(candidate));
-    }
-
-    @GetMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'RECRUITER') or @profileAccess.isCurrentUser(#userId, authentication)")
-    @Operation(summary = "Obtener perfil de postulante por usuario")
-    public ResponseEntity<CandidateProfileResource> getCandidateProfileByUserId(@RequestParam Long userId) {
-        var candidate = candidateProfileQueryService.handle(new GetCandidateProfileByUserIdQuery(userId))
-                .orElseThrow(() -> new ResourceNotFoundException("Candidate profile for user " + userId + " not found"));
         return ResponseEntity.ok(CandidateProfileResourceFromEntityAssembler.toResourceFromEntity(candidate));
     }
 

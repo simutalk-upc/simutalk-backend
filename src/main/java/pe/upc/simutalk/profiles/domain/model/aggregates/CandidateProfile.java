@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.BatchSize;
 import pe.upc.simutalk.profiles.domain.model.commands.CreateCandidateProfileCommand;
 import pe.upc.simutalk.profiles.domain.model.entities.Certification;
 import pe.upc.simutalk.profiles.domain.model.valueobjects.DocumentNumber;
@@ -65,6 +66,7 @@ public class CandidateProfile extends AuditableAbstractAggregateRoot<CandidatePr
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "candidate_id", nullable = false)
     @OrderBy("id ASC")
+    @BatchSize(size = 50)
     private List<Certification> certifications = new ArrayList<>();
 
     public CandidateProfile(CreateCandidateProfileCommand command) {

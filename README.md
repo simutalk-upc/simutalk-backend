@@ -82,15 +82,21 @@ Pruebas:
 | Método | Ruta | Acceso |
 |---|---|---|
 | POST | `/api/v1/company-profiles` | Recruiter (el suyo) o admin |
-| GET | `/api/v1/company-profiles/{id}` · `?userId=` | Autenticado |
+| GET | `/api/v1/company-profiles/me` | El usuario autenticado (404 si no tiene perfil de empresa) |
+| GET | `/api/v1/company-profiles?page=&size=` | Admin (paginado, `page` desde 0, `size` 1 a 100, 20 por defecto) |
+| GET | `/api/v1/company-profiles/{id}` | Autenticado |
 | PUT | `/api/v1/company-profiles/{id}` | Dueño o admin |
 | POST | `/api/v1/candidate-profiles` | Candidato (el suyo) o admin |
-| GET | `/api/v1/candidate-profiles/{id}` · `?userId=` | Dueño, recruiter o admin |
+| GET | `/api/v1/candidate-profiles/me` | El usuario autenticado (404 si no tiene perfil de postulante) |
+| GET | `/api/v1/candidate-profiles?page=&size=` | Admin (paginado, `page` desde 0, `size` 1 a 100, 20 por defecto) |
+| GET | `/api/v1/candidate-profiles/{id}` | Dueño, recruiter o admin |
 | PUT | `/api/v1/candidate-profiles/{id}` | Dueño o admin |
 | POST | `/api/v1/candidate-profiles/{id}/certifications` | Dueño o admin (nace UNVERIFIED) |
 | GET | `/api/v1/candidate-profiles/{id}/certifications` | Dueño, recruiter o admin |
 | POST | `/api/v1/candidate-profiles/{id}/certifications/{certificationId}/verification` | Dueño o admin |
 | DELETE | `/api/v1/candidate-profiles/{id}/certifications/{certificationId}` | Dueño o admin |
+
+Los listados paginados responden `{"content": [...], "page", "size", "totalElements", "totalPages"}`.
 
 Datos demo: arranca con `SEED_DEMO_DATA=true` y `DEMO_USERS_PASSWORD=...`. Usuarios: `consultora.andina` (recruiter),
 `rosa.quispe`, `jorge.huaman`, `lucia.flores`, `miguel.condori`, `carmen.ramos`, `diego.salazar` (candidatos).

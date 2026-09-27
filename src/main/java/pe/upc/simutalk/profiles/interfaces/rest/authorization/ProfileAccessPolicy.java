@@ -9,6 +9,8 @@ import pe.upc.simutalk.profiles.domain.services.CandidateProfileQueryService;
 import pe.upc.simutalk.profiles.domain.services.CompanyProfileQueryService;
 import pe.upc.simutalk.shared.interfaces.acl.IamContextFacade;
 
+import java.util.Optional;
+
 /**
  * Ownership checks used from {@code @PreAuthorize} as {@code @profileAccess}. The current
  * user id is resolved through the IamContextFacade contract, so profiles never imports
@@ -39,6 +41,11 @@ public class ProfileAccessPolicy {
         return currentUserId != null && companyProfileQueryService.handle(new GetCompanyProfileByIdQuery(companyProfileId))
                 .map(company -> company.isOwnedBy(currentUserId))
                 .orElse(false);
+    }
+
+    /** Id of the authenticated user in iam, if it can be resolved. */
+    public Optional<Long> findCurrentUserId(Authentication authentication) {
+        return Optional.ofNullable(currentUserId(authentication));
     }
 
     private Long currentUserId(Authentication authentication) {
