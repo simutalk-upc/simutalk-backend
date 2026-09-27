@@ -21,6 +21,7 @@ import pe.upc.simutalk.recruitment.domain.model.queries.GetJobPostingByIdQuery;
 import pe.upc.simutalk.recruitment.domain.model.valueobjects.CriterionType;
 import pe.upc.simutalk.recruitment.domain.model.valueobjects.JobPostingStatus;
 import pe.upc.simutalk.recruitment.domain.model.valueobjects.Weight;
+import pe.upc.simutalk.recruitment.domain.services.ApplicationQueryService;
 import pe.upc.simutalk.recruitment.domain.services.JobPostingCommandService;
 import pe.upc.simutalk.recruitment.domain.services.JobPostingQueryService;
 import pe.upc.simutalk.recruitment.interfaces.rest.authorization.RecruitmentAccessPolicy;
@@ -58,10 +59,12 @@ class RecruitmentAuthorizationTest {
         @Bean IamContextFacade iamContextFacade() { return mock(IamContextFacade.class); }
         @Bean ProfilesContextFacade profilesContextFacade() { return mock(ProfilesContextFacade.class); }
 
+        @Bean ApplicationQueryService applicationQueryService() { return mock(ApplicationQueryService.class); }
+
         @Bean(name = "recruitmentAccess")
         RecruitmentAccessPolicy recruitmentAccess(IamContextFacade iam, ProfilesContextFacade profiles,
-                                                  JobPostingQueryService queries) {
-            return new RecruitmentAccessPolicy(iam, profiles, queries);
+                                                  JobPostingQueryService queries, ApplicationQueryService applications) {
+            return new RecruitmentAccessPolicy(iam, profiles, queries, applications);
         }
 
         @Bean JobPostingsController jobPostingsController(JobPostingCommandService commands,
