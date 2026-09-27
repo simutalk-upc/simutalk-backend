@@ -51,10 +51,10 @@ agregado (regla de negocio) → repositorio → `*ResourceFromEntityAssembler` �
 
 | Contexto | Responsabilidad | Estado |
 |---|---|---|
-| `shared` | `AuditableAbstractAggregateRoot`, `AuditableModel`, estrategia de nombres snake_case con tablas en plural, OpenAPI, excepciones de dominio base, manejador global de errores (`ErrorResource`), `MessageResource` y contratos ACL entre contextos (`IamContextFacade`). | Implementado |
+| `shared` | `AuditableAbstractAggregateRoot`, `AuditableModel`, estrategia de nombres snake_case con tablas en plural, OpenAPI, excepciones de dominio base, manejador global de errores (`ErrorResource`), `MessageResource` y contratos ACL entre contextos (`IamContextFacade`, `ProfilesContextFacade`). | Implementado |
 | `recruitment` | Vacantes (`JobPosting`) y sus criterios ponderados (`EvaluationCriterion`, `Weight`). Ciclo DRAFT → PUBLISHED → CLOSED. | Implementado |
 | `iam` | Usuarios (`User`), roles (`Role`, `Roles`), registro, sign-in con JWT, autorización y `IamContextFacadeImpl`. | Implementado |
-| `profiles` | Datos de empresas y postulantes (incluye PII del postulante). | Planificado |
+| `profiles` | Perfiles de empresa (`CompanyProfile`) y de postulante (`CandidateProfile`, incluye PII), certificaciones (`Certification`) y su verificación con el emisor. `ProfilesContextFacadeImpl`. | Implementado |
 | `interviews` | Entrevista asincrónica: preguntas por vacante, sesiones y respuestas del postulante. | Planificado |
 | `assessment` | Puntuación NLP por criterio con evidencia textual (fragmento + posición), anonimización previa y ranking. ACL hacia el proveedor de IA. | Planificado |
 
@@ -84,6 +84,23 @@ Los nombres de los contextos planificados son una propuesta; ajustar esta tabla 
   sin roles se asigna `ROLE_CANDIDATE`.
 - Sign-in fallido responde siempre 401 "Invalid username or password", exista o no el usuario.
 
+### Modelo actual de `profiles`
+
+- `CompanyProfile` (tabla `companies`): `userId` (solo el id, sin relación con `iam`), `legalName`, `tradeName`,
+  `industry`, `ruc` (VO `Ruc`: 11 dígitos, empieza en 10 o 20; no cambia), `companySize`
+  (`MICRO|PEQUENA|MEDIANA|GRANDE`), `district`.
+- `CandidateProfile` (tabla `candidates`): `userId`, `personName` (VO `PersonName`), `documentNumber`
+  (VO `DocumentNumber`: DNI 8 dígitos o CE 9 a 12; no cambia), `birthDate` (mínimo 18 años), `phone`, `district`,
+  `yearsOfExperience` (≥ 0) y `certifications`.
+- `Certification` (tabla `certifications`, entidad del agregado candidato): `title`, `issuer`, `credentialCode`
+  (opcional), `issuedAt`, `expiresAt` (opcional), `verificationStatus` (`VERIFIED|UNVERIFIED|REJECTED`), `verifiedAt`.
+  Nace UNVERIFIED y **nunca queda VERIFIED sin código de credencial**. `countsForScoring()` = VERIFIED y no expirada.
+- Un usuario tiene como máximo un perfil (de empresa o de candidato) y debe existir en `iam` (vía `IamContextFacade`).
+- Verificación: coincide → VERIFIED; no coincide → REJECTED; emisor no disponible → sigue UNVERIFIED. Solo desde
+  UNVERIFIED. Sin código responde 422 y no se consulta al emisor.
+- Nada de puntuación aquí: cuánto vale una certificación lo decide `assessment` (vía `ProfilesContextFacade`).
+- `app.seed-demo-data=true` siembra datos demo (1 empresa, 6 candidatos) si las tablas de perfiles están vacías.
+
 ## Seguridad
 
 - Rutas públicas: `/api/v1/authentication/**` y la documentación (`/v3/api-docs/**`, `/swagger-ui/**`). Todo lo
@@ -97,7 +114,9 @@ Los nombres de los contextos planificados son una propuesta; ajustar esta tabla 
 - CORS abierto en desarrollo; en producción se restringe al dominio del frontend Angular (TODO en
   `WebSecurityConfiguration`).
 - Para saber quién es un usuario desde otro contexto se usa `shared.interfaces.acl.IamContextFacade`, nunca
-  `UserRepository` ni clases de `iam`.
+  `UserRepository` ni clases de `iam`. Así lo hace `ProfileAccessPolicy` (`@profileAccess` en `@PreAuthorize`).
+- `profiles`: un candidato solo lee y modifica su propio perfil y certificaciones; un recruiter lee perfiles y
+  certificaciones de candidatos pero nunca los edita, y gestiona su propio perfil de empresa; un admin puede todo.
 
 ## Reglas que no se rompen
 
@@ -125,6 +144,7 @@ Los nombres de los contextos planificados son una propuesta; ajustar esta tabla 
 | Servicio | Uso | Límites y reglas |
 |---|---|---|
 | **Proveedor de IA / NLP** (por definir) | Puntuar respuestas contra criterios y extraer el fragmento que sustenta cada puntaje. | Solo se invoca desde `assessment/application/internal/outboundservices` vía `WebClient`. Timeout explícito, reintentos acotados con backoff y manejo de límites de tasa (HTTP 429). Tamaño de prompt y de respuesta acotados. La respuesta se valida: todo puntaje debe traer un fragmento que exista literalmente en la respuesta del postulante; si no, se descarta. Nunca se envía PII (ver abajo). Clave en variable de entorno. |
+| **Verificación de credenciales** (Coursera, Credly, CertiProf) | Confirmar que una certificación declarada existe. | `profiles/infrastructure/external/credentials`. `external.credentials.mode` = `mock` (por defecto, sin red: código ≥ 8 caracteres coincide) o `live` (`WebClient`; emisores aún sin conectar, TODO por emisor, nunca inventar endpoints). Timeout, reintento con backoff exponencial ante 429 y respuesta de reserva que deja la certificación en UNVERIFIED. Al emisor solo viajan emisor, código, título y nombre del titular (necesario para el cotejo); nada de eso va al proveedor de IA. |
 | **PostgreSQL 16** | Persistencia (`simutalk_db`). | Credenciales por `DB_USERNAME` / `DB_PASSWORD`. `ddl-auto: update` solo para desarrollo. |
 
 Completar esta tabla con el proveedor concreto, su modelo, cuotas y costos cuando se elija.
