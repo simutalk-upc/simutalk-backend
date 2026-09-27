@@ -20,7 +20,7 @@ Guía para cualquier agente (o persona) que trabaje en este repositorio. Léela 
 |---|---|
 | Lenguaje | Java 21 |
 | Framework | Spring Boot 3.5.x (web, data-jpa, security, validation, webflux para `WebClient`) |
-| Persistencia | Spring Data JPA + Hibernate, MySQL 8 (`simutalk_db`) |
+| Persistencia | Spring Data JPA + Hibernate, PostgreSQL 16 (`simutalk_db`) |
 | Seguridad | Spring Security + JWT HS256 (jjwt 0.12.6), BCrypt — contexto `iam` |
 | Documentación | OpenAPI 3 con springdoc 2.8.5 (Swagger UI en `/swagger-ui.html`) |
 | Utilidades | Lombok, ModelMapper 3.2.1 |
@@ -30,7 +30,7 @@ Comandos:
 
 ```bash
 ./mvnw test                 # pruebas unitarias (no requieren base de datos)
-./mvnw spring-boot:run      # levanta la API (requiere MySQL, DB_USERNAME, DB_PASSWORD y JWT_SECRET)
+./mvnw spring-boot:run      # levanta la API (requiere PostgreSQL, DB_USERNAME, DB_PASSWORD y JWT_SECRET)
 ```
 
 ## Arquitectura: DDD con bounded contexts
@@ -56,7 +56,7 @@ agregado (regla de negocio) → repositorio → `*ResourceFromEntityAssembler` �
 | `iam` | Usuarios (`User`), roles (`Role`, `Roles`), registro, sign-in con JWT, autorización y `IamContextFacadeImpl`. | Implementado |
 | `profiles` | Datos de empresas y postulantes (incluye PII del postulante). | Planificado |
 | `interviews` | Entrevista asincrónica: preguntas por vacante, sesiones y respuestas del postulante. | Planificado |
-| `evaluation` | Puntuación NLP por criterio con evidencia textual (fragmento + posición), anonimización previa y ranking. ACL hacia el proveedor de IA. | Planificado |
+| `assessment` | Puntuación NLP por criterio con evidencia textual (fragmento + posición), anonimización previa y ranking. ACL hacia el proveedor de IA. | Planificado |
 
 Los nombres de los contextos planificados son una propuesta; ajustar esta tabla cuando se creen.
 
@@ -124,8 +124,8 @@ Los nombres de los contextos planificados son una propuesta; ajustar esta tabla 
 
 | Servicio | Uso | Límites y reglas |
 |---|---|---|
-| **Proveedor de IA / NLP** (por definir) | Puntuar respuestas contra criterios y extraer el fragmento que sustenta cada puntaje. | Solo se invoca desde `evaluation/application/internal/outboundservices` vía `WebClient`. Timeout explícito, reintentos acotados con backoff y manejo de límites de tasa (HTTP 429). Tamaño de prompt y de respuesta acotados. La respuesta se valida: todo puntaje debe traer un fragmento que exista literalmente en la respuesta del postulante; si no, se descarta. Nunca se envía PII (ver abajo). Clave en variable de entorno. |
-| **MySQL 8** | Persistencia (`simutalk_db`). | Credenciales por `DB_USERNAME` / `DB_PASSWORD`. `ddl-auto: update` solo para desarrollo. |
+| **Proveedor de IA / NLP** (por definir) | Puntuar respuestas contra criterios y extraer el fragmento que sustenta cada puntaje. | Solo se invoca desde `assessment/application/internal/outboundservices` vía `WebClient`. Timeout explícito, reintentos acotados con backoff y manejo de límites de tasa (HTTP 429). Tamaño de prompt y de respuesta acotados. La respuesta se valida: todo puntaje debe traer un fragmento que exista literalmente en la respuesta del postulante; si no, se descarta. Nunca se envía PII (ver abajo). Clave en variable de entorno. |
+| **PostgreSQL 16** | Persistencia (`simutalk_db`). | Credenciales por `DB_USERNAME` / `DB_PASSWORD`. `ddl-auto: update` solo para desarrollo. |
 
 Completar esta tabla con el proveedor concreto, su modelo, cuotas y costos cuando se elija.
 
@@ -138,7 +138,7 @@ Antes de enviar **cualquier** texto al proveedor de IA:
   fecha de nacimiento, fotos, enlaces a perfiles y cualquier dato que lo identifique.
 - Al proveedor solo viajan: el texto de la respuesta ya anonimizado, la pregunta y los criterios de la vacante.
   Nunca ids internos del postulante, ni su nombre, ni metadatos de la sesión.
-- La anonimización ocurre en el contexto `evaluation`, dentro del ACL de salida, y tiene pruebas unitarias propias.
+- La anonimización ocurre en el contexto `assessment`, dentro del ACL de salida, y tiene pruebas unitarias propias.
 - Los offsets de evidencia se calculan sobre el texto original para poder mostrar el fragmento real, pero el
   proveedor solo ve el texto anonimizado.
 - Si `anonymizedScreening` está activo en la vacante, además se ocultan los datos personales al evaluador humano
