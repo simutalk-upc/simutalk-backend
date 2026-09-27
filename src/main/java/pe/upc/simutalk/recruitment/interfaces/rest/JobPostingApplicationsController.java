@@ -7,12 +7,12 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import pe.upc.simutalk.recruitment.domain.model.commands.SubmitApplicationCommand;
 import pe.upc.simutalk.recruitment.domain.model.queries.GetApplicationsByJobPostingIdQuery;
 import pe.upc.simutalk.recruitment.domain.model.valueobjects.ApplicationStatus;
@@ -51,9 +51,8 @@ public class JobPostingApplicationsController {
                 .orElseThrow(() -> new BusinessRuleViolationException(
                         "The authenticated user has no candidate profile to apply with"));
         var application = applicationCommandService.handle(new SubmitApplicationCommand(jobPostingId, candidateId));
-        var location = ServletUriComponentsBuilder.fromCurrentContextPath()
-                .path("/api/v1/applications/{id}").buildAndExpand(application.getId()).toUri();
-        return ResponseEntity.created(location).body(ApplicationResourceFromEntityAssembler.toResourceFromEntity(application));
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ApplicationResourceFromEntityAssembler.toResourceFromEntity(application));
     }
 
     @GetMapping
