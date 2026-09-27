@@ -27,6 +27,16 @@ spring:
   jackson:
     time-zone: UTC
 
+authorization:
+  jwt:
+    # Base64 de al menos 256 bits. Sin valor por defecto: la app no arranca sin JWT_SECRET.
+    secret: ${JWT_SECRET}
+    expiration-days: ${JWT_EXPIRATION_DAYS:7}
+  bootstrap-admin:
+    # Opcional. Si ambos están definidos, se crea este administrador al arrancar (si no existe).
+    username: ${ADMIN_USERNAME:}
+    password: ${ADMIN_PASSWORD:}
+
 server:
   port: ${SERVER_PORT:8080}
   error:
