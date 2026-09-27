@@ -27,7 +27,8 @@ La arquitectura (DDD por bounded contexts), las reglas del proyecto y las conven
    CREATE DATABASE simutalk_db OWNER simutalk;
    ```
 
-2. Copia `.env.example` a `.env` y completa `DB_USERNAME` y `DB_PASSWORD`. Spring Boot lee `.env` desde la raíz del
+2. Copia `.env.example` a `.env` y completa `DB_USERNAME`, `DB_PASSWORD` y `JWT_SECRET`
+   (genéralo con `openssl rand -base64 32`). Spring Boot lee `.env` desde la raíz del
    proyecto. También puedes exportar las variables de entorno directamente (o configurarlas en IntelliJ en
    *Run Configuration → Environment variables*).
 
@@ -35,6 +36,9 @@ La arquitectura (DDD por bounded contexts), las reglas del proyecto y las conven
 |---|---|---|
 | `DB_USERNAME` | sí | — |
 | `DB_PASSWORD` | sí | — |
+| `JWT_SECRET` | sí | — (Base64, ≥ 256 bits) |
+| `JWT_EXPIRATION_DAYS` | no | `7` |
+| `ADMIN_USERNAME` / `ADMIN_PASSWORD` | no | — (si ambos existen, crea el admin inicial) |
 | `DB_HOST` | no | `localhost` |
 | `DB_PORT` | no | `5432` |
 | `SERVER_PORT` | no | `8080` |
@@ -55,7 +59,22 @@ Pruebas:
 ./mvnw test
 ```
 
-## Endpoints disponibles (contexto `recruitment`)
+## Autenticación
+
+1. `POST /api/v1/authentication/sign-up` con `{"username", "password", "roles": ["ROLE_RECRUITER"]}`
+   (roles permitidos: `ROLE_CANDIDATE`, `ROLE_RECRUITER`; sin roles = `ROLE_CANDIDATE`).
+2. `POST /api/v1/authentication/sign-in` → devuelve `token`.
+3. En Swagger UI pulsa **Authorize** (candado), pega el token (sin el prefijo `Bearer`) y prueba el resto.
+
+| Método | Ruta | Acceso |
+|---|---|---|
+| POST | `/api/v1/authentication/sign-up` | Público |
+| POST | `/api/v1/authentication/sign-in` | Público |
+| GET | `/api/v1/users` | `ROLE_ADMIN` |
+| GET | `/api/v1/users/{userId}` | `ROLE_ADMIN` o el propio usuario |
+| GET | `/api/v1/roles` | Autenticado |
+
+## Endpoints de vacantes (contexto `recruitment`, requieren token)
 
 | Método | Ruta | Descripción |
 |---|---|---|
@@ -81,10 +100,8 @@ Errores: todas las respuestas de error tienen la forma
 }
 ```
 
-con `details` por campo en los errores de validación (400). 404 = recurso inexistente, 422 = regla de negocio.
-
-> **Seguridad:** el contexto `iam` (JWT) aún no está implementado; mientras tanto las rutas `/api/v1/**` están
-> abiertas para poder probarlas desde Swagger UI.
+con `details` por campo en los errores de validación (400). 401 = sin token o credenciales inválidas,
+403 = sin permiso, 404 = recurso inexistente, 409 = conflicto de unicidad, 422 = regla de negocio.
 
 ## Ramas
 

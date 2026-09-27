@@ -19,7 +19,7 @@ import java.time.Instant;
 @Getter
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
-public abstract class AuditableAbstractAggregateRoot<T extends AbstractAggregateRoot<T>> extends AbstractAggregateRoot<T> {
+public abstract class AuditableAbstractAggregateRoot<T extends AuditableAbstractAggregateRoot<T>> extends AbstractAggregateRoot<T> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
