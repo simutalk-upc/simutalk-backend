@@ -1,0 +1,14 @@
+package pe.upc.simutalk.profiles.interfaces.rest.transform;
+
+import pe.upc.simutalk.profiles.domain.model.valueobjects.CertificationVerification;
+import pe.upc.simutalk.profiles.interfaces.rest.resources.CertificationVerificationResource;
+
+public class CertificationVerificationResourceFromEntityAssembler {
+
+    public static CertificationVerificationResource toResourceFromEntity(CertificationVerification verification) {
+        var result = verification.result();
+        return new CertificationVerificationResource(
+                CertificationResourceFromEntityAssembler.toResourceFromEntity(verification.certification()),
+                result.matched(), result.conclusive(), result.detail());
+    }
+}
