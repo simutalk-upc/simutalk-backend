@@ -7,6 +7,7 @@ import pe.upc.simutalk.recruitment.domain.model.commands.CreateJobPostingCommand
 import pe.upc.simutalk.recruitment.domain.model.entities.EvaluationCriterion;
 import pe.upc.simutalk.recruitment.domain.model.valueobjects.CriterionType;
 import pe.upc.simutalk.recruitment.domain.model.valueobjects.JobPostingStatus;
+import pe.upc.simutalk.recruitment.domain.model.valueobjects.JobPostingViewer;
 import pe.upc.simutalk.recruitment.domain.model.valueobjects.Weight;
 import pe.upc.simutalk.shared.domain.exceptions.BusinessRuleViolationException;
 import pe.upc.simutalk.shared.domain.exceptions.ResourceNotFoundException;
@@ -164,6 +165,32 @@ class JobPostingTest {
 
         jobPosting.close();
         jobPosting.ensureCanBeDeleted();
+    }
+
+    @Test
+    void draftIsVisibleOnlyToItsOwnCompany() {
+        assertThat(jobPosting.isOwnedBy(1L)).isTrue();
+        assertThat(jobPosting.isOwnedBy(2L)).isFalse();
+        assertThat(jobPosting.isVisibleTo(JobPostingViewer.ofCompany(1L))).isTrue();
+        assertThat(jobPosting.isVisibleTo(JobPostingViewer.ofCompany(2L))).isFalse();
+        assertThat(jobPosting.isVisibleTo(JobPostingViewer.ofCompany(null))).isFalse();
+        assertThat(jobPosting.isVisibleTo(JobPostingViewer.unrestrictedViewer())).isTrue();
+    }
+
+    @Test
+    void listingsShowOtherCompaniesOnlyPublishedPostings() {
+        var otherCompany = JobPostingViewer.ofCompany(2L);
+        assertThat(jobPosting.isListedFor(otherCompany)).isFalse();
+
+        addCompetency("Comunicación", 100);
+        jobPosting.publish();
+        assertThat(jobPosting.isListedFor(otherCompany)).isTrue();
+        assertThat(jobPosting.isVisibleTo(otherCompany)).isTrue();
+
+        jobPosting.close();
+        assertThat(jobPosting.isListedFor(otherCompany)).isFalse();
+        assertThat(jobPosting.isVisibleTo(otherCompany)).isTrue();
+        assertThat(jobPosting.isListedFor(JobPostingViewer.ofCompany(1L))).isTrue();
     }
 
     private long nextId = 1;

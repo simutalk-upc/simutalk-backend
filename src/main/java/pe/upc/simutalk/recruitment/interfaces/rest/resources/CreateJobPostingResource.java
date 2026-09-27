@@ -10,8 +10,6 @@ public record CreateJobPostingResource(
         @NotBlank @Size(max = 150) String title,
         @Schema(example = "Desarrollo de APIs REST con Spring Boot para el área de pagos.")
         @NotBlank @Size(max = 4000) String description,
-        @Schema(example = "1")
-        @NotNull @Positive Long companyId,
         @Schema(example = "2026-12-31")
         @FutureOrPresent LocalDate closingDate,
         @Schema(example = "true", description = "Si es true, los datos personales del postulante se ocultan durante la preselección")
