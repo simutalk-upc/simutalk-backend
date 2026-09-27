@@ -21,8 +21,8 @@ Guía para cualquier agente (o persona) que trabaje en este repositorio. Léela 
 | Lenguaje | Java 21 |
 | Framework | Spring Boot 3.5.x (web, data-jpa, security, validation, webflux para `WebClient`) |
 | Persistencia | Spring Data JPA + Hibernate, MySQL 8 (`simutalk_db`) |
-| Seguridad | Spring Security + JWT (jjwt 0.12.6) — *pendiente en el contexto `iam`* |
-| Documentación | OpenAPI 3 con springdoc 2.7.0 (Swagger UI en `/swagger-ui.html`) |
+| Seguridad | Spring Security + JWT HS256 (jjwt 0.12.6), BCrypt — contexto `iam` |
+| Documentación | OpenAPI 3 con springdoc 2.8.5 (Swagger UI en `/swagger-ui.html`) |
 | Utilidades | Lombok, ModelMapper 3.2.1 |
 | Build | Maven (usar siempre `./mvnw`) |
 
@@ -30,7 +30,7 @@ Comandos:
 
 ```bash
 ./mvnw test                 # pruebas unitarias (no requieren base de datos)
-./mvnw spring-boot:run      # levanta la API (requiere MySQL y DB_USERNAME / DB_PASSWORD)
+./mvnw spring-boot:run      # levanta la API (requiere MySQL, DB_USERNAME, DB_PASSWORD y JWT_SECRET)
 ```
 
 ## Arquitectura: DDD con bounded contexts
@@ -40,9 +40,9 @@ Paquete raíz `pe.upc.simutalk`. Cada bounded context es un paquete de primer ni
 | Capa | Paquete | Contenido |
 |---|---|---|
 | **Domain** | `domain/model/{aggregates,entities,commands,queries,valueobjects}`, `domain/services` | Agregados, entidades, value objects, commands, queries e interfaces de servicios. Aquí viven las reglas de negocio. Sin dependencias de web. |
-| **Application** | `application/internal/{commandservices,queryservices,outboundservices}` | Implementaciones de los servicios de dominio: cargan el agregado, delegan en él y persisten. `outboundservices` son ACL hacia sistemas externos. |
-| **Infrastructure** | `infrastructure/persistence/jpa/repositories` | Repositorios Spring Data JPA (y, en su momento, clientes HTTP a servicios externos). |
-| **Interfaces** | `interfaces/rest/{resources,transform}` | Controladores REST, DTOs (`resources`) y ensambladores DTO ↔ command/entidad (`transform`). |
+| **Application** | `application/internal/{commandservices,queryservices,outboundservices,eventhandlers}` | Implementaciones de los servicios de dominio: cargan el agregado, delegan en él y persisten. `outboundservices` son puertos/ACL hacia sistemas externos (interfaces implementadas en infrastructure). `eventhandlers` reaccionan a eventos de la aplicación. |
+| **Infrastructure** | `infrastructure/persistence/jpa/repositories` (+ adaptadores técnicos, p. ej. `iam/infrastructure/{hashing,tokens,authorization}`) | Repositorios Spring Data JPA e implementaciones de los puertos de salida. |
+| **Interfaces** | `interfaces/rest/{resources,transform}`, `interfaces/acl` | Controladores REST, DTOs (`resources`) y ensambladores DTO ↔ command/entidad (`transform`). `acl` implementa los contratos que el contexto publica en `shared/interfaces/acl`. |
 
 Flujo de una escritura: `Controller` → `*CommandFromResourceAssembler` → `Command` → `CommandService` →
 agregado (regla de negocio) → repositorio → `*ResourceFromEntityAssembler` → DTO.
@@ -51,9 +51,9 @@ agregado (regla de negocio) → repositorio → `*ResourceFromEntityAssembler` �
 
 | Contexto | Responsabilidad | Estado |
 |---|---|---|
-| `shared` | `AuditableAbstractAggregateRoot`, `AuditableModel`, auditoría JPA, OpenAPI, seguridad transitoria, excepciones de dominio base y manejador global de errores (`ErrorResource`). | Implementado |
+| `shared` | `AuditableAbstractAggregateRoot`, `AuditableModel`, estrategia de nombres snake_case con tablas en plural, OpenAPI, excepciones de dominio base, manejador global de errores (`ErrorResource`), `MessageResource` y contratos ACL entre contextos (`IamContextFacade`). | Implementado |
 | `recruitment` | Vacantes (`JobPosting`) y sus criterios ponderados (`EvaluationCriterion`, `Weight`). Ciclo DRAFT → PUBLISHED → CLOSED. | Implementado |
-| `iam` | Usuarios, roles (empresa, postulante, admin), emisión y validación de JWT. | Planificado |
+| `iam` | Usuarios (`User`), roles (`Role`, `Roles`), registro, sign-in con JWT, autorización y `IamContextFacadeImpl`. | Implementado |
 | `profiles` | Datos de empresas y postulantes (incluye PII del postulante). | Planificado |
 | `interviews` | Entrevista asincrónica: preguntas por vacante, sesiones y respuestas del postulante. | Planificado |
 | `evaluation` | Puntuación NLP por criterio con evidencia textual (fragmento + posición), anonimización previa y ranking. ACL hacia el proveedor de IA. | Planificado |
@@ -74,6 +74,31 @@ Los nombres de los contextos planificados son una propuesta; ajustar esta tabla 
   - CLOSED es de solo lectura; no se vuelve a DRAFT; `anonymizedScreening` solo cambia en DRAFT.
   - Una vacante PUBLISHED no se elimina: primero se cierra.
 
+### Modelo actual de `iam`
+
+- `User` (agregado raíz, tabla `users`): `username` único, `password` (siempre hash BCrypt), `roles`
+  (`@ManyToMany` EAGER vía `user_roles`). Sin setters; roles inmutables hacia afuera.
+- `Role` (entidad, tabla `roles`): `name` de tipo `Roles` = `ROLE_ADMIN` (soporte), `ROLE_RECRUITER` (usuario de la
+  empresa que publica vacantes y define criterios), `ROLE_CANDIDATE` (postulante). Se siembran al arrancar.
+- Invariantes: `addRoles` rechaza lista vacía; el registro público (`addSignUpRoles`) nunca concede `ROLE_ADMIN`;
+  sin roles se asigna `ROLE_CANDIDATE`.
+- Sign-in fallido responde siempre 401 "Invalid username or password", exista o no el usuario.
+
+## Seguridad
+
+- Rutas públicas: `/api/v1/authentication/**` y la documentación (`/v3/api-docs/**`, `/swagger-ui/**`). Todo lo
+  demás exige `Authorization: Bearer <jwt>`.
+- JWT HS256, `subject` = username. El secreto es Base64 de ≥ 256 bits en `JWT_SECRET` (sin valor por defecto: sin
+  él la app no arranca). Expiración en `JWT_EXPIRATION_DAYS` (7 por defecto).
+- Autorización fina con `@PreAuthorize` (`@EnableMethodSecurity`). `UserDetailsImpl` expone `id` para reglas del
+  tipo `#userId == authentication.principal.id`.
+- El único camino para crear un administrador es el bootstrap al arrancar con `ADMIN_USERNAME` y `ADMIN_PASSWORD`
+  (idempotente: si existe, no lo toca).
+- CORS abierto en desarrollo; en producción se restringe al dominio del frontend Angular (TODO en
+  `WebSecurityConfiguration`).
+- Para saber quién es un usuario desde otro contexto se usa `shared.interfaces.acl.IamContextFacade`, nunca
+  `UserRepository` ni clases de `iam`.
+
 ## Reglas que no se rompen
 
 1. **Las reglas de negocio viven en el agregado**, nunca en el controlador ni en el command service.
@@ -82,13 +107,18 @@ Los nombres de los contextos planificados son una propuesta; ajustar esta tabla 
 4. **Commands, queries y value objects son `record`** (los enums de estado/tipo también van en `valueobjects`).
 5. **Toda ruta empieza con `/api/v1/` y usa sustantivos en plural en inglés** (`/api/v1/job-postings`).
 6. **Ningún contexto importa clases de otro contexto, salvo `shared`.** La integración entre contextos se hace
-   con contratos definidos en `shared` o con eventos de integración.
+   con contratos (fachadas ACL) definidos en `shared/interfaces/acl` e implementados en
+   `<contexto>/interfaces/acl`, o con eventos de integración.
 7. Los errores salen siempre con el cuerpo `ErrorResource` del `GlobalExceptionHandler`:
-   `ResourceNotFoundException` → 404, `BusinessRuleViolationException` → 422, validación → 400.
+   validación / argumento inválido → 400, `InvalidCredentialsException` o sin token → 401, sin permiso → 403,
+   `ResourceNotFoundException` → 404, conflicto de unicidad → 409, `BusinessRuleViolationException` → 422.
 8. `open-in-view` está desactivado: los repositorios cargan el agregado completo (`@EntityGraph`).
    En command services no se llama a `save()` sobre agregados ya cargados; se usa `flush()`.
-9. Ningún secreto en el repositorio: credenciales solo por variables de entorno o `.env` (ignorado por git).
+9. Ningún secreto en el repositorio: credenciales, `JWT_SECRET` y llaves de API solo por variables de entorno o
+   `.env` (ignorado por git). Nada de valores reales en `application.yml`.
 10. Todo cambio de dominio viene con su prueba unitaria del agregado.
+11. Entidades JPA: constructor protegido sin argumentos, `@Getter` donde haga falta, nunca `@Data` ni setters
+    públicos. Siempre `jakarta.persistence`, nunca `javax.persistence`.
 
 ## Servicios externos y sus límites
 
