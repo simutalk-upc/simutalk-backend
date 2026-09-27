@@ -8,23 +8,23 @@ Curso 1ASI0705 Arquitectura de Aplicaciones Web — UPC — ciclo 202620.
 
 ## Stack
 
-Java 21 · Spring Boot 3.5 · Spring Data JPA + Hibernate · MySQL 8 · Spring Security + JWT · springdoc OpenAPI 3 · Maven
+Java 21 · Spring Boot 3.5 · Spring Data JPA + Hibernate · PostgreSQL 16 · Spring Security + JWT · springdoc OpenAPI 3 · Maven
 
 La arquitectura (DDD por bounded contexts), las reglas del proyecto y las convenciones están en [CLAUDE.md](CLAUDE.md).
 
 ## Requisitos
 
 - JDK 21
-- MySQL 8 en ejecución (la base `simutalk_db` se crea sola al arrancar)
+- PostgreSQL 16 en ejecución, con la base `simutalk_db` creada
 - No hace falta instalar Maven: se usa el wrapper `./mvnw` (`mvnw.cmd` en Windows)
 
 ## Configuración
 
-1. Crea un usuario de MySQL (o usa uno existente):
+1. Crea el usuario y la base en PostgreSQL (como superusuario, p. ej. `psql -U postgres`):
 
    ```sql
-   CREATE USER 'simutalk'@'localhost' IDENTIFIED BY 'change-me';
-   GRANT ALL PRIVILEGES ON simutalk_db.* TO 'simutalk'@'localhost';
+   CREATE USER simutalk WITH PASSWORD 'change-me';
+   CREATE DATABASE simutalk_db OWNER simutalk;
    ```
 
 2. Copia `.env.example` a `.env` y completa `DB_USERNAME` y `DB_PASSWORD`. Spring Boot lee `.env` desde la raíz del
@@ -36,7 +36,7 @@ La arquitectura (DDD por bounded contexts), las reglas del proyecto y las conven
 | `DB_USERNAME` | sí | — |
 | `DB_PASSWORD` | sí | — |
 | `DB_HOST` | no | `localhost` |
-| `DB_PORT` | no | `3306` |
+| `DB_PORT` | no | `5432` |
 | `SERVER_PORT` | no | `8080` |
 
 ## Ejecución
