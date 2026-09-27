@@ -3,6 +3,7 @@ package pe.upc.simutalk.recruitment.application.internal.commandservices;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import pe.upc.simutalk.recruitment.application.internal.outboundservices.acl.ExternalInterviewsService;
 import pe.upc.simutalk.recruitment.domain.model.aggregates.JobPosting;
 import pe.upc.simutalk.recruitment.domain.model.commands.*;
 import pe.upc.simutalk.recruitment.domain.model.entities.EvaluationCriterion;
@@ -25,6 +26,7 @@ import pe.upc.simutalk.shared.domain.exceptions.ResourceNotFoundException;
 public class JobPostingCommandServiceImpl implements JobPostingCommandService {
 
     private final JobPostingRepository jobPostingRepository;
+    private final ExternalInterviewsService externalInterviewsService;
 
     @Override
     public JobPosting handle(CreateJobPostingCommand command) {
@@ -50,7 +52,7 @@ public class JobPostingCommandServiceImpl implements JobPostingCommandService {
     @Override
     public JobPosting handle(ChangeJobPostingStatusCommand command) {
         var jobPosting = loadJobPosting(command.jobPostingId());
-        jobPosting.changeStatus(command.status());
+        jobPosting.changeStatus(command.status(), externalInterviewsService);
         jobPostingRepository.flush();
         return jobPosting;
     }

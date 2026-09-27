@@ -37,7 +37,7 @@ class JobPostingQueryServiceImplTest {
         draftOfCompany1 = posting(1, 1);
         publishedOfCompany2 = posting(2, 2);
         publishedOfCompany2.addCriterion("Comunicación", "x", new Weight(100), CriterionType.COMPETENCY, null, false);
-        publishedOfCompany2.publish();
+        publishedOfCompany2.publish(criterionId -> 1L);
         when(repository.findAllByOrderByIdAsc()).thenReturn(List.of(draftOfCompany1, publishedOfCompany2));
         when(repository.findWithCriteriaById(1L)).thenReturn(Optional.of(draftOfCompany1));
     }

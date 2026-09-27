@@ -29,7 +29,7 @@ class ApplicationTest {
     }
 
     private Application submitted() {
-        jobPosting.publish();
+        jobPosting.publish(criterionId -> 1L);
         return Application.submit(jobPosting, 7L, false, Instant.now());
     }
 
@@ -42,7 +42,7 @@ class ApplicationTest {
     @Test
     void submittedApplicationStartsReceivedAndKeepsOnlyIds() {
         var appliedAt = Instant.now();
-        jobPosting.publish();
+        jobPosting.publish(criterionId -> 1L);
 
         var application = Application.submit(jobPosting, 7L, false, appliedAt);
 
@@ -61,7 +61,7 @@ class ApplicationTest {
 
     @Test
     void cannotApplyToClosedPosting() {
-        jobPosting.publish();
+        jobPosting.publish(criterionId -> 1L);
         jobPosting.close();
 
         assertThatThrownBy(() -> Application.submit(jobPosting, 7L, false, Instant.now()))
@@ -70,7 +70,7 @@ class ApplicationTest {
 
     @Test
     void candidateCannotApplyTwiceToTheSamePosting() {
-        jobPosting.publish();
+        jobPosting.publish(criterionId -> 1L);
 
         assertThatThrownBy(() -> Application.submit(jobPosting, 7L, true, Instant.now()))
                 .isInstanceOf(BusinessRuleViolationException.class)

@@ -92,7 +92,7 @@ class ApplicationAuthorizationTest {
         var posting = new JobPosting(new CreateJobPostingCommand("Analista", "SQL", 1L, null, false));
         ReflectionTestUtils.setField(posting, "id", 100L);
         posting.addCriterion("Análisis", "x", new Weight(100), CriterionType.COMPETENCY, null, false);
-        posting.publish();
+        posting.publish(criterionId -> 1L);
         application = Application.submit(posting, 7L, false, Instant.now());
         ReflectionTestUtils.setField(application, "id", 500L);
 

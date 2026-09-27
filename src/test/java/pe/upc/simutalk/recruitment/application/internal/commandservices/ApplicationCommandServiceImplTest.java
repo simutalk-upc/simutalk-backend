@@ -35,7 +35,7 @@ class ApplicationCommandServiceImplTest {
         var posting = new JobPosting(new CreateJobPostingCommand("Analista", "SQL", 1L, null, false));
         ReflectionTestUtils.setField(posting, "id", 100L);
         posting.addCriterion("Análisis", "x", new Weight(100), CriterionType.COMPETENCY, null, false);
-        posting.publish();
+        posting.publish(criterionId -> 1L);
         when(postings.findById(100L)).thenReturn(Optional.of(posting));
         when(applications.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
     }
