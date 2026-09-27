@@ -52,7 +52,7 @@ agregado (regla de negocio) → repositorio → `*ResourceFromEntityAssembler` �
 | Contexto | Responsabilidad | Estado |
 |---|---|---|
 | `shared` | `AuditableAbstractAggregateRoot`, `AuditableModel`, estrategia de nombres snake_case con tablas en plural, OpenAPI, excepciones de dominio base, manejador global de errores (`ErrorResource`), `MessageResource` y contratos ACL entre contextos (`IamContextFacade`, `ProfilesContextFacade`). | Implementado |
-| `recruitment` | Vacantes (`JobPosting`) y sus criterios ponderados (`EvaluationCriterion`, `Weight`). Ciclo DRAFT → PUBLISHED → CLOSED. | Implementado |
+| `recruitment` | Vacantes (`JobPosting`) y sus criterios ponderados (`EvaluationCriterion`, `Weight`), ciclo DRAFT → PUBLISHED → CLOSED; postulaciones (`Application`) y su pipeline. | Implementado |
 | `iam` | Usuarios (`User`), roles (`Role`, `Roles`), registro, sign-in con JWT, autorización y `IamContextFacadeImpl`. | Implementado |
 | `profiles` | Perfiles de empresa (`CompanyProfile`) y de postulante (`CandidateProfile`, incluye PII), certificaciones (`Certification`) y su verificación con el emisor. `ProfilesContextFacadeImpl`. | Implementado |
 | `interviews` | Entrevista asincrónica: preguntas por vacante, sesiones y respuestas del postulante. | Planificado |
@@ -75,6 +75,13 @@ Los nombres de los contextos planificados son una propuesta; ajustar esta tabla 
   - Una vacante PUBLISHED no se elimina: primero se cierra.
   - Visibilidad: un DRAFT solo lo ve su propia empresa; en los listados, las vacantes de otras empresas solo
     aparecen mientras están PUBLISHED (`isVisibleTo` / `isListedFor` con el VO `JobPostingViewer`).
+- `Application` (agregado raíz, tabla `applications`): `jobPostingId` y `candidateId` (solo ids), `status`
+  (`ApplicationStatus`), `appliedAt`. Solo se postula a una vacante PUBLISHED y una vez por candidato (también
+  `UNIQUE (job_posting_id, candidate_id)`). Transiciones dirigidas: RECEIVED → INTERVIEWING → ASSESSED →
+  SHORTLISTED → HIRED, y REJECTED desde cualquier etapa no final; REJECTED y HIRED son finales. Un salto inválido
+  lanza `InvalidStateTransitionException` (una `IllegalStateException`, 422 en la API).
+- Con `app.seed-demo-data=true`, `RecruitmentDemoDataSeeder` (después del de `profiles`) publica una vacante demo
+  y hace postular a los 6 candidatos, repartidos en RECEIVED, INTERVIEWING y ASSESSED.
 
 ### Modelo actual de `iam`
 
@@ -122,6 +129,9 @@ Los nombres de los contextos planificados son una propuesta; ajustar esta tabla 
   `IamContextFacade` → userId → `ProfilesContextFacade.fetchCompanyIdByUserId` → companyId de la vacante. Al crear,
   el `companyId` sale del usuario autenticado, nunca del cuerpo. Las lecturas siguen abiertas a cualquier
   autenticado con las reglas de visibilidad del agregado.
+- Postulaciones: solo `ROLE_CANDIDATE` postula (el `candidateId` sale del usuario autenticado vía
+  `ProfilesContextFacade.fetchCandidateIdByUserId`, nunca del cuerpo) y lista las suyas en `/api/v1/applications`;
+  el pipeline de una vacante y el cambio de etapa son del recruiter dueño de la vacante o de un admin.
 - `profiles`: un candidato solo lee y modifica su propio perfil y certificaciones; un recruiter lee perfiles y
   certificaciones de candidatos pero nunca los edita, y gestiona su propio perfil de empresa; un admin puede todo.
 
@@ -137,7 +147,8 @@ Los nombres de los contextos planificados son una propuesta; ajustar esta tabla 
    `<contexto>/interfaces/acl`, o con eventos de integración.
 7. Los errores salen siempre con el cuerpo `ErrorResource` del `GlobalExceptionHandler`:
    validación / argumento inválido → 400, `InvalidCredentialsException` o sin token → 401, sin permiso → 403,
-   `ResourceNotFoundException` → 404, conflicto de unicidad → 409, `BusinessRuleViolationException` → 422.
+   `ResourceNotFoundException` → 404, conflicto de unicidad → 409, `BusinessRuleViolationException` e
+   `InvalidStateTransitionException` → 422.
 8. `open-in-view` está desactivado: los repositorios cargan el agregado completo (`@EntityGraph`).
    En command services no se llama a `save()` sobre agregados ya cargados; se usa `flush()`.
 9. Ningún secreto en el repositorio: credenciales, `JWT_SECRET` y llaves de API solo por variables de entorno o

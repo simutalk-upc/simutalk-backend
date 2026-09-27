@@ -4,8 +4,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
+import pe.upc.simutalk.recruitment.domain.model.queries.GetApplicationByIdQuery;
 import pe.upc.simutalk.recruitment.domain.model.queries.GetJobPostingByIdQuery;
 import pe.upc.simutalk.recruitment.domain.model.valueobjects.JobPostingViewer;
+import pe.upc.simutalk.recruitment.domain.services.ApplicationQueryService;
 import pe.upc.simutalk.recruitment.domain.services.JobPostingQueryService;
 import pe.upc.simutalk.shared.interfaces.acl.IamContextFacade;
 import pe.upc.simutalk.shared.interfaces.acl.ProfilesContextFacade;
@@ -27,6 +29,7 @@ public class RecruitmentAccessPolicy {
     private final IamContextFacade iamContextFacade;
     private final ProfilesContextFacade profilesContextFacade;
     private final JobPostingQueryService jobPostingQueryService;
+    private final ApplicationQueryService applicationQueryService;
 
     /** True when the authenticated user's company owns the job posting. */
     public boolean ownsJobPosting(Long jobPostingId, Authentication authentication) {
@@ -38,17 +41,38 @@ public class RecruitmentAccessPolicy {
                 .orElse(false);
     }
 
+    /** True when the authenticated user's company owns the job posting the application belongs to. */
+    public boolean ownsApplicationJobPosting(Long applicationId, Authentication authentication) {
+        return applicationQueryService.handle(new GetApplicationByIdQuery(applicationId))
+                .map(application -> ownsJobPosting(application.getJobPostingId(), authentication))
+                .orElse(false);
+    }
+
     /** Company profile id of the authenticated user, if it has one. */
     public Optional<Long> currentCompanyId(Authentication authentication) {
+        return currentUserId(authentication)
+                .map(profilesContextFacade::fetchCompanyIdByUserId)
+                .filter(RecruitmentAccessPolicy::isPresentId);
+    }
+
+    /** Candidate profile id of the authenticated user, if it has one. */
+    public Optional<Long> currentCandidateId(Authentication authentication) {
+        return currentUserId(authentication)
+                .map(profilesContextFacade::fetchCandidateIdByUserId)
+                .filter(RecruitmentAccessPolicy::isPresentId);
+    }
+
+    private Optional<Long> currentUserId(Authentication authentication) {
         if (authentication == null || !authentication.isAuthenticated()) {
             return Optional.empty();
         }
-        var userId = iamContextFacade.fetchUserIdByUsername(authentication.getName());
-        if (userId == null || userId == 0L) {
-            return Optional.empty();
-        }
-        var companyId = profilesContextFacade.fetchCompanyIdByUserId(userId);
-        return companyId == null || companyId == 0L ? Optional.empty() : Optional.of(companyId);
+        return Optional.ofNullable(iamContextFacade.fetchUserIdByUsername(authentication.getName()))
+                .filter(RecruitmentAccessPolicy::isPresentId);
+    }
+
+    /** The facades answer 0 when there is no such id. */
+    private static boolean isPresentId(Long id) {
+        return id != null && id != 0L;
     }
 
     /** Visibility context for reads: admins see everything, others see by company. */
