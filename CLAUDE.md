@@ -134,6 +134,8 @@ Los nombres de los contextos planificados son una propuesta; ajustar esta tabla 
   el pipeline de una vacante y el cambio de etapa son del recruiter dueño de la vacante o de un admin.
 - `profiles`: un candidato solo lee y modifica su propio perfil y certificaciones; un recruiter lee perfiles y
   certificaciones de candidatos pero nunca los edita, y gestiona su propio perfil de empresa; un admin puede todo.
+  El perfil propio se lee en `/candidate-profiles/me` y `/company-profiles/me` (el usuario sale del token, nunca de
+  un parámetro); las rutas de colección listan de verdad, paginadas, y solo para admin.
 
 ## Reglas que no se rompen
 
