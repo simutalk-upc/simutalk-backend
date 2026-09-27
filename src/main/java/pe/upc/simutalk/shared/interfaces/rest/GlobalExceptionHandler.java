@@ -3,9 +3,11 @@ package pe.upc.simutalk.shared.interfaces.rest;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 import pe.upc.simutalk.shared.domain.exceptions.BusinessRuleViolationException;
+import pe.upc.simutalk.shared.domain.exceptions.InvalidCredentialsException;
 import pe.upc.simutalk.shared.domain.exceptions.ResourceNotFoundException;
 import pe.upc.simutalk.shared.interfaces.rest.resources.ErrorResource;
 import pe.upc.simutalk.shared.interfaces.rest.resources.ErrorResource.FieldErrorResource;
@@ -36,6 +39,29 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(BusinessRuleViolationException.class)
     public ResponseEntity<ErrorResource> handleBusinessRule(BusinessRuleViolationException ex, HttpServletRequest request) {
         return build(HttpStatus.UNPROCESSABLE_ENTITY, ex.getMessage(), request, List.of());
+    }
+
+    @ExceptionHandler(InvalidCredentialsException.class)
+    public ResponseEntity<ErrorResource> handleInvalidCredentials(InvalidCredentialsException ex, HttpServletRequest request) {
+        return build(HttpStatus.UNAUTHORIZED, ex.getMessage(), request, List.of());
+    }
+
+    /**
+     * Raised by method security ({@code @PreAuthorize}) inside a controller call, where
+     * it reaches this advice before Spring Security's own exception translation.
+     */
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ErrorResource> handleAccessDenied(AccessDeniedException ex, HttpServletRequest request) {
+        return build(HttpStatus.FORBIDDEN, "Access denied", request, List.of());
+    }
+
+    /**
+     * A unique constraint lost a race against a concurrent request (e.g. two sign-ups
+     * with the same username).
+     */
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ErrorResource> handleDataIntegrity(DataIntegrityViolationException ex, HttpServletRequest request) {
+        return build(HttpStatus.CONFLICT, "The request conflicts with existing data", request, List.of());
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
