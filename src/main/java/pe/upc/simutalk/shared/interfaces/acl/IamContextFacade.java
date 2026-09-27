@@ -20,4 +20,12 @@ public interface IamContextFacade {
     String fetchUsernameByUserId(Long userId);
 
     boolean existsUserById(Long userId);
+
+    /**
+     * Registers a user through the public sign-up rules (never ROLE_ADMIN) unless the
+     * username already exists. Meant for seeding demo data from other contexts.
+     *
+     * @return the id of the new or existing user
+     */
+    Long signUpUserIfAbsent(String username, String password, String roleName);
 }

@@ -4,6 +4,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 import pe.upc.simutalk.iam.domain.model.commands.SeedAdminUserCommand;
 import pe.upc.simutalk.iam.domain.model.commands.SeedRolesCommand;
@@ -33,7 +35,9 @@ public class ApplicationReadyEventHandler {
         this.adminPassword = adminPassword;
     }
 
+    /** Runs first: other contexts' startup handlers may need the roles to exist. */
     @EventListener(ApplicationReadyEvent.class)
+    @Order(Ordered.HIGHEST_PRECEDENCE)
     public void on(ApplicationReadyEvent event) {
         roleCommandService.handle(new SeedRolesCommand());
         log.info("Roles seeding verified");
