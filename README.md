@@ -95,6 +95,18 @@ Pruebas:
 Datos demo: arranca con `SEED_DEMO_DATA=true` y `DEMO_USERS_PASSWORD=...`. Usuarios: `consultora.andina` (recruiter),
 `rosa.quispe`, `jorge.huaman`, `lucia.flores`, `miguel.condori`, `carmen.ramos`, `diego.salazar` (candidatos).
 
+## Postulaciones (contexto `recruitment`, requieren token)
+
+| Método | Ruta | Acceso |
+|---|---|---|
+| POST | `/api/v1/job-postings/{jobPostingId}/applications` | Candidato (su propio perfil); solo vacantes PUBLISHED, una vez |
+| GET | `/api/v1/job-postings/{jobPostingId}/applications?status=` | Recruiter dueño o admin (pipeline del dashboard) |
+| GET | `/api/v1/applications` | Candidato: sus postulaciones |
+| PATCH | `/api/v1/applications/{applicationId}/status` | Recruiter dueño o admin; transiciones dirigidas |
+
+Etapas: `RECEIVED → INTERVIEWING → ASSESSED → SHORTLISTED → HIRED`, y `REJECTED` desde cualquier etapa no final.
+Un salto inválido responde 422.
+
 ## Endpoints de vacantes (contexto `recruitment`, requieren token)
 
 | Método | Ruta | Descripción |
