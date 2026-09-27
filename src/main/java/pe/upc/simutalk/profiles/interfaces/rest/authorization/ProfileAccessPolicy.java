@@ -1,0 +1,51 @@
+package pe.upc.simutalk.profiles.interfaces.rest.authorization;
+
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.stereotype.Component;
+import pe.upc.simutalk.profiles.domain.model.queries.GetCandidateProfileByIdQuery;
+import pe.upc.simutalk.profiles.domain.model.queries.GetCompanyProfileByIdQuery;
+import pe.upc.simutalk.profiles.domain.services.CandidateProfileQueryService;
+import pe.upc.simutalk.profiles.domain.services.CompanyProfileQueryService;
+import pe.upc.simutalk.shared.interfaces.acl.IamContextFacade;
+
+/**
+ * Ownership checks used from {@code @PreAuthorize} as {@code @profileAccess}. The current
+ * user id is resolved through the IamContextFacade contract, so profiles never imports
+ * iam classes.
+ */
+@Component("profileAccess")
+@RequiredArgsConstructor
+public class ProfileAccessPolicy {
+
+    private final IamContextFacade iamContextFacade;
+    private final CandidateProfileQueryService candidateProfileQueryService;
+    private final CompanyProfileQueryService companyProfileQueryService;
+
+    public boolean isCurrentUser(Long userId, Authentication authentication) {
+        var currentUserId = currentUserId(authentication);
+        return currentUserId != null && currentUserId.equals(userId);
+    }
+
+    public boolean ownsCandidate(Long candidateId, Authentication authentication) {
+        var currentUserId = currentUserId(authentication);
+        return currentUserId != null && candidateProfileQueryService.handle(new GetCandidateProfileByIdQuery(candidateId))
+                .map(candidate -> candidate.isOwnedBy(currentUserId))
+                .orElse(false);
+    }
+
+    public boolean ownsCompany(Long companyProfileId, Authentication authentication) {
+        var currentUserId = currentUserId(authentication);
+        return currentUserId != null && companyProfileQueryService.handle(new GetCompanyProfileByIdQuery(companyProfileId))
+                .map(company -> company.isOwnedBy(currentUserId))
+                .orElse(false);
+    }
+
+    private Long currentUserId(Authentication authentication) {
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return null;
+        }
+        var userId = iamContextFacade.fetchUserIdByUsername(authentication.getName());
+        return userId == null || userId == 0L ? null : userId;
+    }
+}
