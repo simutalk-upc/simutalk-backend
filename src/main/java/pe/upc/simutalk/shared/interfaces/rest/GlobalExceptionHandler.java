@@ -17,6 +17,7 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 import pe.upc.simutalk.shared.domain.exceptions.BusinessRuleViolationException;
 import pe.upc.simutalk.shared.domain.exceptions.InvalidCredentialsException;
+import pe.upc.simutalk.shared.domain.exceptions.InvalidStateTransitionException;
 import pe.upc.simutalk.shared.domain.exceptions.ResourceNotFoundException;
 import pe.upc.simutalk.shared.interfaces.rest.resources.ErrorResource;
 import pe.upc.simutalk.shared.interfaces.rest.resources.ErrorResource.FieldErrorResource;
@@ -38,6 +39,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(BusinessRuleViolationException.class)
     public ResponseEntity<ErrorResource> handleBusinessRule(BusinessRuleViolationException ex, HttpServletRequest request) {
+        return build(HttpStatus.UNPROCESSABLE_ENTITY, ex.getMessage(), request, List.of());
+    }
+
+    @ExceptionHandler(InvalidStateTransitionException.class)
+    public ResponseEntity<ErrorResource> handleInvalidTransition(InvalidStateTransitionException ex, HttpServletRequest request) {
         return build(HttpStatus.UNPROCESSABLE_ENTITY, ex.getMessage(), request, List.of());
     }
 

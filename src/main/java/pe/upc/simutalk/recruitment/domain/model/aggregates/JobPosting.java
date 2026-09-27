@@ -92,6 +92,10 @@ public class JobPosting extends AuditableAbstractAggregateRoot<JobPosting> {
         return status == JobPostingStatus.DRAFT;
     }
 
+    public boolean isPublished() {
+        return status == JobPostingStatus.PUBLISHED;
+    }
+
     public boolean isOwnedBy(Long otherCompanyId) {
         return otherCompanyId != null && companyId.value().equals(otherCompanyId);
     }
