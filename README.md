@@ -99,7 +99,7 @@ Datos demo: arranca con `SEED_DEMO_DATA=true` y `DEMO_USERS_PASSWORD=...`. Usuar
 
 | Método | Ruta | Descripción |
 |---|---|---|
-| POST | `/api/v1/job-postings` | Crea una vacante en DRAFT |
+| POST | `/api/v1/job-postings` | Crea una vacante en DRAFT a nombre de la empresa del recruiter autenticado |
 | GET | `/api/v1/job-postings/{id}` | Obtiene una vacante con sus criterios |
 | GET | `/api/v1/job-postings?companyId=&status=` | Lista vacantes (filtros opcionales) |
 | PUT | `/api/v1/job-postings/{id}` | Actualiza título, descripción, fecha de cierre y anonimización |
@@ -108,6 +108,10 @@ Datos demo: arranca con `SEED_DEMO_DATA=true` y `DEMO_USERS_PASSWORD=...`. Usuar
 | PUT | `/api/v1/job-postings/{id}/criteria/{criterionId}` | Modifica un criterio (solo en DRAFT) |
 | DELETE | `/api/v1/job-postings/{id}/criteria/{criterionId}` | Elimina un criterio (solo en DRAFT) |
 | PATCH | `/api/v1/job-postings/{id}/status` | Cambia el estado: `PUBLISHED` (exige pesos = 100) o `CLOSED` |
+
+Escrituras (POST/PUT/DELETE de vacantes y criterios, PATCH de estado): solo el recruiter de la empresa dueña o un
+admin; los demás reciben 403. Lecturas: cualquier autenticado, pero un DRAFT solo lo ve su empresa y los listados
+muestran de otras empresas solo las PUBLISHED.
 
 Errores: todas las respuestas de error tienen la forma
 

@@ -9,6 +9,7 @@ import pe.upc.simutalk.recruitment.domain.model.entities.EvaluationCriterion;
 import pe.upc.simutalk.recruitment.domain.model.valueobjects.CompanyId;
 import pe.upc.simutalk.recruitment.domain.model.valueobjects.CriterionType;
 import pe.upc.simutalk.recruitment.domain.model.valueobjects.JobPostingStatus;
+import pe.upc.simutalk.recruitment.domain.model.valueobjects.JobPostingViewer;
 import pe.upc.simutalk.recruitment.domain.model.valueobjects.Weight;
 import pe.upc.simutalk.shared.domain.exceptions.BusinessRuleViolationException;
 import pe.upc.simutalk.shared.domain.exceptions.ResourceNotFoundException;
@@ -33,6 +34,8 @@ import java.util.List;
  *   <li>A CLOSED posting is read-only; the anonymized screening flag is fixed once
  *       the posting leaves DRAFT.</li>
  *   <li>A PUBLISHED posting cannot be deleted; it has to be closed first.</li>
+ *   <li>A DRAFT is only visible to its own company; lists show other companies'
+ *       postings only while PUBLISHED.</li>
  * </ul>
  */
 @Getter
@@ -87,6 +90,20 @@ public class JobPosting extends AuditableAbstractAggregateRoot<JobPosting> {
 
     public boolean isDraft() {
         return status == JobPostingStatus.DRAFT;
+    }
+
+    public boolean isOwnedBy(Long otherCompanyId) {
+        return otherCompanyId != null && companyId.value().equals(otherCompanyId);
+    }
+
+    /** Whether the viewer may open this posting by id: DRAFTs only for the owning company. */
+    public boolean isVisibleTo(JobPostingViewer viewer) {
+        return viewer.unrestricted() || !isDraft() || isOwnedBy(viewer.companyId());
+    }
+
+    /** Whether the posting appears in the viewer's listings: others only see PUBLISHED ones. */
+    public boolean isListedFor(JobPostingViewer viewer) {
+        return viewer.unrestricted() || status == JobPostingStatus.PUBLISHED || isOwnedBy(viewer.companyId());
     }
 
     /* ---------- details ---------- */

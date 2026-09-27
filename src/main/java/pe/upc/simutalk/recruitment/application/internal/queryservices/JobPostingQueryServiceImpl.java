@@ -22,11 +22,18 @@ public class JobPostingQueryServiceImpl implements JobPostingQueryService {
 
     @Override
     public Optional<JobPosting> handle(GetJobPostingByIdQuery query) {
-        return jobPostingRepository.findWithCriteriaById(query.jobPostingId());
+        return jobPostingRepository.findWithCriteriaById(query.jobPostingId())
+                .filter(jobPosting -> jobPosting.isVisibleTo(query.viewer()));
     }
 
     @Override
     public List<JobPosting> handle(SearchJobPostingsQuery query) {
+        return findByFilters(query).stream()
+                .filter(jobPosting -> jobPosting.isListedFor(query.viewer()))
+                .toList();
+    }
+
+    private List<JobPosting> findByFilters(SearchJobPostingsQuery query) {
         var status = query.status();
         if (query.companyId() == null) {
             return status == null

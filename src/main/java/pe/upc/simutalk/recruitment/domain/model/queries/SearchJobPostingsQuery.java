@@ -1,9 +1,17 @@
 package pe.upc.simutalk.recruitment.domain.model.queries;
 
 import pe.upc.simutalk.recruitment.domain.model.valueobjects.JobPostingStatus;
+import pe.upc.simutalk.recruitment.domain.model.valueobjects.JobPostingViewer;
 
 /**
  * Lists job postings. Both filters are optional; a {@code null} filter is ignored.
+ * Results are limited to what the {@code viewer} may see in a listing.
  */
-public record SearchJobPostingsQuery(Long companyId, JobPostingStatus status) {
+public record SearchJobPostingsQuery(Long companyId, JobPostingStatus status, JobPostingViewer viewer) {
+
+    public SearchJobPostingsQuery {
+        if (viewer == null) {
+            throw new IllegalArgumentException("Viewer is required");
+        }
+    }
 }

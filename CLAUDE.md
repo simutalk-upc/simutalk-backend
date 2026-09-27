@@ -73,6 +73,8 @@ Los nombres de los contextos planificados son una propuesta; ajustar esta tabla 
   - Nombres de criterio únicos dentro de la vacante (sin distinguir mayúsculas).
   - CLOSED es de solo lectura; no se vuelve a DRAFT; `anonymizedScreening` solo cambia en DRAFT.
   - Una vacante PUBLISHED no se elimina: primero se cierra.
+  - Visibilidad: un DRAFT solo lo ve su propia empresa; en los listados, las vacantes de otras empresas solo
+    aparecen mientras están PUBLISHED (`isVisibleTo` / `isListedFor` con el VO `JobPostingViewer`).
 
 ### Modelo actual de `iam`
 
@@ -115,6 +117,11 @@ Los nombres de los contextos planificados son una propuesta; ajustar esta tabla 
   `WebSecurityConfiguration`).
 - Para saber quién es un usuario desde otro contexto se usa `shared.interfaces.acl.IamContextFacade`, nunca
   `UserRepository` ni clases de `iam`. Así lo hace `ProfileAccessPolicy` (`@profileAccess` en `@PreAuthorize`).
+- `recruitment`: toda escritura (vacantes, criterios, estado) exige `ROLE_RECRUITER` dueño de la vacante o
+  `ROLE_ADMIN`. El dueño se resuelve en `RecruitmentAccessPolicy` (`@recruitmentAccess`): username →
+  `IamContextFacade` → userId → `ProfilesContextFacade.fetchCompanyIdByUserId` → companyId de la vacante. Al crear,
+  el `companyId` sale del usuario autenticado, nunca del cuerpo. Las lecturas siguen abiertas a cualquier
+  autenticado con las reglas de visibilidad del agregado.
 - `profiles`: un candidato solo lee y modifica su propio perfil y certificaciones; un recruiter lee perfiles y
   certificaciones de candidatos pero nunca los edita, y gestiona su propio perfil de empresa; un admin puede todo.
 
