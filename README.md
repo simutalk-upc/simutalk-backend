@@ -39,6 +39,9 @@ La arquitectura (DDD por bounded contexts), las reglas del proyecto y las conven
 | `JWT_SECRET` | sí | — (Base64, ≥ 256 bits) |
 | `JWT_EXPIRATION_DAYS` | no | `7` |
 | `ADMIN_USERNAME` / `ADMIN_PASSWORD` | no | — (si ambos existen, crea el admin inicial) |
+| `CREDENTIALS_MODE` | no | `mock` (`live` llama al emisor; aún sin emisores conectados) |
+| `SEED_DEMO_DATA` | no | `false` |
+| `DEMO_USERS_PASSWORD` | no | — (contraseña de los usuarios demo; sin ella no pueden iniciar sesión) |
 | `DB_HOST` | no | `localhost` |
 | `DB_PORT` | no | `5432` |
 | `SERVER_PORT` | no | `8080` |
@@ -73,6 +76,24 @@ Pruebas:
 | GET | `/api/v1/users` | `ROLE_ADMIN` |
 | GET | `/api/v1/users/{userId}` | `ROLE_ADMIN` o el propio usuario |
 | GET | `/api/v1/roles` | Autenticado |
+
+## Perfiles y certificaciones (contexto `profiles`, requieren token)
+
+| Método | Ruta | Acceso |
+|---|---|---|
+| POST | `/api/v1/company-profiles` | Recruiter (el suyo) o admin |
+| GET | `/api/v1/company-profiles/{id}` · `?userId=` | Autenticado |
+| PUT | `/api/v1/company-profiles/{id}` | Dueño o admin |
+| POST | `/api/v1/candidate-profiles` | Candidato (el suyo) o admin |
+| GET | `/api/v1/candidate-profiles/{id}` · `?userId=` | Dueño, recruiter o admin |
+| PUT | `/api/v1/candidate-profiles/{id}` | Dueño o admin |
+| POST | `/api/v1/candidate-profiles/{id}/certifications` | Dueño o admin (nace UNVERIFIED) |
+| GET | `/api/v1/candidate-profiles/{id}/certifications` | Dueño, recruiter o admin |
+| POST | `/api/v1/candidate-profiles/{id}/certifications/{certificationId}/verification` | Dueño o admin |
+| DELETE | `/api/v1/candidate-profiles/{id}/certifications/{certificationId}` | Dueño o admin |
+
+Datos demo: arranca con `SEED_DEMO_DATA=true` y `DEMO_USERS_PASSWORD=...`. Usuarios: `consultora.andina` (recruiter),
+`rosa.quispe`, `jorge.huaman`, `lucia.flores`, `miguel.condori`, `carmen.ramos`, `diego.salazar` (candidatos).
 
 ## Endpoints de vacantes (contexto `recruitment`, requieren token)
 
