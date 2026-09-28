@@ -1,14 +1,15 @@
 package pe.upc.simutalk.assessment.infrastructure.external.ai;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sun.net.httpserver.HttpServer;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.HttpHeaders;
-import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.web.reactive.function.client.WebClientResponseException;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestClient;
 import pe.upc.simutalk.assessment.domain.services.AnswerScoringService.ScoringResult;
-import reactor.core.publisher.Mono;
 
 import java.math.BigDecimal;
+import java.net.InetSocketAddress;
 import java.time.Duration;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -20,8 +21,12 @@ class AnswerScoringServiceImplTest {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     private AnswerScoringServiceImpl service(String mode, String key) {
-        return new AnswerScoringServiceImpl(mode, "https://generativelanguage.googleapis.com", "gemini-test", key,
-                Duration.ofMillis(200), 3, Duration.ofMillis(5), 10, WebClient.builder(), objectMapper);
+        return service(mode, "https://generativelanguage.googleapis.com", key);
+    }
+
+    private AnswerScoringServiceImpl service(String mode, String baseUrl, String key) {
+        return new AnswerScoringServiceImpl(mode, baseUrl, "gemini-test", key,
+                Duration.ofMillis(200), 3, Duration.ofMillis(5), 10, RestClient.builder(), objectMapper);
     }
 
     private static final String TRANSCRIPT = "Primero confirmaría que la caída es real. Luego separaría el volumen del ticket "
@@ -51,18 +56,53 @@ class AnswerScoringServiceImplTest {
     @Test
     void retriesOnRateLimitWithBackoffThenSucceeds() {
         var attempts = new AtomicInteger();
-        var call = Mono.defer(() -> attempts.incrementAndGet() < 3
-                ? Mono.<ScoringResult>error(WebClientResponseException.create(429, "Too Many Requests", HttpHeaders.EMPTY, new byte[0], null))
-                : Mono.just(new ScoringResult(BigDecimal.ONE, BigDecimal.ONE, "x", 0, 1, false)));
+        var result = service("live", "k").callWithResilience(() -> {
+            if (attempts.incrementAndGet() < 3) {
+                throw HttpClientErrorException.create(HttpStatus.TOO_MANY_REQUESTS, "Too Many Requests", null, new byte[0], null);
+            }
+            return new ScoringResult(BigDecimal.ONE, BigDecimal.ONE, "x", 0, 1, false);
+        });
 
-        assertThat(service("live", "k").callWithResilience(call).isAvailable()).isTrue();
+        assertThat(result.isAvailable()).isTrue();
         assertThat(attempts).hasValue(3);
     }
 
     @Test
-    void fallsBackWhenTheProviderTimesOutOrFails() {
-        assertThat(service("live", "k").callWithResilience(Mono.never()).isAvailable()).isFalse();
-        assertThat(service("live", "k").callWithResilience(Mono.error(new IllegalStateException("boom"))).isAvailable()).isFalse();
+    void fallsBackWhenTheProviderFails() {
+        var attempts = new AtomicInteger();
+
+        var result = service("live", "k").callWithResilience(() -> {
+            attempts.incrementAndGet();
+            throw new IllegalStateException("boom");
+        });
+
+        assertThat(result.isAvailable()).isFalse();
+        assertThat(attempts).hasValue(1);
+    }
+
+    @Test
+    void fallsBackWhenTheProviderDoesNotAnswerWithinTheTimeout() throws Exception {
+        var server = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
+        server.createContext("/", exchange -> {
+            try {
+                Thread.sleep(2_000);
+            } catch (InterruptedException ex) {
+                Thread.currentThread().interrupt();
+            }
+            exchange.close();
+        });
+        server.start();
+        try {
+            var live = service("live", "http://127.0.0.1:" + server.getAddress().getPort(), "k");
+            var startedAt = System.nanoTime();
+
+            var result = live.score(TRANSCRIPT, "Pensamiento analítico", "Resuelve problemas con datos.");
+
+            assertThat(result.isAvailable()).isFalse();
+            assertThat(Duration.ofNanos(System.nanoTime() - startedAt)).isLessThan(Duration.ofMillis(1_500));
+        } finally {
+            server.stop(0);
+        }
     }
 
     @Test

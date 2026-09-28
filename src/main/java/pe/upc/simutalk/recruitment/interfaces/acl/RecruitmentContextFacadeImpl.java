@@ -8,6 +8,7 @@ import pe.upc.simutalk.recruitment.domain.model.commands.ChangeApplicationStatus
 import pe.upc.simutalk.recruitment.domain.model.entities.EvaluationCriterion;
 import pe.upc.simutalk.recruitment.domain.model.queries.GetApplicationByIdQuery;
 import pe.upc.simutalk.recruitment.domain.model.queries.GetApplicationCountByStatusQuery;
+import pe.upc.simutalk.recruitment.domain.model.queries.GetApplicationsByJobPostingIdQuery;
 import pe.upc.simutalk.recruitment.domain.model.queries.GetAverageTimeToShortlistQuery;
 import pe.upc.simutalk.recruitment.domain.model.queries.GetJobPostingIdsByCompanyIdQuery;
 import pe.upc.simutalk.recruitment.domain.model.queries.GetPublishedJobPostingCountByCompanyIdQuery;
@@ -97,6 +98,16 @@ public class RecruitmentContextFacadeImpl implements RecruitmentContextFacade {
     @Override
     public Long fetchJobPostingIdByApplicationId(Long applicationId) {
         return findApplication(applicationId).map(Application::getJobPostingId).orElse(0L);
+    }
+
+    @Override
+    public List<Long> fetchApplicationIds(Long jobPostingId) {
+        if (jobPostingId == null) {
+            return List.of();
+        }
+        return applicationQueryService.handle(new GetApplicationsByJobPostingIdQuery(jobPostingId, null)).stream()
+                .map(Application::getId)
+                .toList();
     }
 
     @Override

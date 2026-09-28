@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import pe.upc.simutalk.interviews.domain.model.aggregates.InterviewSession;
 import pe.upc.simutalk.interviews.domain.model.aggregates.Question;
 import pe.upc.simutalk.interviews.domain.model.queries.CountQuestionsByCriterionIdQuery;
+import pe.upc.simutalk.interviews.domain.model.queries.GetInterviewSessionByApplicationIdQuery;
 import pe.upc.simutalk.interviews.domain.model.queries.GetInterviewSessionByIdQuery;
 import pe.upc.simutalk.interviews.domain.model.queries.GetQuestionsByJobPostingIdQuery;
 import pe.upc.simutalk.interviews.domain.services.InterviewSessionQueryService;
@@ -36,6 +37,16 @@ public class InterviewsContextFacadeImpl implements InterviewsContextFacade {
     @Override
     public String fetchSessionStatus(Long interviewSessionId) {
         return findSession(interviewSessionId).map(session -> session.getStatus().name()).orElse("");
+    }
+
+    @Override
+    public Long fetchSessionIdByApplicationId(Long applicationId) {
+        if (applicationId == null) {
+            return 0L;
+        }
+        return interviewSessionQueryService.handle(new GetInterviewSessionByApplicationIdQuery(applicationId))
+                .map(InterviewSession::getId)
+                .orElse(0L);
     }
 
     @Override

@@ -1,53 +1,90 @@
 package pe.upc.simutalk.interviews.application.internal.eventhandlers;
 
-import lombok.RequiredArgsConstructor;
-import org.springframework.context.ApplicationEventPublisher;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.support.TransactionTemplate;
 import pe.upc.simutalk.interviews.domain.model.aggregates.Question;
 import pe.upc.simutalk.interviews.domain.model.commands.*;
+import pe.upc.simutalk.interviews.domain.model.queries.GetInterviewSessionByApplicationIdQuery;
 import pe.upc.simutalk.interviews.domain.model.queries.GetQuestionsByJobPostingIdQuery;
 import pe.upc.simutalk.interviews.domain.model.valueobjects.QuestionOrigin;
 import pe.upc.simutalk.interviews.domain.services.InterviewSessionCommandService;
+import pe.upc.simutalk.interviews.domain.services.InterviewSessionQueryService;
 import pe.upc.simutalk.interviews.domain.services.QuestionCommandService;
 import pe.upc.simutalk.interviews.domain.services.QuestionQueryService;
-import pe.upc.simutalk.shared.interfaces.events.DemoApplicationsSubmittedEvent;
-import pe.upc.simutalk.shared.interfaces.events.DemoInterviewsCompletedEvent;
-import pe.upc.simutalk.shared.interfaces.events.DemoJobPostingDraftedEvent;
+import pe.upc.simutalk.shared.interfaces.acl.IamContextFacade;
+import pe.upc.simutalk.shared.interfaces.acl.ProfilesContextFacade;
+import pe.upc.simutalk.shared.interfaces.acl.RecruitmentContextFacade;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * Interviews part of the demo data. Reacts synchronously, inside recruitment's demo seeding
- * transaction, to the shared demo events:
+ * Interviews part of the demo data ({@code app.seed-demo-data=true}), two steps of the ordered
+ * demo sequence described in recruitment's seeder:
  * <ul>
- *   <li>{@link DemoJobPostingDraftedEvent}: writes a 6-question script over the posting's
- *       COMPETENCY criteria, one of them allowing a follow-up.</li>
- *   <li>{@link DemoApplicationsSubmittedEvent}: INTERVIEWING applications get an IN_PROGRESS
- *       session with 3 and 5 answers; ASSESSED ones a COMPLETED session with the 6 answers,
- *       one of them including a follow-up. RECEIVED applications are left untouched.</li>
+ *   <li>300 ({@link #writeScript}): while the demo job posting is in DRAFT and has no questions,
+ *       writes a 6-question script over its COMPETENCY criteria, one of them allowing a follow-up.</li>
+ *   <li>500 ({@link #runInterviews}): once it is PUBLISHED and none of its applications has a session,
+ *       rosa.quispe and jorge.huaman get a COMPLETED session with the 6 answers (jorge's includes a
+ *       follow-up) and carmen.ramos and diego.salazar an IN_PROGRESS one with 3 and 5 answers.
+ *       The other applications stay RECEIVED.</li>
  * </ul>
- * Everything goes through the command services, so the same rules as the API apply.
+ * The demo job posting is found through the shared facades; everything goes through the command
+ * services, so the same rules as the API apply.
  */
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class InterviewsDemoDataSeeder {
 
+    private static final String COMPANY_USERNAME = "consultora.andina";
     private static final int DEMO_SESSION_VALIDITY_DAYS = 14;
 
+    /** Candidates whose interview ends COMPLETED, in the order of {@link #ASSESSED_ANSWERS}. */
+    private static final List<String> COMPLETED_INTERVIEWS = List.of("rosa.quispe", "jorge.huaman");
+
+    /** Candidates whose interview stays IN_PROGRESS, in the order of {@link #INTERVIEWING_ANSWERS}. */
+    private static final List<String> IN_PROGRESS_INTERVIEWS = List.of("carmen.ramos", "diego.salazar");
+
+    private final boolean enabled;
     private final QuestionCommandService questionCommandService;
     private final QuestionQueryService questionQueryService;
     private final InterviewSessionCommandService interviewSessionCommandService;
-    private final ApplicationEventPublisher eventPublisher;
+    private final InterviewSessionQueryService interviewSessionQueryService;
+    private final IamContextFacade iamContextFacade;
+    private final ProfilesContextFacade profilesContextFacade;
+    private final RecruitmentContextFacade recruitmentContextFacade;
+    private final TransactionTemplate transactionTemplate;
+
+    public InterviewsDemoDataSeeder(@Value("${app.seed-demo-data:false}") boolean enabled,
+                                    QuestionCommandService questionCommandService,
+                                    QuestionQueryService questionQueryService,
+                                    InterviewSessionCommandService interviewSessionCommandService,
+                                    InterviewSessionQueryService interviewSessionQueryService,
+                                    IamContextFacade iamContextFacade,
+                                    ProfilesContextFacade profilesContextFacade,
+                                    RecruitmentContextFacade recruitmentContextFacade,
+                                    TransactionTemplate transactionTemplate) {
+        this.enabled = enabled;
+        this.questionCommandService = questionCommandService;
+        this.questionQueryService = questionQueryService;
+        this.interviewSessionCommandService = interviewSessionCommandService;
+        this.interviewSessionQueryService = interviewSessionQueryService;
+        this.iamContextFacade = iamContextFacade;
+        this.profilesContextFacade = profilesContextFacade;
+        this.recruitmentContextFacade = recruitmentContextFacade;
+        this.transactionTemplate = transactionTemplate;
+    }
 
     private record DemoQuestion(int criterionIndex, String statement, int maxDurationSeconds, boolean allowsFollowUp) {
     }
 
-    /** criterionIndex: 0 = analytical thinking, 1 = communication (order of the drafted event). */
+    /** criterionIndex: 0 = analytical thinking, 1 = communication (COMPETENCY criteria in id order). */
     private static final List<DemoQuestion> SCRIPT = List.of(
             new DemoQuestion(0, "Un cliente reporta que sus ventas mensuales cayeron 15 % respecto al mes anterior. "
                     + "¿Cómo usarías los datos disponibles para encontrar la causa?", 240, true),
@@ -150,35 +187,83 @@ public class InterviewsDemoDataSeeder {
                             + "producto. Prefiero un gráfico de barras simple antes que una tabla llena de números, y "
                             + "terminaría con una recomendación.", 120)));
 
-    @EventListener
-    public void on(DemoJobPostingDraftedEvent event) {
-        var criterionIds = event.competencyCriterionIds();
-        for (var demo : SCRIPT) {
-            questionCommandService.handle(new CreateQuestionCommand(event.jobPostingId(), criterionIds.get(demo.criterionIndex()),
-                    demo.statement(), demo.maxDurationSeconds(), QuestionOrigin.MANUAL, demo.allowsFollowUp()));
+    @EventListener(ApplicationReadyEvent.class)
+    @Order(300)
+    public void writeScript(ApplicationReadyEvent event) {
+        var jobPostingId = demoJobPostingId();
+        if (jobPostingId == 0L || !recruitmentContextFacade.isJobPostingDraft(jobPostingId)
+                || !questionQueryService.handle(new GetQuestionsByJobPostingIdQuery(jobPostingId)).isEmpty()) {
+            return;
         }
-        log.info("Interviews demo data: {} questions written for job posting {}", SCRIPT.size(), event.jobPostingId());
+        var criterionIds = recruitmentContextFacade.fetchCompetencyCriterionIds(jobPostingId);
+        transactionTemplate.executeWithoutResult(status -> {
+            for (var demo : SCRIPT) {
+                questionCommandService.handle(new CreateQuestionCommand(jobPostingId, criterionIds.get(demo.criterionIndex()),
+                        demo.statement(), demo.maxDurationSeconds(), QuestionOrigin.MANUAL, demo.allowsFollowUp()));
+            }
+        });
+        log.info("Interviews demo data: {} questions written for job posting {}", SCRIPT.size(), jobPostingId);
     }
 
-    @EventListener
-    public void on(DemoApplicationsSubmittedEvent event) {
-        var script = questionQueryService.handle(new GetQuestionsByJobPostingIdQuery(event.jobPostingId()));
-        var assessed = event.applications().stream().filter(app -> "ASSESSED".equals(app.targetStage())).toList();
-        var interviewing = event.applications().stream().filter(app -> "INTERVIEWING".equals(app.targetStage())).toList();
+    @EventListener(ApplicationReadyEvent.class)
+    @Order(500)
+    public void runInterviews(ApplicationReadyEvent event) {
+        var jobPostingId = demoJobPostingId();
+        if (jobPostingId == 0L || !recruitmentContextFacade.isJobPostingPublished(jobPostingId)) {
+            return;
+        }
+        var applicationIds = recruitmentContextFacade.fetchApplicationIds(jobPostingId);
+        if (applicationIds.isEmpty() || applicationIds.stream().anyMatch(applicationId ->
+                interviewSessionQueryService.handle(new GetInterviewSessionByApplicationIdQuery(applicationId)).isPresent())) {
+            return;
+        }
+        var script = questionQueryService.handle(new GetQuestionsByJobPostingIdQuery(jobPostingId));
+        var completed = new AtomicInteger();
+        var inProgress = new AtomicInteger();
+        transactionTemplate.executeWithoutResult(status -> {
+            for (var index = 0; index < COMPLETED_INTERVIEWS.size(); index++) {
+                var applicationId = applicationIdOf(COMPLETED_INTERVIEWS.get(index), applicationIds);
+                if (applicationId == 0L) {
+                    continue;
+                }
+                var sessionId = startSession(applicationId);
+                answer(sessionId, script, ASSESSED_ANSWERS.get(index), index == 1);
+                interviewSessionCommandService.handle(new CompleteInterviewSessionCommand(sessionId));
+                completed.incrementAndGet();
+            }
+            for (var index = 0; index < IN_PROGRESS_INTERVIEWS.size(); index++) {
+                var applicationId = applicationIdOf(IN_PROGRESS_INTERVIEWS.get(index), applicationIds);
+                if (applicationId != 0L) {
+                    answer(startSession(applicationId), script, INTERVIEWING_ANSWERS.get(index), false);
+                    inProgress.incrementAndGet();
+                }
+            }
+        });
+        log.info("Interviews demo data: {} completed and {} in-progress sessions", completed, inProgress);
+    }
 
-        var completedSessions = new ArrayList<Long>();
-        for (var index = 0; index < assessed.size() && index < ASSESSED_ANSWERS.size(); index++) {
-            var sessionId = startSession(assessed.get(index).applicationId());
-            answer(sessionId, script, ASSESSED_ANSWERS.get(index), index == 1);
-            interviewSessionCommandService.handle(new CompleteInterviewSessionCommand(sessionId));
-            completedSessions.add(sessionId);
+    /** The demo company's first job posting (the one recruitment's seeder created), or {@code 0L}. */
+    private Long demoJobPostingId() {
+        if (!enabled) {
+            return 0L;
         }
-        for (var index = 0; index < interviewing.size() && index < INTERVIEWING_ANSWERS.size(); index++) {
-            var sessionId = startSession(interviewing.get(index).applicationId());
-            answer(sessionId, script, INTERVIEWING_ANSWERS.get(index), false);
-        }
-        log.info("Interviews demo data: {} completed and {} in-progress sessions", assessed.size(), interviewing.size());
-        eventPublisher.publishEvent(new DemoInterviewsCompletedEvent(event.jobPostingId(), completedSessions));
+        var companyId = profilesContextFacade.fetchCompanyIdByUserId(userIdOf(COMPANY_USERNAME));
+        var jobPostingIds = companyId == 0L ? List.<Long>of() : recruitmentContextFacade.fetchJobPostingIdsByCompanyId(companyId);
+        return jobPostingIds.isEmpty() ? 0L : jobPostingIds.getFirst();
+    }
+
+    private Long applicationIdOf(String username, List<Long> applicationIds) {
+        var candidateId = profilesContextFacade.fetchCandidateIdByUserId(userIdOf(username));
+        return applicationIds.stream()
+                .filter(applicationId -> candidateId != 0L
+                        && candidateId.equals(recruitmentContextFacade.fetchCandidateIdByApplicationId(applicationId)))
+                .findFirst()
+                .orElse(0L);
+    }
+
+    private Long userIdOf(String username) {
+        var userId = iamContextFacade.fetchUserIdByUsername(username);
+        return userId == null ? 0L : userId;
     }
 
     private Long startSession(Long applicationId) {

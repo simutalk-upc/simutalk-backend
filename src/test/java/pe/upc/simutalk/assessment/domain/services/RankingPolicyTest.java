@@ -3,7 +3,6 @@ package pe.upc.simutalk.assessment.domain.services;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import org.springframework.test.util.ReflectionTestUtils;
 import pe.upc.simutalk.assessment.domain.model.aggregates.Assessment;
 import pe.upc.simutalk.assessment.domain.model.entities.CriterionScore;
 import pe.upc.simutalk.assessment.domain.model.entities.Evidence;

@@ -14,6 +14,9 @@ public interface InterviewsContextFacade {
     /** @return the InterviewSessionStatus name, or an empty string if the session does not exist */
     String fetchSessionStatus(Long interviewSessionId);
 
+    /** @return the id of the application's interview session, or {@code 0L} if it has none */
+    Long fetchSessionIdByApplicationId(Long applicationId);
+
     /** @return the application id of the session, or {@code 0L} */
     Long fetchApplicationIdBySessionId(Long interviewSessionId);
 

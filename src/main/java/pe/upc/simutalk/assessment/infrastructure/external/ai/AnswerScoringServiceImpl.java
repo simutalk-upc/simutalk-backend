@@ -4,12 +4,12 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.MediaType;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.web.reactive.function.client.WebClientResponseException;
+import org.springframework.web.client.RestClient;
+import org.springframework.web.client.RestClientResponseException;
 import pe.upc.simutalk.assessment.domain.services.AnswerScoringService;
-import reactor.core.publisher.Mono;
-import reactor.util.retry.Retry;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -22,13 +22,14 @@ import java.util.HexFormat;
 import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.function.Supplier;
 
 /**
  * Adapter of the {@link AnswerScoringService} port.
  * <ul>
  *   <li>{@code external.ai.mode=mock} (default): deterministic, no network ({@link MockAnswerScorer}).</li>
  *   <li>{@code external.ai.mode=live}: Google Gemini {@code generateContent} REST API with the model and
- *       key from {@code external.ai.gemini.*}. Timeout, exponential backoff on HTTP 429/503, an LRU cache
+ *       key from {@code external.ai.gemini.*}, called through {@link RestClient}. Timeouts, exponential backoff on HTTP 429/503, an LRU cache
  *       keyed by the SHA-256 of the request, and {@link ScoringResult#unavailable()} as fallback.</li>
  * </ul>
  * The excerpt returned by the model is located again in the anonymized transcript; if it is not a
@@ -45,10 +46,9 @@ public class AnswerScoringServiceImpl implements AnswerScoringService {
     private final Mode mode;
     private final String model;
     private final String apiKey;
-    private final Duration timeout;
     private final int maxRetries;
     private final Duration initialBackoff;
-    private final WebClient webClient;
+    private final RestClient restClient;
     private final ObjectMapper objectMapper;
     private final Map<String, ScoringResult> cache;
 
@@ -60,15 +60,17 @@ public class AnswerScoringServiceImpl implements AnswerScoringService {
                                     @Value("${external.ai.max-retries:3}") int maxRetries,
                                     @Value("${external.ai.initial-backoff:1s}") Duration initialBackoff,
                                     @Value("${external.ai.cache-size:500}") int cacheSize,
-                                    WebClient.Builder webClientBuilder,
+                                    RestClient.Builder restClientBuilder,
                                     ObjectMapper objectMapper) {
         this.mode = parseMode(mode);
         this.model = model;
         this.apiKey = apiKey;
-        this.timeout = timeout;
         this.maxRetries = maxRetries;
         this.initialBackoff = initialBackoff;
-        this.webClient = webClientBuilder.baseUrl(baseUrl).build();
+        var requestFactory = new SimpleClientHttpRequestFactory();
+        requestFactory.setConnectTimeout(timeout);
+        requestFactory.setReadTimeout(timeout);
+        this.restClient = restClientBuilder.baseUrl(baseUrl).requestFactory(requestFactory).build();
         this.objectMapper = objectMapper;
         this.cache = Collections.synchronizedMap(new LinkedHashMap<>(16, 0.75f, true) {
             @Override
@@ -100,38 +102,47 @@ public class AnswerScoringServiceImpl implements AnswerScoringService {
         if (cached != null) {
             return cached;
         }
-        var result = callWithResilience(requestGemini(anonymizedTranscript, criterionName, criterionDescription)
-                .map(response -> parse(response, anonymizedTranscript)));
+        var result = callWithResilience(() -> parse(
+                requestGemini(anonymizedTranscript, criterionName, criterionDescription), anonymizedTranscript));
         if (result.isAvailable()) {
             cache.put(key, result);
         }
         return result;
     }
 
-    private Mono<JsonNode> requestGemini(String anonymizedTranscript, String criterionName, String criterionDescription) {
-        return webClient.post()
+    private JsonNode requestGemini(String anonymizedTranscript, String criterionName, String criterionDescription) {
+        return restClient.post()
                 .uri("/v1beta/models/{model}:generateContent", model)
                 .header("x-goog-api-key", apiKey)
-                .bodyValue(GeminiRequestFactory.build(anonymizedTranscript, criterionName, criterionDescription))
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(GeminiRequestFactory.build(anonymizedTranscript, criterionName, criterionDescription))
                 .retrieve()
-                .bodyToMono(JsonNode.class);
+                .body(JsonNode.class);
     }
 
-    /** Timeout, backoff on 429/503 and fallback; package visible for tests without network. */
-    ScoringResult callWithResilience(Mono<ScoringResult> call) {
-        try {
-            var result = call
-                    .timeout(timeout)
-                    .retryWhen(Retry.backoff(maxRetries, initialBackoff).filter(AnswerScoringServiceImpl::isRetryable))
-                    .onErrorResume(ex -> {
-                        log.warn("Answer scoring unavailable: {}", ex.toString());
-                        return Mono.just(ScoringResult.unavailable());
-                    })
-                    .block();
-            return result != null ? result : ScoringResult.unavailable();
-        } catch (RuntimeException ex) {
-            log.warn("Answer scoring failed: {}", ex.toString());
-            return ScoringResult.unavailable();
+    /**
+     * Exponential backoff on 429/503 and fallback; the timeouts live in {@link #restClient}.
+     * Package visible for tests without network.
+     */
+    ScoringResult callWithResilience(Supplier<ScoringResult> call) {
+        var backoff = initialBackoff;
+        for (var attempt = 0; ; attempt++) {
+            try {
+                var result = call.get();
+                return result != null ? result : ScoringResult.unavailable();
+            } catch (RuntimeException ex) {
+                if (!isRetryable(ex) || attempt >= maxRetries) {
+                    log.warn("Answer scoring unavailable: {}", ex.toString());
+                    return ScoringResult.unavailable();
+                }
+            }
+            try {
+                Thread.sleep(backoff);
+            } catch (InterruptedException ex) {
+                Thread.currentThread().interrupt();
+                return ScoringResult.unavailable();
+            }
+            backoff = backoff.multipliedBy(2);
         }
     }
 
@@ -178,8 +189,8 @@ public class AnswerScoringServiceImpl implements AnswerScoringService {
         }
     }
 
-    private static boolean isRetryable(Throwable ex) {
-        return ex instanceof WebClientResponseException response
+    private static boolean isRetryable(RuntimeException ex) {
+        return ex instanceof RestClientResponseException response
                 && (response.getStatusCode().value() == 429 || response.getStatusCode().value() == 503);
     }
 
