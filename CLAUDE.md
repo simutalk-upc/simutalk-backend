@@ -56,7 +56,7 @@ agregado (regla de negocio) → repositorio → `*ResourceFromEntityAssembler` �
 | `iam` | Usuarios (`User`), roles (`Role`, `Roles`), registro, sign-in con JWT, autorización y `IamContextFacadeImpl`. | Implementado |
 | `profiles` | Perfiles de empresa (`CompanyProfile`) y de postulante (`CandidateProfile`, incluye PII), certificaciones (`Certification`) y su verificación con el emisor. `ProfilesContextFacadeImpl`. | Implementado |
 | `interviews` | Guion de preguntas por vacante (`Question`), sesión de entrevista asincrónica (`InterviewSession`) y respuestas (`Answer`). Solo registra qué se preguntó y qué se respondió; nada de puntuación ni IA. `InterviewsContextFacadeImpl`. | Implementado |
-| `assessment` | Puntuación NLP por criterio con evidencia textual (fragmento + posición), anonimización previa y ranking. ACL hacia el proveedor de IA. | Planificado |
+| `assessment` | Evaluación por criterio (`Assessment`, `CriterionScore`, `Evidence`, `IntegrityFlag`) con evidencia textual anclada, anonimización previa (`TranscriptAnonymizer`), puerto de IA (`AnswerScoringService`, adaptador mock/Gemini) y ranking explicable. | Implementado |
 
 Los nombres de los contextos planificados son una propuesta; ajustar esta tabla cuando se creen.
 
@@ -138,6 +138,29 @@ Los nombres de los contextos planificados son una propuesta; ajustar esta tabla 
 - Aún no hay un proceso que marque como EXPIRED las sesiones vencidas: `expire()` existe en el agregado, pero nada lo
   invoca todavía.
 
+### Modelo actual de `assessment`
+
+- `Assessment` (agregado raíz, tabla `assessments`): `interviewSessionId` (único), copias inmutables de
+  `applicationId`, `jobPostingId` y `candidateId`, `weightedScore` (0.0 a 10.0), `engineVersion`, `computedAt`,
+  `criterionScores` e `integrityFlags`. Solo se calcula sobre una sesión COMPLETED. `weightedScore = Σ(score ×
+  weightApplied) / 100`, calculado dentro del agregado y redondeado a 1 decimal (HALF_UP); los pesos suman 100.
+- `CriterionScore` (tabla `criterion_scores`): `criterionId`, `criterionName` (copia), `criterionKind`
+  (`COMPETENCY|CERTIFICATION`), `score`, `weightApplied`, `confidence`, `evidences`. Un COMPETENCY necesita al menos
+  una evidencia; un CERTIFICATION no: su puntaje sale de las certificaciones verificadas y vigentes
+  (`CertificationScoringPolicy`: 0 → 0.0, 1 → 7.0, 2 → 8.5, 3+ → 10.0).
+- `Evidence` (tabla `evidences`): `answerId`, `excerpt`, `startOffset`, `endOffset`. El excerpt es literalmente
+  `transcript[start, end)` del texto ORIGINAL.
+- `IntegrityFlag` (tabla `integrity_flags`): `AI_GENERATED_CONTENT` (respuestas que parecen redactadas por IA) y
+  `CV_INCONSISTENCY` (certificaciones declaradas que el emisor rechazó); severidad `LOW|MEDIUM|HIGH`. No cambian el
+  puntaje.
+- Flujo: cada respuesta se anonimiza, se puntúa con `AnswerScoringService` (solo transcript anonimizado y criterio),
+  el fragmento devuelto se vuelve a ubicar en el texto anonimizado y se traduce al original. Si el proveedor no da
+  evidencia para un criterio COMPETENCY, no se guarda nada (422).
+- Ranking explicable (`RankingPolicy`): orden por `weightedScore`, desglose por criterio, insignias (`TOP_RANKED`,
+  `STRONG_EVIDENCE`, `VERIFIED_CERTIFICATIONS`, `MISSING_MANDATORY_CERTIFICATION`, `INTEGRITY_ALERT`) y códigos
+  estables `CANDIDATO-X-9999` (HMAC con `app.anonymization.secret`). Si la vacante tiene `anonymizedScreening`, la
+  anonimización es forzada y además se redactan los datos personales dentro de los excerpts.
+
 ## Seguridad
 
 - Rutas públicas: `/api/v1/authentication/**` y la documentación (`/v3/api-docs/**`, `/swagger-ui/**`). Todo lo
@@ -164,6 +187,8 @@ Los nombres de los contextos planificados son una propuesta; ajustar esta tabla 
   el guion e invita; el guion lo lee el dueño o el candidato con una sesión IN_PROGRESS en esa vacante; solo el
   candidato dueño inicia, responde y completa su entrevista; las respuestas las leen el candidato dueño y el recruiter
   de la vacante.
+- `assessment` (`AssessmentAccessPolicy`, `@assessmentAccess`): calcular y leer evaluaciones, evidencias y el ranking
+  es solo del recruiter dueño de la vacante o de un admin.
 - `profiles`: un candidato solo lee y modifica su propio perfil y certificaciones; un recruiter lee perfiles y
   certificaciones de candidatos pero nunca los edita, y gestiona su propio perfil de empresa; un admin puede todo.
   El perfil propio se lee en `/candidate-profiles/me` y `/company-profiles/me` (el usuario sale del token, nunca de
@@ -195,11 +220,11 @@ Los nombres de los contextos planificados son una propuesta; ajustar esta tabla 
 
 | Servicio | Uso | Límites y reglas |
 |---|---|---|
-| **Proveedor de IA / NLP** (por definir) | Puntuar respuestas contra criterios y extraer el fragmento que sustenta cada puntaje. | Solo se invoca desde `assessment/application/internal/outboundservices` vía `WebClient`. Timeout explícito, reintentos acotados con backoff y manejo de límites de tasa (HTTP 429). Tamaño de prompt y de respuesta acotados. La respuesta se valida: todo puntaje debe traer un fragmento que exista literalmente en la respuesta del postulante; si no, se descarta. Nunca se envía PII (ver abajo). Clave en variable de entorno. |
+| **Proveedor de IA / NLP**: Google Gemini (`generateContent`) | Puntuar respuestas contra criterios y extraer el fragmento que sustenta cada puntaje. | Puerto `assessment/domain/services/AnswerScoringService`, adaptador `assessment/infrastructure/external/ai` vía `WebClient`. `external.ai.mode` = `mock` (por defecto, sin red) o `live` (requiere `GEMINI_API_KEY`; modelo en `GEMINI_MODEL`). Caché LRU por SHA-256 del texto y criterio. Timeout explícito, reintentos acotados con backoff y manejo de límites de tasa (HTTP 429). Tamaño de prompt y de respuesta acotados. La respuesta se valida: todo puntaje debe traer un fragmento que exista literalmente en la respuesta del postulante; si no, se descarta. Nunca se envía PII (ver abajo). Clave en variable de entorno. |
 | **Verificación de credenciales** (Coursera, Credly, CertiProf) | Confirmar que una certificación declarada existe. | `profiles/infrastructure/external/credentials`. `external.credentials.mode` = `mock` (por defecto, sin red: código ≥ 8 caracteres coincide) o `live` (`WebClient`; emisores aún sin conectar, TODO por emisor, nunca inventar endpoints). Timeout, reintento con backoff exponencial ante 429 y respuesta de reserva que deja la certificación en UNVERIFIED. Al emisor solo viajan emisor, código, título y nombre del titular (necesario para el cotejo); nada de eso va al proveedor de IA. |
 | **PostgreSQL 16** | Persistencia (`simutalk_db`). | Credenciales por `DB_USERNAME` / `DB_PASSWORD`. `ddl-auto: update` solo para desarrollo. |
 
-Completar esta tabla con el proveedor concreto, su modelo, cuotas y costos cuando se elija.
+Pendiente: documentar las cuotas y costos del plan de Gemini que use el equipo.
 
 ## Anonimización de datos del postulante (obligatorio)
 
@@ -210,7 +235,8 @@ Antes de enviar **cualquier** texto al proveedor de IA:
   fecha de nacimiento, fotos, enlaces a perfiles y cualquier dato que lo identifique.
 - Al proveedor solo viajan: el texto de la respuesta ya anonimizado, la pregunta y los criterios de la vacante.
   Nunca ids internos del postulante, ni su nombre, ni metadatos de la sesión.
-- La anonimización ocurre en el contexto `assessment`, dentro del ACL de salida, y tiene pruebas unitarias propias.
+- La anonimización ocurre en el contexto `assessment`, dentro del ACL de salida (`TranscriptAnonymizer`), y tiene
+  pruebas unitarias propias; `AnswerScoringPrivacyTest` verifica el payload construido y el cuerpo HTTP enviado.
 - Los offsets de evidencia se calculan sobre el texto original para poder mostrar el fragmento real, pero el
   proveedor solo ve el texto anonimizado.
 - Si `anonymizedScreening` está activo en la vacante, además se ocultan los datos personales al evaluador humano

@@ -40,6 +40,10 @@ La arquitectura (DDD por bounded contexts), las reglas del proyecto y las conven
 | `JWT_EXPIRATION_DAYS` | no | `7` |
 | `ADMIN_USERNAME` / `ADMIN_PASSWORD` | no | — (si ambos existen, crea el admin inicial) |
 | `CREDENTIALS_MODE` | no | `mock` (`live` llama al emisor; aún sin emisores conectados) |
+| `AI_MODE` | no | `mock` (`live` usa Google Gemini) |
+| `GEMINI_API_KEY` | solo en `live` | — |
+| `GEMINI_MODEL` | no | `gemini-2.5-flash` |
+| `ANONYMIZATION_SECRET` | no | derivado de `JWT_SECRET` (clave de los códigos `CANDIDATO-X-9999`) |
 | `SEED_DEMO_DATA` | no | `false` |
 | `DEMO_USERS_PASSWORD` | no | — (contraseña de los usuarios demo; sin ella no pueden iniciar sesión) |
 | `DB_HOST` | no | `localhost` |
@@ -112,6 +116,20 @@ Datos demo: arranca con `SEED_DEMO_DATA=true` y `DEMO_USERS_PASSWORD=...`. Usuar
 
 Etapas: `RECEIVED → INTERVIEWING → ASSESSED → SHORTLISTED → HIRED`, y `REJECTED` desde cualquier etapa no final.
 Un salto inválido responde 422.
+
+## Evaluación y ranking (contexto `assessment`, requieren token)
+
+| Método | Ruta | Acceso |
+|---|---|---|
+| POST | `/api/v1/interview-sessions/{sessionId}/assessment` | Recruiter dueño o admin; entrevista COMPLETED, una vez |
+| GET | `/api/v1/interview-sessions/{sessionId}/assessment` | Recruiter dueño o admin |
+| GET | `/api/v1/assessments/{assessmentId}/criterion-scores/{criterionScoreId}/evidences` | Recruiter dueño o admin |
+| GET | `/api/v1/job-postings/{jobPostingId}/ranking?anonymized=` | Recruiter dueño o admin |
+
+`weightedScore = Σ(puntaje × peso) / 100`, redondeado a 1 decimal. Cada puntaje de competencia trae su evidencia: el
+fragmento literal de la respuesta y su posición. Con `anonymized=true` (o forzado por `anonymizedScreening`) el ranking
+muestra `CANDIDATO-X-9999` en lugar de nombre y documento. Al proveedor de IA solo viaja el transcript anonimizado y
+el criterio.
 
 ## Entrevistas (contexto `interviews`, requieren token)
 
