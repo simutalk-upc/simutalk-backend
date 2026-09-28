@@ -2,6 +2,7 @@ package pe.upc.simutalk.recruitment.application.internal.eventhandlers;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.annotation.Order;
@@ -16,18 +17,28 @@ import pe.upc.simutalk.recruitment.domain.services.JobPostingCommandService;
 import pe.upc.simutalk.recruitment.infrastructure.persistence.jpa.repositories.ApplicationRepository;
 import pe.upc.simutalk.shared.interfaces.acl.IamContextFacade;
 import pe.upc.simutalk.shared.interfaces.acl.ProfilesContextFacade;
+import pe.upc.simutalk.shared.interfaces.events.DemoApplicationsSubmittedEvent;
+import pe.upc.simutalk.shared.interfaces.events.DemoApplicationsSubmittedEvent.DemoApplication;
+import pe.upc.simutalk.shared.interfaces.events.DemoJobPostingDraftedEvent;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 /**
  * Recruitment part of the demo data ({@code app.seed-demo-data=true}). Runs after the
- * profiles DemoDataSeeder: publishes a job posting for Consultora Andina and makes the six
- * demo candidates apply, spread over RECEIVED, INTERVIEWING and ASSESSED so every column of
- * the recruiter's pipeline has data. Users and profiles are resolved through the shared
- * facades; recruitment never imports profiles classes. Idempotent: skipped once any
- * application exists.
+ * profiles DemoDataSeeder, in a single transaction:
+ * <ol>
+ *   <li>creates a DRAFT job posting for Consultora Andina with its criteria;</li>
+ *   <li>publishes {@link DemoJobPostingDraftedEvent} so interviews writes the script
+ *       (publishing requires questions for every COMPETENCY criterion);</li>
+ *   <li>publishes the job posting and makes the six demo candidates apply (RECEIVED);</li>
+ *   <li>publishes {@link DemoApplicationsSubmittedEvent} with each application's target
+ *       stage; interviews reaches INTERVIEWING / ASSESSED through interview sessions.</li>
+ * </ol>
+ * Users and profiles are resolved through the shared facades; no other context's classes are
+ * imported. Idempotent: skipped once any application exists.
  */
 @Slf4j
 @Service
@@ -54,6 +65,7 @@ public class RecruitmentDemoDataSeeder {
     private final ApplicationCommandService applicationCommandService;
     private final ApplicationRepository applicationRepository;
     private final TransactionTemplate transactionTemplate;
+    private final ApplicationEventPublisher eventPublisher;
 
     public RecruitmentDemoDataSeeder(@Value("${app.seed-demo-data:false}") boolean enabled,
                                      IamContextFacade iamContextFacade,
@@ -61,7 +73,8 @@ public class RecruitmentDemoDataSeeder {
                                      JobPostingCommandService jobPostingCommandService,
                                      ApplicationCommandService applicationCommandService,
                                      ApplicationRepository applicationRepository,
-                                     TransactionTemplate transactionTemplate) {
+                                     TransactionTemplate transactionTemplate,
+                                     ApplicationEventPublisher eventPublisher) {
         this.enabled = enabled;
         this.iamContextFacade = iamContextFacade;
         this.profilesContextFacade = profilesContextFacade;
@@ -69,6 +82,7 @@ public class RecruitmentDemoDataSeeder {
         this.applicationCommandService = applicationCommandService;
         this.applicationRepository = applicationRepository;
         this.transactionTemplate = transactionTemplate;
+        this.eventPublisher = eventPublisher;
     }
 
     @EventListener(ApplicationReadyEvent.class)
@@ -96,15 +110,19 @@ public class RecruitmentDemoDataSeeder {
                 "Análisis de datos comerciales con SQL, Excel y Python; elaboración de reportes para clientes.",
                 companyId, LocalDate.now().plusDays(60), true));
         var jobPostingId = jobPosting.getId();
-        jobPostingCommandService.handle(new AddEvaluationCriterionCommand(jobPostingId, "Pensamiento analítico",
+        var analytical = jobPostingCommandService.handle(new AddEvaluationCriterionCommand(jobPostingId, "Pensamiento analítico",
                 "Descompone problemas de negocio y los resuelve con datos.", 40, CriterionType.COMPETENCY, null, false));
-        jobPostingCommandService.handle(new AddEvaluationCriterionCommand(jobPostingId, "Comunicación efectiva",
+        var communication = jobPostingCommandService.handle(new AddEvaluationCriterionCommand(jobPostingId, "Comunicación efectiva",
                 "Explica hallazgos a públicos no técnicos con claridad.", 30, CriterionType.COMPETENCY, null, false));
         jobPostingCommandService.handle(new AddEvaluationCriterionCommand(jobPostingId, "Certificación en análisis de datos",
                 "Certificación reconocida en análisis de datos.", 30, CriterionType.CERTIFICATION,
                 "Google Data Analytics", false));
+        // Competency criteria in creation order: analytical thinking, then communication.
+        eventPublisher.publishEvent(new DemoJobPostingDraftedEvent(jobPostingId,
+                List.of(analytical.getId(), communication.getId())));
         jobPostingCommandService.handle(new ChangeJobPostingStatusCommand(jobPostingId, JobPostingStatus.PUBLISHED));
 
+        var submitted = new ArrayList<DemoApplication>();
         for (var username : APPLICATION_ORDER) {
             var candidateId = profilesContextFacade.fetchCandidateIdByUserId(userIdOf(username));
             if (candidateId == 0L) {
@@ -112,18 +130,9 @@ public class RecruitmentDemoDataSeeder {
                 continue;
             }
             var application = applicationCommandService.handle(new SubmitApplicationCommand(jobPostingId, candidateId));
-            advance(application.getId(), DEMO_CANDIDATES.get(username));
+            submitted.add(new DemoApplication(application.getId(), DEMO_CANDIDATES.get(username).name()));
         }
-    }
-
-    /** Walks the directed transitions from RECEIVED up to {@code target}. */
-    private void advance(Long applicationId, ApplicationStatus target) {
-        for (var next : List.of(ApplicationStatus.INTERVIEWING, ApplicationStatus.ASSESSED)) {
-            if (target.ordinal() < next.ordinal()) {
-                return;
-            }
-            applicationCommandService.handle(new ChangeApplicationStatusCommand(applicationId, next));
-        }
+        eventPublisher.publishEvent(new DemoApplicationsSubmittedEvent(jobPostingId, submitted));
     }
 
     private Long userIdOf(String username) {

@@ -1,0 +1,26 @@
+package pe.upc.simutalk.interviews.infrastructure.persistence.jpa.repositories;
+
+import org.springframework.data.jpa.repository.EntityGraph;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+import pe.upc.simutalk.interviews.domain.model.aggregates.InterviewSession;
+import pe.upc.simutalk.interviews.domain.model.valueobjects.InterviewSessionStatus;
+
+import java.util.Optional;
+
+/**
+ * Finders load the session together with its answers (open-in-view is disabled).
+ */
+@Repository
+public interface InterviewSessionRepository extends JpaRepository<InterviewSession, Long> {
+
+    @EntityGraph(attributePaths = "answers")
+    Optional<InterviewSession> findWithAnswersById(Long id);
+
+    @EntityGraph(attributePaths = "answers")
+    Optional<InterviewSession> findByApplicationId(Long applicationId);
+
+    boolean existsByApplicationId(Long applicationId);
+
+    boolean existsByJobPostingIdAndCandidateIdAndStatus(Long jobPostingId, Long candidateId, InterviewSessionStatus status);
+}

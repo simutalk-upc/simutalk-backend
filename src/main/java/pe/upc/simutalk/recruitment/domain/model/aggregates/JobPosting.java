@@ -11,6 +11,7 @@ import pe.upc.simutalk.recruitment.domain.model.valueobjects.CriterionType;
 import pe.upc.simutalk.recruitment.domain.model.valueobjects.JobPostingStatus;
 import pe.upc.simutalk.recruitment.domain.model.valueobjects.JobPostingViewer;
 import pe.upc.simutalk.recruitment.domain.model.valueobjects.Weight;
+import pe.upc.simutalk.recruitment.domain.services.InterviewQuestionCounter;
 import pe.upc.simutalk.shared.domain.exceptions.BusinessRuleViolationException;
 import pe.upc.simutalk.shared.domain.exceptions.ResourceNotFoundException;
 import pe.upc.simutalk.shared.domain.model.aggregates.AuditableAbstractAggregateRoot;
@@ -26,8 +27,9 @@ import java.util.List;
  * <p>
  * Invariants guarded here:
  * <ul>
- *   <li>A job posting can only be published when it has at least one criterion and
- *       the weights add up to exactly 100.</li>
+ *   <li>A job posting can only be published when it has at least one criterion, the
+ *       weights add up to exactly 100 and every COMPETENCY criterion has at least one
+ *       interview question.</li>
  *   <li>Criteria can only be added, changed or removed while the posting is DRAFT,
  *       so every candidate is scored against the same weights.</li>
  *   <li>Criterion names are unique within a posting (case-insensitive).</li>
@@ -156,10 +158,15 @@ public class JobPosting extends AuditableAbstractAggregateRoot<JobPosting> {
     /**
      * Moves the posting from DRAFT to PUBLISHED.
      *
-     * @throws BusinessRuleViolationException if the posting is not DRAFT, has no
-     *                                        criteria, or its weights do not add up to 100
+     * @param questionCounter how many interview questions evaluate each criterion
+     * @throws BusinessRuleViolationException if the posting is not DRAFT, has no criteria,
+     *                                        its weights do not add up to 100, or a
+     *                                        COMPETENCY criterion has no interview question
      */
-    public void publish() {
+    public void publish(InterviewQuestionCounter questionCounter) {
+        if (questionCounter == null) {
+            throw new IllegalArgumentException("An interview question counter is required to publish");
+        }
         if (!isDraft()) {
             throw new BusinessRuleViolationException(
                     "Only a DRAFT job posting can be published (current status: %s)".formatted(status));
@@ -174,6 +181,16 @@ public class JobPosting extends AuditableAbstractAggregateRoot<JobPosting> {
                     "The weights of the evaluation criteria must add up to exactly %d (current total: %d)"
                             .formatted(Weight.TOTAL, totalWeight));
         }
+        var competenciesWithoutQuestions = criteria.stream()
+                .filter(criterion -> criterion.getCriterionType() == CriterionType.COMPETENCY)
+                .filter(criterion -> questionCounter.countQuestionsByCriterionId(criterion.getId()) == 0)
+                .map(EvaluationCriterion::getName)
+                .toList();
+        if (!competenciesWithoutQuestions.isEmpty()) {
+            throw new BusinessRuleViolationException(
+                    "Every COMPETENCY criterion needs at least one interview question before publishing; missing: %s"
+                            .formatted(competenciesWithoutQuestions));
+        }
         this.status = JobPostingStatus.PUBLISHED;
     }
 
@@ -184,12 +201,12 @@ public class JobPosting extends AuditableAbstractAggregateRoot<JobPosting> {
         this.status = JobPostingStatus.CLOSED;
     }
 
-    public void changeStatus(JobPostingStatus targetStatus) {
+    public void changeStatus(JobPostingStatus targetStatus, InterviewQuestionCounter questionCounter) {
         if (targetStatus == null) {
             throw new IllegalArgumentException("Target status is required");
         }
         switch (targetStatus) {
-            case PUBLISHED -> publish();
+            case PUBLISHED -> publish(questionCounter);
             case CLOSED -> close();
             case DRAFT -> throw new BusinessRuleViolationException("A job posting cannot go back to DRAFT");
         }

@@ -9,6 +9,7 @@ import pe.upc.simutalk.recruitment.domain.model.valueobjects.CriterionType;
 import pe.upc.simutalk.recruitment.domain.model.valueobjects.JobPostingStatus;
 import pe.upc.simutalk.recruitment.domain.model.valueobjects.JobPostingViewer;
 import pe.upc.simutalk.recruitment.domain.model.valueobjects.Weight;
+import pe.upc.simutalk.recruitment.domain.services.InterviewQuestionCounter;
 import pe.upc.simutalk.shared.domain.exceptions.BusinessRuleViolationException;
 import pe.upc.simutalk.shared.domain.exceptions.ResourceNotFoundException;
 
@@ -18,6 +19,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class JobPostingTest {
+
+    /** Every criterion has interview questions. */
+    private static final InterviewQuestionCounter ALL_COVERED = criterionId -> 1L;
 
     private JobPosting jobPosting;
 
@@ -36,7 +40,7 @@ class JobPostingTest {
 
     @Test
     void publishFailsWithoutCriteria() {
-        assertThatThrownBy(jobPosting::publish)
+        assertThatThrownBy(() -> jobPosting.publish(ALL_COVERED))
                 .isInstanceOf(BusinessRuleViolationException.class)
                 .hasMessageContaining("at least one evaluation criterion");
         assertThat(jobPosting.getStatus()).isEqualTo(JobPostingStatus.DRAFT);
@@ -47,7 +51,7 @@ class JobPostingTest {
         addCompetency("Comunicación", 60);
         addCompetency("Trabajo en equipo", 30);
 
-        assertThatThrownBy(jobPosting::publish)
+        assertThatThrownBy(() -> jobPosting.publish(ALL_COVERED))
                 .isInstanceOf(BusinessRuleViolationException.class)
                 .hasMessageContaining("current total: 90");
     }
@@ -57,7 +61,7 @@ class JobPostingTest {
         addCompetency("Comunicación", 60);
         addCompetency("Trabajo en equipo", 50);
 
-        assertThatThrownBy(jobPosting::publish)
+        assertThatThrownBy(() -> jobPosting.publish(ALL_COVERED))
                 .isInstanceOf(BusinessRuleViolationException.class)
                 .hasMessageContaining("current total: 110");
     }
@@ -68,7 +72,7 @@ class JobPostingTest {
         jobPosting.addCriterion("Java SE", "Certificación vigente", new Weight(40),
                 CriterionType.CERTIFICATION, "Oracle Certified Professional Java SE 21", true);
 
-        jobPosting.publish();
+        jobPosting.publish(ALL_COVERED);
 
         assertThat(jobPosting.getStatus()).isEqualTo(JobPostingStatus.PUBLISHED);
         assertThat(jobPosting.getTotalWeight()).isEqualTo(100);
@@ -77,7 +81,7 @@ class JobPostingTest {
     @Test
     void criteriaCannotChangeOnceTheJobPostingIsPublished() {
         var criterion = addCompetency("Comunicación", 100);
-        jobPosting.publish();
+        jobPosting.publish(ALL_COVERED);
 
         assertThatThrownBy(() -> addCompetency("Liderazgo", 10))
                 .isInstanceOf(BusinessRuleViolationException.class);
@@ -130,24 +134,24 @@ class JobPostingTest {
 
     @Test
     void cannotGoBackToDraft() {
-        assertThatThrownBy(() -> jobPosting.changeStatus(JobPostingStatus.DRAFT))
+        assertThatThrownBy(() -> jobPosting.changeStatus(JobPostingStatus.DRAFT, ALL_COVERED))
                 .isInstanceOf(BusinessRuleViolationException.class);
     }
 
     @Test
     void closedJobPostingIsReadOnly() {
-        jobPosting.changeStatus(JobPostingStatus.CLOSED);
+        jobPosting.changeStatus(JobPostingStatus.CLOSED, ALL_COVERED);
 
         assertThatThrownBy(() -> jobPosting.updateDetails("Otro", "Otra", null, true))
                 .isInstanceOf(BusinessRuleViolationException.class);
         assertThatThrownBy(jobPosting::close).isInstanceOf(BusinessRuleViolationException.class);
-        assertThatThrownBy(jobPosting::publish).isInstanceOf(BusinessRuleViolationException.class);
+        assertThatThrownBy(() -> jobPosting.publish(ALL_COVERED)).isInstanceOf(BusinessRuleViolationException.class);
     }
 
     @Test
     void anonymizedScreeningIsFixedAfterPublishing() {
         addCompetency("Comunicación", 100);
-        jobPosting.publish();
+        jobPosting.publish(ALL_COVERED);
 
         assertThatThrownBy(() -> jobPosting.updateDetails("Backend Developer", "APIs", null, false))
                 .isInstanceOf(BusinessRuleViolationException.class);
@@ -159,7 +163,7 @@ class JobPostingTest {
     @Test
     void publishedJobPostingCannotBeDeleted() {
         addCompetency("Comunicación", 100);
-        jobPosting.publish();
+        jobPosting.publish(ALL_COVERED);
 
         assertThatThrownBy(jobPosting::ensureCanBeDeleted).isInstanceOf(BusinessRuleViolationException.class);
 
@@ -183,7 +187,7 @@ class JobPostingTest {
         assertThat(jobPosting.isListedFor(otherCompany)).isFalse();
 
         addCompetency("Comunicación", 100);
-        jobPosting.publish();
+        jobPosting.publish(ALL_COVERED);
         assertThat(jobPosting.isListedFor(otherCompany)).isTrue();
         assertThat(jobPosting.isVisibleTo(otherCompany)).isTrue();
 
@@ -191,6 +195,33 @@ class JobPostingTest {
         assertThat(jobPosting.isListedFor(otherCompany)).isFalse();
         assertThat(jobPosting.isVisibleTo(otherCompany)).isTrue();
         assertThat(jobPosting.isListedFor(JobPostingViewer.ofCompany(1L))).isTrue();
+    }
+
+    @Test
+    void publishFailsWhenACompetencyCriterionHasNoInterviewQuestions() {
+        var communication = addCompetency("Comunicación", 40);
+        addCompetency("Trabajo en equipo", 30);
+        jobPosting.addCriterion("AWS", "Certificación", new Weight(30), CriterionType.CERTIFICATION,
+                "AWS Cloud Practitioner", false);
+        InterviewQuestionCounter onlyCommunicationCovered =
+                criterionId -> communication.getId().equals(criterionId) ? 2L : 0L;
+
+        assertThatThrownBy(() -> jobPosting.publish(onlyCommunicationCovered))
+                .isInstanceOf(BusinessRuleViolationException.class)
+                .hasMessageContaining("Trabajo en equipo")
+                .hasMessageNotContaining("AWS");
+        assertThat(jobPosting.getStatus()).isEqualTo(JobPostingStatus.DRAFT);
+    }
+
+    @Test
+    void certificationCriteriaDoNotNeedInterviewQuestions() {
+        var communication = addCompetency("Comunicación", 70);
+        jobPosting.addCriterion("AWS", "Certificación", new Weight(30), CriterionType.CERTIFICATION,
+                "AWS Cloud Practitioner", false);
+
+        jobPosting.publish(criterionId -> communication.getId().equals(criterionId) ? 1L : 0L);
+
+        assertThat(jobPosting.getStatus()).isEqualTo(JobPostingStatus.PUBLISHED);
     }
 
     private long nextId = 1;
