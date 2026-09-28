@@ -46,12 +46,28 @@ external:
     timeout: 5s
     max-retries: 3
     initial-backoff: 500ms
+  ai:
+    # mock (por defecto, sin red, determinista) | live (Google Gemini)
+    mode: ${AI_MODE:mock}
+    timeout: 20s
+    max-retries: 3
+    initial-backoff: 1s
+    # Resultados en memoria por hash del texto + criterio (solo en modo live)
+    cache-size: 500
+    gemini:
+      base-url: https://generativelanguage.googleapis.com
+      model: ${GEMINI_MODEL:gemini-2.5-flash}
+      # Obligatoria en modo live. Nunca se escribe aquí.
+      api-key: ${GEMINI_API_KEY:}
 
 app:
   # Datos de demostración (1 empresa, 6 candidatos). Solo se crean si la base de perfiles está vacía.
   seed-demo-data: ${SEED_DEMO_DATA:false}
   # Contraseña de los usuarios demo. Si falta, se usa una aleatoria y no podrán iniciar sesión.
   demo-users-password: ${DEMO_USERS_PASSWORD:}
+  anonymization:
+    # Clave HMAC de los códigos CANDIDATO-X-9999. Si no se define, se deriva de JWT_SECRET.
+    secret: ${ANONYMIZATION_SECRET:${authorization.jwt.secret}}
 
 server:
   port: ${SERVER_PORT:8080}
