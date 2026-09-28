@@ -10,6 +10,7 @@ import pe.upc.simutalk.profiles.domain.model.queries.GetCompanyProfileByUserIdQu
 import pe.upc.simutalk.profiles.domain.model.queries.GetVerifiedCertificationCountQuery;
 import pe.upc.simutalk.profiles.domain.services.CandidateProfileQueryService;
 import pe.upc.simutalk.profiles.domain.services.CompanyProfileQueryService;
+import pe.upc.simutalk.shared.interfaces.acl.CandidatePersonalData;
 import pe.upc.simutalk.shared.interfaces.acl.ProfilesContextFacade;
 
 /**
@@ -48,6 +49,28 @@ public class ProfilesContextFacadeImpl implements ProfilesContextFacade {
             return 0L;
         }
         return candidateProfileQueryService.handle(new GetVerifiedCertificationCountQuery(candidateId));
+    }
+
+    @Override
+    public long fetchRejectedCertificationCount(Long candidateId) {
+        if (candidateId == null) {
+            return 0L;
+        }
+        return candidateProfileQueryService.handle(new GetCandidateProfileByIdQuery(candidateId))
+                .map(CandidateProfile::countRejectedCertifications)
+                .orElse(0L);
+    }
+
+    @Override
+    public CandidatePersonalData fetchCandidatePersonalData(Long candidateId) {
+        if (candidateId == null) {
+            return null;
+        }
+        return candidateProfileQueryService.handle(new GetCandidateProfileByIdQuery(candidateId))
+                .map(candidate -> new CandidatePersonalData(candidate.getId(), candidate.getPersonName().firstName(),
+                        candidate.getPersonName().lastName(), candidate.getDocumentNumber().value(),
+                        candidate.getPhone(), candidate.getDistrict(), candidate.getBirthDate()))
+                .orElse(null);
     }
 
     @Override

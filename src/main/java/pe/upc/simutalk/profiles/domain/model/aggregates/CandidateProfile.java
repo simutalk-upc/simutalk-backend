@@ -9,6 +9,7 @@ import pe.upc.simutalk.profiles.domain.model.commands.CreateCandidateProfileComm
 import pe.upc.simutalk.profiles.domain.model.entities.Certification;
 import pe.upc.simutalk.profiles.domain.model.valueobjects.DocumentNumber;
 import pe.upc.simutalk.profiles.domain.model.valueobjects.PersonName;
+import pe.upc.simutalk.profiles.domain.model.valueobjects.VerificationStatus;
 import pe.upc.simutalk.shared.domain.exceptions.BusinessRuleViolationException;
 import pe.upc.simutalk.shared.domain.exceptions.ResourceNotFoundException;
 import pe.upc.simutalk.shared.domain.model.aggregates.AuditableAbstractAggregateRoot;
@@ -161,6 +162,13 @@ public class CandidateProfile extends AuditableAbstractAggregateRoot<CandidatePr
     /** Certifications in VERIFIED status, expired or not. */
     public long countVerifiedCertifications() {
         return certifications.stream().filter(Certification::isVerified).count();
+    }
+
+    /** Declared certifications the issuer did not match. */
+    public long countRejectedCertifications() {
+        return certifications.stream()
+                .filter(certification -> certification.getVerificationStatus() == VerificationStatus.REJECTED)
+                .count();
     }
 
     /** Certifications that are VERIFIED and not expired as of {@code today}. */

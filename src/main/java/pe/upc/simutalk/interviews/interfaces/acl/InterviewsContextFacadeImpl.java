@@ -2,9 +2,21 @@ package pe.upc.simutalk.interviews.interfaces.acl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import pe.upc.simutalk.interviews.domain.model.aggregates.InterviewSession;
+import pe.upc.simutalk.interviews.domain.model.aggregates.Question;
 import pe.upc.simutalk.interviews.domain.model.queries.CountQuestionsByCriterionIdQuery;
+import pe.upc.simutalk.interviews.domain.model.queries.GetInterviewSessionByIdQuery;
+import pe.upc.simutalk.interviews.domain.model.queries.GetQuestionsByJobPostingIdQuery;
+import pe.upc.simutalk.interviews.domain.services.InterviewSessionQueryService;
 import pe.upc.simutalk.interviews.domain.services.QuestionQueryService;
+import pe.upc.simutalk.shared.interfaces.acl.InterviewAnswerView;
 import pe.upc.simutalk.shared.interfaces.acl.InterviewsContextFacade;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * interviews' implementation of the {@link InterviewsContextFacade} contract published in shared.
@@ -14,9 +26,54 @@ import pe.upc.simutalk.shared.interfaces.acl.InterviewsContextFacade;
 public class InterviewsContextFacadeImpl implements InterviewsContextFacade {
 
     private final QuestionQueryService questionQueryService;
+    private final InterviewSessionQueryService interviewSessionQueryService;
 
     @Override
     public long countQuestionsByCriterionId(Long criterionId) {
         return questionQueryService.handle(new CountQuestionsByCriterionIdQuery(criterionId));
+    }
+
+    @Override
+    public String fetchSessionStatus(Long interviewSessionId) {
+        return findSession(interviewSessionId).map(session -> session.getStatus().name()).orElse("");
+    }
+
+    @Override
+    public Long fetchApplicationIdBySessionId(Long interviewSessionId) {
+        return findSession(interviewSessionId).map(InterviewSession::getApplicationId).orElse(0L);
+    }
+
+    @Override
+    public Long fetchJobPostingIdBySessionId(Long interviewSessionId) {
+        return findSession(interviewSessionId).map(InterviewSession::getJobPostingId).orElse(0L);
+    }
+
+    @Override
+    public Long fetchCandidateIdBySessionId(Long interviewSessionId) {
+        return findSession(interviewSessionId).map(InterviewSession::getCandidateId).orElse(0L);
+    }
+
+    @Override
+    public List<InterviewAnswerView> fetchAnswers(Long interviewSessionId) {
+        return findSession(interviewSessionId)
+                .map(session -> {
+                    Map<Long, Question> script = questionQueryService
+                            .handle(new GetQuestionsByJobPostingIdQuery(session.getJobPostingId())).stream()
+                            .collect(Collectors.toMap(Question::getId, Function.identity()));
+                    return session.getAnswers().stream()
+                            .filter(answer -> script.containsKey(answer.getQuestionId()))
+                            .map(answer -> new InterviewAnswerView(answer.getId(), answer.getQuestionId(),
+                                    script.get(answer.getQuestionId()).getCriterionId(), answer.getTranscript(),
+                                    answer.isFollowUp()))
+                            .toList();
+                })
+                .orElse(List.of());
+    }
+
+    private Optional<InterviewSession> findSession(Long interviewSessionId) {
+        if (interviewSessionId == null) {
+            return Optional.empty();
+        }
+        return interviewSessionQueryService.handle(new GetInterviewSessionByIdQuery(interviewSessionId));
     }
 }
