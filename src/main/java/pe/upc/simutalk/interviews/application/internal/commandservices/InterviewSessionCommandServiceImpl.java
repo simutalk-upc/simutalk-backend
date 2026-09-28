@@ -1,6 +1,7 @@
 package pe.upc.simutalk.interviews.application.internal.commandservices;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pe.upc.simutalk.interviews.application.internal.outboundservices.acl.ExternalRecruitmentService;
@@ -15,6 +16,7 @@ import pe.upc.simutalk.interviews.infrastructure.persistence.jpa.repositories.In
 import pe.upc.simutalk.interviews.infrastructure.persistence.jpa.repositories.QuestionRepository;
 import pe.upc.simutalk.shared.domain.exceptions.BusinessRuleViolationException;
 import pe.upc.simutalk.shared.domain.exceptions.ResourceNotFoundException;
+import pe.upc.simutalk.shared.interfaces.events.InterviewSessionCompletedEvent;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -32,6 +34,7 @@ public class InterviewSessionCommandServiceImpl implements InterviewSessionComma
     private final InterviewSessionRepository interviewSessionRepository;
     private final QuestionRepository questionRepository;
     private final ExternalRecruitmentService externalRecruitmentService;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Override
     public InterviewSession handle(CreateInterviewSessionCommand command) {
@@ -74,6 +77,8 @@ public class InterviewSessionCommandServiceImpl implements InterviewSessionComma
         session.complete(expectedQuestions, Instant.now());
         interviewSessionRepository.flush();
         externalRecruitmentService.markApplicationAsAssessed(session.getApplicationId());
+        eventPublisher.publishEvent(new InterviewSessionCompletedEvent(session.getId(), session.getApplicationId(),
+                session.getJobPostingId(), session.getCandidateId(), session.getFinishedAt()));
         return session;
     }
 

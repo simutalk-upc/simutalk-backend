@@ -44,6 +44,7 @@ La arquitectura (DDD por bounded contexts), las reglas del proyecto y las conven
 | `GEMINI_API_KEY` | solo en `live` | — |
 | `GEMINI_MODEL` | no | `gemini-2.5-flash` |
 | `ANONYMIZATION_SECRET` | no | derivado de `JWT_SECRET` (clave de los códigos `CANDIDATO-X-9999`) |
+| `SUSTAINABILITY_EMISSION_FACTOR` | no | `0.12` kg CO2e/km (valor de referencia a validar) |
 | `SEED_DEMO_DATA` | no | `false` |
 | `DEMO_USERS_PASSWORD` | no | — (contraseña de los usuarios demo; sin ella no pueden iniciar sesión) |
 | `DB_HOST` | no | `localhost` |
@@ -116,6 +117,17 @@ Datos demo: arranca con `SEED_DEMO_DATA=true` y `DEMO_USERS_PASSWORD=...`. Usuar
 
 Etapas: `RECEIVED → INTERVIEWING → ASSESSED → SHORTLISTED → HIRED`, y `REJECTED` desde cualquier etapa no final.
 Un salto inválido responde 422.
+
+## Reportes (contexto `analytics`, requieren token)
+
+| Método | Ruta | Contenido |
+|---|---|---|
+| GET | `/api/v1/reports/job-postings/{id}/funnel` | Postulaciones por etapa: RECEIVED, INTERVIEWING, ASSESSED, SHORTLISTED, HIRED, REJECTED |
+| GET | `/api/v1/reports/job-postings/{id}/criterion-averages` | Puntaje medio por criterio sobre los evaluados |
+| GET | `/api/v1/reports/job-postings/{id}/carbon-savings` | kg CO2e evitados, traslados no realizados y km no recorridos |
+| GET | `/api/v1/reports/companies/{id}/summary` | Vacantes activas, candidatos evaluados, días promedio hasta la terna y evidencias ancladas |
+
+Acceso: recruiter de la empresa dueña o admin. Todos los valores se calculan con consultas de agregación en la base.
 
 ## Evaluación y ranking (contexto `assessment`, requieren token)
 

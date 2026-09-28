@@ -13,7 +13,7 @@ import java.util.Optional;
  * Anti-corruption layer from assessment to interviews, recruitment and profiles, through the
  * contracts in shared. assessment never imports classes of those contexts.
  */
-@Service
+@Service("assessmentExternalContextsService")
 @RequiredArgsConstructor
 public class ExternalContextsService {
 

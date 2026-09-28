@@ -2,7 +2,8 @@ package pe.upc.simutalk.assessment.domain.services;
 
 import pe.upc.simutalk.assessment.domain.model.aggregates.Assessment;
 import pe.upc.simutalk.assessment.domain.model.entities.Evidence;
-import pe.upc.simutalk.assessment.domain.model.queries.GetAssessmentByIdQuery;
+import pe.upc.simutalk.assessment.domain.model.queries.*;
+import pe.upc.simutalk.assessment.domain.model.valueobjects.CriterionAverage;
 import pe.upc.simutalk.assessment.domain.model.queries.GetAssessmentByInterviewSessionIdQuery;
 import pe.upc.simutalk.assessment.domain.model.queries.GetEvidencesByCriterionScoreQuery;
 import pe.upc.simutalk.assessment.domain.model.queries.GetRankingByJobPostingIdQuery;
@@ -24,4 +25,11 @@ public interface AssessmentQueryService {
     List<Evidence> handle(GetEvidencesByCriterionScoreQuery query);
 
     Ranking handle(GetRankingByJobPostingIdQuery query);
+
+    /** Average score per criterion, aggregated in the database; one decimal. */
+    List<CriterionAverage> handle(GetCriterionAveragesQuery query);
+
+    long handle(CountAssessmentsByJobPostingIdsQuery query);
+
+    long handle(CountEvidencesByJobPostingIdsQuery query);
 }

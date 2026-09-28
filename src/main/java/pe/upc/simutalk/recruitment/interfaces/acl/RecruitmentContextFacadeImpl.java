@@ -7,6 +7,10 @@ import pe.upc.simutalk.recruitment.domain.model.aggregates.JobPosting;
 import pe.upc.simutalk.recruitment.domain.model.commands.ChangeApplicationStatusCommand;
 import pe.upc.simutalk.recruitment.domain.model.entities.EvaluationCriterion;
 import pe.upc.simutalk.recruitment.domain.model.queries.GetApplicationByIdQuery;
+import pe.upc.simutalk.recruitment.domain.model.queries.GetApplicationCountByStatusQuery;
+import pe.upc.simutalk.recruitment.domain.model.queries.GetAverageTimeToShortlistQuery;
+import pe.upc.simutalk.recruitment.domain.model.queries.GetJobPostingIdsByCompanyIdQuery;
+import pe.upc.simutalk.recruitment.domain.model.queries.GetPublishedJobPostingCountByCompanyIdQuery;
 import pe.upc.simutalk.recruitment.domain.model.queries.GetJobPostingByIdQuery;
 import pe.upc.simutalk.recruitment.domain.model.valueobjects.ApplicationStatus;
 import pe.upc.simutalk.recruitment.domain.model.valueobjects.CriterionType;
@@ -17,7 +21,10 @@ import pe.upc.simutalk.recruitment.domain.services.JobPostingQueryService;
 import pe.upc.simutalk.shared.interfaces.acl.CriterionView;
 import pe.upc.simutalk.shared.interfaces.acl.RecruitmentContextFacade;
 
+import java.time.Duration;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -100,6 +107,31 @@ public class RecruitmentContextFacadeImpl implements RecruitmentContextFacade {
     @Override
     public String fetchApplicationStatus(Long applicationId) {
         return findApplication(applicationId).map(application -> application.getStatus().name()).orElse("");
+    }
+
+    @Override
+    public Map<String, Long> countApplicationsByStatus(Long jobPostingId) {
+        var counts = new LinkedHashMap<String, Long>();
+        applicationQueryService.handle(new GetApplicationCountByStatusQuery(jobPostingId))
+                .forEach((status, total) -> counts.put(status.name(), total));
+        return counts;
+    }
+
+    @Override
+    public long countPublishedJobPostingsByCompanyId(Long companyId) {
+        return companyId == null ? 0L : jobPostingQueryService.handle(new GetPublishedJobPostingCountByCompanyIdQuery(companyId));
+    }
+
+    @Override
+    public List<Long> fetchJobPostingIdsByCompanyId(Long companyId) {
+        return companyId == null ? List.of() : jobPostingQueryService.handle(new GetJobPostingIdsByCompanyIdQuery(companyId));
+    }
+
+    @Override
+    public Long fetchAverageSecondsToShortlist(List<Long> jobPostingIds) {
+        return applicationQueryService.handle(new GetAverageTimeToShortlistQuery(jobPostingIds))
+                .map(Duration::getSeconds)
+                .orElse(null);
     }
 
     @Override

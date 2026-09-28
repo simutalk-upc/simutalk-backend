@@ -6,6 +6,7 @@ import pe.upc.simutalk.profiles.domain.model.aggregates.CandidateProfile;
 import pe.upc.simutalk.profiles.domain.model.aggregates.CompanyProfile;
 import pe.upc.simutalk.profiles.domain.model.queries.GetCandidateProfileByIdQuery;
 import pe.upc.simutalk.profiles.domain.model.queries.GetCandidateProfileByUserIdQuery;
+import pe.upc.simutalk.profiles.domain.model.queries.GetCompanyProfileByIdQuery;
 import pe.upc.simutalk.profiles.domain.model.queries.GetCompanyProfileByUserIdQuery;
 import pe.upc.simutalk.profiles.domain.model.queries.GetVerifiedCertificationCountQuery;
 import pe.upc.simutalk.profiles.domain.services.CandidateProfileQueryService;
@@ -41,6 +42,16 @@ public class ProfilesContextFacadeImpl implements ProfilesContextFacade {
         return companyProfileQueryService.handle(new GetCompanyProfileByUserIdQuery(userId))
                 .map(CompanyProfile::getId)
                 .orElse(0L);
+    }
+
+    @Override
+    public String fetchCompanyDistrict(Long companyId) {
+        if (companyId == null) {
+            return "";
+        }
+        return companyProfileQueryService.handle(new GetCompanyProfileByIdQuery(companyId))
+                .map(CompanyProfile::getDistrict)
+                .orElse("");
     }
 
     @Override

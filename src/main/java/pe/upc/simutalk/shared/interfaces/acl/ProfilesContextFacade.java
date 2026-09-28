@@ -17,6 +17,9 @@ public interface ProfilesContextFacade {
      */
     Long fetchCompanyIdByUserId(Long userId);
 
+    /** @return the company's district, or an empty string if the company does not exist */
+    String fetchCompanyDistrict(Long companyId);
+
     /**
      * @return certifications that are VERIFIED and not expired today; 0 if the candidate does not exist
      */
