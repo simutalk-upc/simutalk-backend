@@ -2,6 +2,7 @@ package pe.upc.simutalk.assessment.application.internal.commandservices;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import pe.upc.simutalk.assessment.application.internal.outboundservices.acl.ExternalContextsService;
 import pe.upc.simutalk.assessment.application.internal.outboundservices.anonymization.TranscriptAnonymizer;
 import pe.upc.simutalk.assessment.domain.model.commands.ComputeAssessmentCommand;
@@ -9,6 +10,7 @@ import pe.upc.simutalk.assessment.domain.model.valueobjects.CriterionKind;
 import pe.upc.simutalk.assessment.domain.model.valueobjects.IntegrityFlagType;
 import pe.upc.simutalk.assessment.domain.model.valueobjects.InterviewSessionSnapshot;
 import pe.upc.simutalk.assessment.domain.services.AnswerScoringService;
+import pe.upc.simutalk.assessment.domain.services.AnswerScoringService.CriterionFeedback;
 import pe.upc.simutalk.assessment.domain.services.AnswerScoringService.ScoringResult;
 import pe.upc.simutalk.assessment.infrastructure.persistence.jpa.repositories.AssessmentRepository;
 import pe.upc.simutalk.shared.domain.exceptions.BusinessRuleViolationException;
@@ -25,6 +27,8 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
@@ -116,5 +120,23 @@ class AssessmentCommandServiceImplTest {
 
         assertThat(assessment.getIntegrityFlags()).extracting(flag -> flag.getFlagType())
                 .containsExactly(IntegrityFlagType.AI_GENERATED_CONTENT, IntegrityFlagType.CV_INCONSISTENCY);
+    }
+
+    @Test
+    void recordsFeedbackBuiltOnlyFromScoresAndAnonymizedExcerpts() {
+        when(scoring.summarizeFeedback(any(), anyList())).thenReturn("Tu puntaje ponderado fue 7,7 de 10.");
+
+        var assessment = service.handle(new ComputeAssessmentCommand(900L));
+
+        assertThat(assessment.getFeedbackSummary()).isEqualTo("Tu puntaje ponderado fue 7,7 de 10.");
+        var inputs = ArgumentCaptor.forClass(List.class);
+        verify(scoring).summarizeFeedback(eq(new BigDecimal("7.7")), inputs.capture());
+        @SuppressWarnings("unchecked")
+        List<CriterionFeedback> criteria = inputs.getValue();
+        assertThat(criteria).extracting(CriterionFeedback::criterionName)
+                .containsExactly("Pensamiento analítico", "Certificación");
+        assertThat(criteria.get(0).anonymizedExcerpt()).isEqualTo("Separaría la caída en volumen y ticket promedio por región.");
+        assertThat(criteria.get(1).anonymizedExcerpt()).isNull();
+        assertThat(criteria.toString()).doesNotContain("Rosa", "Quispe", "45879632", "Comas");
     }
 }

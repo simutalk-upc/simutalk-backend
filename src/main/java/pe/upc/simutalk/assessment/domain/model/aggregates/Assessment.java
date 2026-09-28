@@ -30,6 +30,9 @@ import java.util.List;
  * <p>
  * {@code applicationId}, {@code jobPostingId} and {@code candidateId} are immutable copies taken
  * from the session, used for rankings and authorization.
+ * <p>
+ * {@code feedbackSummary} is the text shown to the candidate: what sustained the score and where
+ * points were lost. It never mentions the ranking, other candidates or integrity flags.
  */
 @Getter
 @Entity
@@ -59,6 +62,12 @@ public class Assessment extends AuditableAbstractAggregateRoot<Assessment> {
 
     @Column(name = "computed_at", nullable = false)
     private Instant computedAt;
+
+    public static final int FEEDBACK_MAX_LENGTH = 2000;
+
+    /** Feedback for the candidate; {@code null} on assessments computed before it existed. */
+    @Column(name = "feedback_summary", length = FEEDBACK_MAX_LENGTH)
+    private String feedbackSummary;
 
     @Getter(AccessLevel.NONE)
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
@@ -126,6 +135,18 @@ public class Assessment extends AuditableAbstractAggregateRoot<Assessment> {
                 .map(CriterionScore::weightedContribution)
                 .reduce(BigDecimal.ZERO, BigDecimal::add)
                 .divide(ONE_HUNDRED, 1, RoundingMode.HALF_UP);
+    }
+
+    /** Records the candidate feedback, replacing a previous one. */
+    public void recordFeedback(String feedbackSummary) {
+        if (feedbackSummary == null || feedbackSummary.isBlank()) {
+            throw new IllegalArgumentException("Feedback summary is required");
+        }
+        var stripped = feedbackSummary.strip();
+        if (stripped.length() > FEEDBACK_MAX_LENGTH) {
+            throw new IllegalArgumentException("Feedback summary must be at most %d characters".formatted(FEEDBACK_MAX_LENGTH));
+        }
+        this.feedbackSummary = stripped;
     }
 
     public List<CriterionScore> getCriterionScores() {

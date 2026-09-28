@@ -154,7 +154,8 @@ Los nombres de los contextos planificados son una propuesta; ajustar esta tabla 
 
 - `Assessment` (agregado raíz, tabla `assessments`): `interviewSessionId` (único), copias inmutables de
   `applicationId`, `jobPostingId` y `candidateId`, `weightedScore` (0.0 a 10.0), `engineVersion`, `computedAt`,
-  `criterionScores` e `integrityFlags`. Solo se calcula sobre una sesión COMPLETED. `weightedScore = Σ(score ×
+  `criterionScores`, `integrityFlags` y `feedbackSummary` (retroalimentación para el candidato, hasta 2000 caracteres:
+  qué sostuvo el puntaje y en qué criterio se perdieron más puntos; `null` en evaluaciones anteriores). Solo se calcula sobre una sesión COMPLETED. `weightedScore = Σ(score ×
   weightApplied) / 100`, calculado dentro del agregado y redondeado a 1 decimal (HALF_UP); los pesos suman 100.
 - `CriterionScore` (tabla `criterion_scores`): `criterionId`, `criterionName` (copia), `criterionKind`
   (`COMPETENCY|CERTIFICATION`), `score`, `weightApplied`, `confidence`, `evidences`. Un COMPETENCY necesita al menos
@@ -168,6 +169,9 @@ Los nombres de los contextos planificados son una propuesta; ajustar esta tabla 
 - Flujo: cada respuesta se anonimiza, se puntúa con `AnswerScoringService` (solo transcript anonimizado y criterio),
   el fragmento devuelto se vuelve a ubicar en el texto anonimizado y se traduce al original. Si el proveedor no da
   evidencia para un criterio COMPETENCY, no se guarda nada (422).
+- Retroalimentación (US-22): al calcular, `AnswerScoringService.summarizeFeedback` recibe solo los puntajes, pesos y
+  los fragmentos ANONIMIZADOS (nunca el ranking, otros candidatos ni las señales de integridad); en mock, o si el
+  proveedor falla, un texto determinista a partir de los números.
 - Ranking explicable (`RankingPolicy`): orden por `weightedScore`, desglose por criterio, insignias (`TOP_RANKED`,
   `STRONG_EVIDENCE`, `VERIFIED_CERTIFICATIONS`, `MISSING_MANDATORY_CERTIFICATION`, `INTEGRITY_ALERT`) y códigos
   estables `CANDIDATO-X-9999` (HMAC con `app.anonymization.secret`). Si la vacante tiene `anonymizedScreening`, la
@@ -212,8 +216,11 @@ Los nombres de los contextos planificados son una propuesta; ajustar esta tabla 
   el guion e invita; el guion lo lee el dueño o el candidato con una sesión IN_PROGRESS en esa vacante; solo el
   candidato dueño inicia, responde y completa su entrevista; las respuestas las leen el candidato dueño y el recruiter
   de la vacante.
-- `assessment` (`AssessmentAccessPolicy`, `@assessmentAccess`): calcular y leer evaluaciones, evidencias y el ranking
-  es solo del recruiter dueño de la vacante o de un admin.
+- `assessment` (`AssessmentAccessPolicy`, `@assessmentAccess`): calcular evaluaciones y leer evidencias y el ranking
+  es solo del recruiter dueño de la vacante o de un admin. `GET /interview-sessions/{id}/assessment` también lo lee el
+  candidato dueño de la entrevista, pero con otra vista (`CandidateAssessmentResource`): su puntaje ponderado, su
+  desglose por criterio y la retroalimentación; nunca su posición en el ranking, puntajes de otros ni señales de
+  integridad.
 - `analytics` (`AnalyticsAccessPolicy`, `@analyticsAccess`): los reportes de una vacante son del recruiter de la
   empresa dueña o de un admin; el resumen de una empresa, del recruiter de esa empresa o de un admin.
 - `profiles`: un candidato solo lee y modifica su propio perfil y certificaciones; un recruiter lee perfiles y

@@ -2,6 +2,8 @@ package pe.upc.simutalk.assessment.interfaces.rest;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -11,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import pe.upc.simutalk.assessment.domain.model.commands.ComputeAssessmentCommand;
 import pe.upc.simutalk.assessment.domain.model.queries.GetAssessmentByInterviewSessionIdQuery;
@@ -18,10 +21,13 @@ import pe.upc.simutalk.assessment.domain.model.queries.GetEvidencesByCriterionSc
 import pe.upc.simutalk.assessment.domain.model.queries.GetRankingByJobPostingIdQuery;
 import pe.upc.simutalk.assessment.domain.services.AssessmentCommandService;
 import pe.upc.simutalk.assessment.domain.services.AssessmentQueryService;
+import pe.upc.simutalk.assessment.interfaces.rest.authorization.AssessmentAccessPolicy;
 import pe.upc.simutalk.assessment.interfaces.rest.resources.AssessmentResource;
+import pe.upc.simutalk.assessment.interfaces.rest.resources.CandidateAssessmentResource;
 import pe.upc.simutalk.assessment.interfaces.rest.resources.EvidenceResource;
 import pe.upc.simutalk.assessment.interfaces.rest.resources.RankingResource;
 import pe.upc.simutalk.assessment.interfaces.rest.transform.AssessmentResourceFromEntityAssembler;
+import pe.upc.simutalk.assessment.interfaces.rest.transform.CandidateAssessmentResourceFromEntityAssembler;
 import pe.upc.simutalk.assessment.interfaces.rest.transform.EvidenceResourceFromEntityAssembler;
 import pe.upc.simutalk.assessment.interfaces.rest.transform.RankingResourceFromEntityAssembler;
 import pe.upc.simutalk.shared.domain.exceptions.ResourceNotFoundException;
@@ -37,6 +43,7 @@ public class AssessmentsController {
 
     private final AssessmentCommandService assessmentCommandService;
     private final AssessmentQueryService assessmentQueryService;
+    private final AssessmentAccessPolicy assessmentAccess;
 
     @PostMapping("/interview-sessions/{sessionId}/assessment")
     @PreAuthorize("hasRole('ADMIN') or (hasRole('RECRUITER') and @assessmentAccess.ownsSessionJobPosting(#sessionId, authentication))")
@@ -54,12 +61,25 @@ public class AssessmentsController {
     }
 
     @GetMapping("/interview-sessions/{sessionId}/assessment")
-    @PreAuthorize("hasRole('ADMIN') or (hasRole('RECRUITER') and @assessmentAccess.ownsSessionJobPosting(#sessionId, authentication))")
-    @Operation(summary = "Ver la evaluación de una entrevista")
-    public ResponseEntity<AssessmentResource> getAssessment(@PathVariable Long sessionId) {
+    @PreAuthorize("hasRole('ADMIN') or (hasRole('RECRUITER') and @assessmentAccess.ownsSessionJobPosting(#sessionId, authentication))"
+            + " or (hasRole('CANDIDATE') and @assessmentAccess.isSessionCandidate(#sessionId, authentication))")
+    @Operation(summary = "Ver la evaluación de una entrevista",
+            description = "El recruiter dueño de la vacante (o un admin) ve la evaluación completa. El candidato dueño de "
+                    + "la entrevista ve solo su puntaje ponderado, su desglose por criterio y la retroalimentación: nunca "
+                    + "su posición en el ranking, los puntajes de otros ni las señales de integridad.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Evaluación (completa o vista del candidato)",
+                    content = @Content(schema = @Schema(oneOf = {AssessmentResource.class, CandidateAssessmentResource.class}))),
+            @ApiResponse(responseCode = "403", description = "No es el recruiter dueño, un admin ni el candidato de la entrevista"),
+            @ApiResponse(responseCode = "404", description = "La entrevista no tiene evaluación")
+    })
+    public ResponseEntity<?> getAssessment(@PathVariable Long sessionId, Authentication authentication) {
         var assessment = assessmentQueryService.handle(new GetAssessmentByInterviewSessionIdQuery(sessionId))
                 .orElseThrow(() -> new ResourceNotFoundException("Interview session %s has no assessment".formatted(sessionId)));
-        return ResponseEntity.ok(AssessmentResourceFromEntityAssembler.toResourceFromEntity(assessment));
+        if (assessmentAccess.seesFullAssessment(sessionId, authentication)) {
+            return ResponseEntity.ok(AssessmentResourceFromEntityAssembler.toResourceFromEntity(assessment));
+        }
+        return ResponseEntity.ok(CandidateAssessmentResourceFromEntityAssembler.toResourceFromEntity(assessment));
     }
 
     @GetMapping("/assessments/{assessmentId}/criterion-scores/{criterionScoreId}/evidences")

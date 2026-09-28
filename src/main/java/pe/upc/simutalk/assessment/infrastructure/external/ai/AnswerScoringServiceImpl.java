@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
+import pe.upc.simutalk.assessment.domain.model.aggregates.Assessment;
 import pe.upc.simutalk.assessment.domain.services.AnswerScoringService;
 import pe.upc.simutalk.shared.infrastructure.external.ai.GenerativeAiClient;
 import tools.jackson.databind.ObjectMapper;
@@ -11,6 +12,8 @@ import tools.jackson.databind.ObjectMapper;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.Duration;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * Adapter of the {@link AnswerScoringService} port. It builds assessment's own prompt, validates the
@@ -64,6 +67,29 @@ public class AnswerScoringServiceImpl implements AnswerScoringService {
         return aiClient.generate(GeminiRequestFactory.prompt(anonymizedTranscript, criterionName, criterionDescription))
                 .map(text -> parse(text, anonymizedTranscript))
                 .orElseGet(ScoringResult::unavailable);
+    }
+
+    @Override
+    public String summarizeFeedback(BigDecimal weightedScore, List<CriterionFeedback> criteria) {
+        var fallback = MockFeedbackWriter.write(weightedScore, criteria);
+        if (!aiClient.isLive() || criteria == null || criteria.isEmpty()) {
+            return fallback;
+        }
+        return aiClient.generate(GeminiRequestFactory.feedbackPrompt(weightedScore.toPlainString(), criteria))
+                .flatMap(this::readFeedback)
+                .orElse(fallback);
+    }
+
+    /** The model's {@code feedback}, if present and within the aggregate's limit. */
+    private Optional<String> readFeedback(String text) {
+        try {
+            var feedback = objectMapper.readTree(text).path("feedback").asString("").strip();
+            return feedback.isEmpty() || feedback.length() > Assessment.FEEDBACK_MAX_LENGTH
+                    ? Optional.empty() : Optional.of(feedback);
+        } catch (Exception ex) {
+            log.warn("Could not read the AI feedback: {}", ex.toString());
+            return Optional.empty();
+        }
     }
 
     /** Reads the model's JSON answer; anything malformed or not literally anchored becomes unavailable. */

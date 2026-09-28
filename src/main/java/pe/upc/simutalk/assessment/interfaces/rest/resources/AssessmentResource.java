@@ -13,5 +13,6 @@ public record AssessmentResource(
         String engineVersion,
         Instant computedAt,
         List<CriterionScoreResource> criterionScores,
-        List<IntegrityFlagResource> integrityFlags) {
+        List<IntegrityFlagResource> integrityFlags,
+        String feedbackSummary) {
 }

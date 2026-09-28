@@ -1,6 +1,9 @@
 package pe.upc.simutalk.assessment.domain.services;
 
+import pe.upc.simutalk.assessment.domain.model.valueobjects.CriterionKind;
+
 import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * Port to the AI/NLP provider that scores one answer against one criterion. Adapters live in
@@ -15,6 +18,22 @@ public interface AnswerScoringService {
 
     /** Identifies the engine and model that produced the scores, e.g. {@code mock-1} or {@code gemini:<model>}. */
     String engineVersion();
+
+    /**
+     * Feedback text for the candidate: what sustained the weighted score and in which criterion points
+     * were lost. It must never mention the ranking, other candidates or integrity flags; those are not
+     * even inputs. Never {@code null}: adapters fall back to a deterministic summary of the numbers.
+     * <p>
+     * Privacy (Ley 29733): only criterion data and ALREADY ANONYMIZED excerpts.
+     */
+    String summarizeFeedback(BigDecimal weightedScore, List<CriterionFeedback> criteria);
+
+    /**
+     * @param anonymizedExcerpt a supporting fragment of the ANONYMIZED answer, or {@code null} (certifications)
+     */
+    record CriterionFeedback(String criterionName, CriterionKind criterionKind, BigDecimal score, int weightApplied,
+                             String anonymizedExcerpt) {
+    }
 
     /**
      * @param score                0.0 to 10.0
