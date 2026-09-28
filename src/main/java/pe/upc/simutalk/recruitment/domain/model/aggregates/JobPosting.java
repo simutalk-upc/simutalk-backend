@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import pe.upc.simutalk.recruitment.domain.model.commands.CreateJobPostingCommand;
 import pe.upc.simutalk.recruitment.domain.model.entities.EvaluationCriterion;
 import pe.upc.simutalk.recruitment.domain.model.valueobjects.CompanyId;
+import pe.upc.simutalk.recruitment.domain.model.valueobjects.CriterionOrigin;
 import pe.upc.simutalk.recruitment.domain.model.valueobjects.CriterionType;
 import pe.upc.simutalk.recruitment.domain.model.valueobjects.JobPostingStatus;
 import pe.upc.simutalk.recruitment.domain.model.valueobjects.JobPostingViewer;
@@ -132,11 +133,34 @@ public class JobPosting extends AuditableAbstractAggregateRoot<JobPosting> {
 
     public EvaluationCriterion addCriterion(String name, String description, Weight weight,
                                             CriterionType criterionType, String certificationName, boolean mandatory) {
+        return addCriterion(name, description, weight, criterionType, certificationName, mandatory, CriterionOrigin.MANUAL);
+    }
+
+    /** Adds a criterion; an {@code AI_SUGGESTED} one still needs the weight the recruiter chose. */
+    public EvaluationCriterion addCriterion(String name, String description, Weight weight, CriterionType criterionType,
+                                            String certificationName, boolean mandatory, CriterionOrigin origin) {
         ensureCriteriaAreEditable();
         ensureUniqueCriterionName(name, null);
-        var criterion = new EvaluationCriterion(this, name, description, weight, criterionType, certificationName, mandatory);
+        var criterion = new EvaluationCriterion(this, name, description, weight, criterionType, certificationName,
+                mandatory, origin);
         criteria.add(criterion);
         return criterion;
+    }
+
+    /**
+     * Criteria can only be suggested while they can still be edited: suggestions exist to be accepted
+     * into the posting, and a published posting's criteria are frozen.
+     */
+    public void ensureCriteriaCanBeSuggested() {
+        if (!isDraft()) {
+            throw new BusinessRuleViolationException(
+                    "Criteria can only be suggested while the job posting is in DRAFT (current status: %s)".formatted(status));
+        }
+    }
+
+    /** Names of the criteria already defined, so suggestions do not repeat them. */
+    public List<String> getCriterionNames() {
+        return criteria.stream().map(EvaluationCriterion::getName).toList();
     }
 
     public EvaluationCriterion updateCriterion(Long criterionId, String name, String description, Weight weight,

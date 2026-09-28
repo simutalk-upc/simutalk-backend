@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 import pe.upc.simutalk.recruitment.domain.model.commands.CreateJobPostingCommand;
 import pe.upc.simutalk.recruitment.domain.model.entities.EvaluationCriterion;
+import pe.upc.simutalk.recruitment.domain.model.valueobjects.CriterionOrigin;
 import pe.upc.simutalk.recruitment.domain.model.valueobjects.CriterionType;
 import pe.upc.simutalk.recruitment.domain.model.valueobjects.JobPostingStatus;
 import pe.upc.simutalk.recruitment.domain.model.valueobjects.JobPostingViewer;
@@ -231,5 +232,24 @@ class JobPostingTest {
                 CriterionType.COMPETENCY, null, false);
         ReflectionTestUtils.setField(criterion, "id", nextId++);
         return criterion;
+    }
+
+    @Test
+    void criteriaAreManualByDefault() {
+        var criterion = jobPosting.addCriterion("Liderazgo", "Guía al equipo", new Weight(100),
+                CriterionType.COMPETENCY, null, false);
+
+        assertThat(criterion.getOrigin()).isEqualTo(CriterionOrigin.MANUAL);
+    }
+
+    @Test
+    void criteriaCanOnlyBeSuggestedWhileTheJobPostingIsDraft() {
+        jobPosting.ensureCriteriaCanBeSuggested();
+        jobPosting.addCriterion("Liderazgo", "Guía al equipo", new Weight(100), CriterionType.COMPETENCY, null, false);
+        jobPosting.publish(ALL_COVERED);
+
+        assertThatThrownBy(jobPosting::ensureCriteriaCanBeSuggested)
+                .isInstanceOf(BusinessRuleViolationException.class)
+                .hasMessageContaining("DRAFT");
     }
 }

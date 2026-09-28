@@ -1,0 +1,12 @@
+package pe.upc.simutalk.recruitment.domain.services;
+
+import pe.upc.simutalk.recruitment.domain.model.queries.GetCriterionSuggestionsQuery;
+import pe.upc.simutalk.recruitment.domain.model.valueobjects.CriterionSuggestion;
+
+import java.util.List;
+
+public interface CriterionSuggestionQueryService {
+
+    /** Proposed criteria for a DRAFT job posting; nothing is persisted and no weight is assigned. */
+    List<CriterionSuggestion> handle(GetCriterionSuggestionsQuery query);
+}

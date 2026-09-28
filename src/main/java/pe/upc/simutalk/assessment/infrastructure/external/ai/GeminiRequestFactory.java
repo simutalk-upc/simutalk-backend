@@ -1,10 +1,12 @@
 package pe.upc.simutalk.assessment.infrastructure.external.ai;
 
-import java.util.List;
+import pe.upc.simutalk.shared.infrastructure.external.ai.GenerativeAiClient;
+
 import java.util.Map;
 
 /**
- * Builds the body of Gemini's {@code generateContent} request.
+ * Builds assessment's scoring prompt and, for inspection in tests, the full {@code generateContent}
+ * body the shared {@link GenerativeAiClient} sends with it.
  * <p>
  * Privacy (Ley 29733): the payload is made ONLY of the anonymized transcript and the criterion.
  * This class has no access to candidate data at all; keep it that way.
@@ -15,13 +17,7 @@ public final class GeminiRequestFactory {
     }
 
     public static Map<String, Object> build(String anonymizedTranscript, String criterionName, String criterionDescription) {
-        return Map.of(
-                "contents", List.of(Map.of(
-                        "role", "user",
-                        "parts", List.of(Map.of("text", prompt(anonymizedTranscript, criterionName, criterionDescription))))),
-                "generationConfig", Map.of(
-                        "temperature", 0,
-                        "responseMimeType", "application/json"));
+        return GenerativeAiClient.requestBody(prompt(anonymizedTranscript, criterionName, criterionDescription));
     }
 
     static String prompt(String anonymizedTranscript, String criterionName, String criterionDescription) {

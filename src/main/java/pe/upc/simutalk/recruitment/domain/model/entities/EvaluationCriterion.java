@@ -5,6 +5,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import pe.upc.simutalk.recruitment.domain.model.aggregates.JobPosting;
+import pe.upc.simutalk.recruitment.domain.model.valueobjects.CriterionOrigin;
 import pe.upc.simutalk.recruitment.domain.model.valueobjects.CriterionType;
 import pe.upc.simutalk.recruitment.domain.model.valueobjects.Weight;
 import pe.upc.simutalk.shared.domain.model.entities.AuditableModel;
@@ -50,12 +51,29 @@ public class EvaluationCriterion extends AuditableModel {
     @Column(nullable = false)
     private boolean mandatory;
 
+    /** Who proposed the criterion; rows created before this column existed read as MANUAL. */
+    @Getter(AccessLevel.NONE)
+    @Enumerated(EnumType.STRING)
+    @Column(length = 20)
+    private CriterionOrigin origin;
+
     public EvaluationCriterion(JobPosting jobPosting, String name, String description, Weight weight,
                                CriterionType criterionType, String certificationName, boolean mandatory) {
+        this(jobPosting, name, description, weight, criterionType, certificationName, mandatory, CriterionOrigin.MANUAL);
+    }
+
+    /**
+     * @param weight always set by the recruiter, also for an {@code AI_SUGGESTED} criterion: it is required
+     * @param origin {@code null} means MANUAL
+     */
+    public EvaluationCriterion(JobPosting jobPosting, String name, String description, Weight weight,
+                               CriterionType criterionType, String certificationName, boolean mandatory,
+                               CriterionOrigin origin) {
         if (jobPosting == null) {
             throw new IllegalArgumentException("Evaluation criterion must belong to a job posting");
         }
         this.jobPosting = jobPosting;
+        this.origin = origin == null ? CriterionOrigin.MANUAL : origin;
         applyDetails(name, description, weight, criterionType, certificationName, mandatory);
     }
 
@@ -66,6 +84,10 @@ public class EvaluationCriterion extends AuditableModel {
     public void update(String name, String description, Weight weight, CriterionType criterionType,
                        String certificationName, boolean mandatory) {
         applyDetails(name, description, weight, criterionType, certificationName, mandatory);
+    }
+
+    public CriterionOrigin getOrigin() {
+        return origin == null ? CriterionOrigin.MANUAL : origin;
     }
 
     public Long getJobPostingId() {

@@ -61,7 +61,7 @@ public class JobPostingCommandServiceImpl implements JobPostingCommandService {
     public EvaluationCriterion handle(AddEvaluationCriterionCommand command) {
         var jobPosting = loadJobPosting(command.jobPostingId());
         var criterion = jobPosting.addCriterion(command.name(), command.description(), new Weight(command.weight()),
-                command.criterionType(), command.certificationName(), command.mandatory());
+                command.criterionType(), command.certificationName(), command.mandatory(), command.origin());
         jobPostingRepository.flush();
         return criterion;
     }

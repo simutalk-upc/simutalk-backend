@@ -2,6 +2,7 @@ package pe.upc.simutalk.recruitment.interfaces.rest.resources;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
+import pe.upc.simutalk.recruitment.domain.model.valueobjects.CriterionOrigin;
 import pe.upc.simutalk.recruitment.domain.model.valueobjects.CriterionType;
 
 public record CreateEvaluationCriterionResource(
@@ -16,5 +17,8 @@ public record CreateEvaluationCriterionResource(
         @Schema(description = "Obligatorio si criterionType es CERTIFICATION; se ignora en COMPETENCY", example = "Oracle Certified Professional Java SE 21")
         @Size(max = 150) String certificationName,
         @Schema(description = "Solo aplica a CERTIFICATION; se ignora en COMPETENCY", example = "false")
-        boolean mandatory) {
+        boolean mandatory,
+        @Schema(description = "MANUAL por defecto; AI_SUGGESTED cuando el reclutador acepta una sugerencia. "
+                + "El peso lo pone siempre el reclutador.", example = "MANUAL")
+        CriterionOrigin origin) {
 }

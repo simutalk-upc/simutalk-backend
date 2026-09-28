@@ -9,8 +9,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -22,6 +24,10 @@ import pe.upc.simutalk.recruitment.domain.model.valueobjects.CriterionType;
 import pe.upc.simutalk.recruitment.domain.model.valueobjects.JobPostingStatus;
 import pe.upc.simutalk.recruitment.domain.model.valueobjects.Weight;
 import pe.upc.simutalk.recruitment.domain.services.ApplicationQueryService;
+import pe.upc.simutalk.recruitment.domain.model.queries.GetCriterionSuggestionsQuery;
+import pe.upc.simutalk.recruitment.domain.model.valueobjects.CriterionOrigin;
+import pe.upc.simutalk.recruitment.domain.model.valueobjects.CriterionSuggestion;
+import pe.upc.simutalk.recruitment.domain.services.CriterionSuggestionQueryService;
 import pe.upc.simutalk.recruitment.domain.services.JobPostingCommandService;
 import pe.upc.simutalk.recruitment.domain.services.JobPostingQueryService;
 import pe.upc.simutalk.recruitment.interfaces.rest.authorization.RecruitmentAccessPolicy;
@@ -73,8 +79,13 @@ class RecruitmentAuthorizationTest {
             return new JobPostingsController(commands, queries, policy);
         }
 
-        @Bean JobPostingCriteriaController jobPostingCriteriaController(JobPostingCommandService commands) {
-            return new JobPostingCriteriaController(commands);
+        @Bean CriterionSuggestionQueryService criterionSuggestionQueryService() {
+            return mock(CriterionSuggestionQueryService.class);
+        }
+
+        @Bean JobPostingCriteriaController jobPostingCriteriaController(JobPostingCommandService commands,
+                                                                        CriterionSuggestionQueryService suggestions) {
+            return new JobPostingCriteriaController(commands, suggestions);
         }
     }
 
@@ -82,6 +93,7 @@ class RecruitmentAuthorizationTest {
     @Autowired JobPostingCriteriaController criteria;
     @Autowired JobPostingCommandService commandService;
     @Autowired JobPostingQueryService queryService;
+    @Autowired CriterionSuggestionQueryService suggestionService;
     @Autowired IamContextFacade iam;
     @Autowired ProfilesContextFacade profiles;
 
@@ -90,7 +102,7 @@ class RecruitmentAuthorizationTest {
 
     @BeforeEach
     void setUp() {
-        reset(commandService, queryService, iam, profiles);
+        reset(commandService, queryService, suggestionService, iam, profiles);
         ownedByCompany1 = new JobPosting(new CreateJobPostingCommand("Backend", "APIs", 1L,
                 LocalDate.now().plusDays(30), true));
         ReflectionTestUtils.setField(ownedByCompany1, "id", JOB_POSTING_ID);
@@ -120,7 +132,7 @@ class RecruitmentAuthorizationTest {
         var create = new CreateJobPostingResource("Backend", "APIs", LocalDate.now().plusDays(30), true);
         var update = new UpdateJobPostingResource("Backend Sr", "APIs", LocalDate.now().plusDays(30), true);
         var criterionBody = new CreateEvaluationCriterionResource("Liderazgo", "Guía", 10,
-                CriterionType.COMPETENCY, null, false);
+                CriterionType.COMPETENCY, null, false, null);
         var criterionUpdate = new UpdateEvaluationCriterionResource("Liderazgo", "Guía", 20,
                 CriterionType.COMPETENCY, null, false);
         var status = new UpdateJobPostingStatusResource(JobPostingStatus.PUBLISHED);
@@ -199,6 +211,36 @@ class RecruitmentAuthorizationTest {
 
         assertThat(jobPostings.updateJobPosting(JOB_POSTING_ID, update).getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(jobPostings.deleteJobPosting(JOB_POSTING_ID).getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
+    }
+
+    @Test
+    @WithMockUser(username = "recruiter.a", roles = "RECRUITER")
+    void owningRecruiterCanAskForCriterionSuggestions() {
+        when(suggestionService.handle(any(GetCriterionSuggestionsQuery.class)))
+                .thenReturn(List.of(new CriterionSuggestion("Pensamiento analítico", "Usa datos", "datos")));
+
+        var response = criteria.suggestCriteria(JOB_POSTING_ID);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).singleElement()
+                .satisfies(suggestion -> assertThat(suggestion.origin()).isEqualTo(CriterionOrigin.AI_SUGGESTED));
+    }
+
+    @Test
+    void onlyTheOwningRecruiterCanAskForCriterionSuggestions() {
+        for (var user : List.of(
+                User.withUsername("recruiter.b").password("x").roles("RECRUITER").build(),
+                User.withUsername("candidate").password("x").roles("CANDIDATE").build(),
+                User.withUsername("admin").password("x").roles("ADMIN").build())) {
+            SecurityContextHolder.getContext().setAuthentication(
+                    new UsernamePasswordAuthenticationToken(user, "x", user.getAuthorities()));
+            try {
+                assertThrows(AccessDeniedException.class, () -> criteria.suggestCriteria(JOB_POSTING_ID), user.getUsername());
+            } finally {
+                SecurityContextHolder.clearContext();
+            }
+        }
+        verifyNoInteractions(suggestionService);
     }
 
     @Test

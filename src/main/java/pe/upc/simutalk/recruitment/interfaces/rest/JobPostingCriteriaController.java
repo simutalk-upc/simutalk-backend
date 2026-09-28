@@ -13,13 +13,19 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import pe.upc.simutalk.recruitment.domain.model.commands.RemoveEvaluationCriterionCommand;
+import pe.upc.simutalk.recruitment.domain.model.queries.GetCriterionSuggestionsQuery;
+import pe.upc.simutalk.recruitment.domain.services.CriterionSuggestionQueryService;
 import pe.upc.simutalk.recruitment.domain.services.JobPostingCommandService;
 import pe.upc.simutalk.recruitment.interfaces.rest.resources.CreateEvaluationCriterionResource;
+import pe.upc.simutalk.recruitment.interfaces.rest.resources.CriterionSuggestionResource;
 import pe.upc.simutalk.recruitment.interfaces.rest.resources.EvaluationCriterionResource;
 import pe.upc.simutalk.recruitment.interfaces.rest.resources.UpdateEvaluationCriterionResource;
 import pe.upc.simutalk.recruitment.interfaces.rest.transform.AddEvaluationCriterionCommandFromResourceAssembler;
+import pe.upc.simutalk.recruitment.interfaces.rest.transform.CriterionSuggestionResourceFromValueAssembler;
 import pe.upc.simutalk.recruitment.interfaces.rest.transform.EvaluationCriterionResourceFromEntityAssembler;
 import pe.upc.simutalk.recruitment.interfaces.rest.transform.UpdateEvaluationCriterionCommandFromResourceAssembler;
+
+import java.util.List;
 
 @RestController
 @RequestMapping(value = "/api/v1/job-postings/{jobPostingId}/criteria", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -29,6 +35,26 @@ import pe.upc.simutalk.recruitment.interfaces.rest.transform.UpdateEvaluationCri
 public class JobPostingCriteriaController {
 
     private final JobPostingCommandService jobPostingCommandService;
+    private final CriterionSuggestionQueryService criterionSuggestionQueryService;
+
+    @PostMapping("/suggestions")
+    @PreAuthorize("hasRole('RECRUITER') and @recruitmentAccess.ownsJobPosting(#jobPostingId, authentication)")
+    @Operation(summary = "Sugerir criterios a partir de la descripción del puesto",
+            description = "Solo el recruiter dueño y con la vacante en DRAFT. Devuelve criterios propuestos SIN "
+                    + "persistirlos y SIN peso: el reclutador acepta los que quiera con POST /criteria, poniendo él "
+                    + "el peso y origin=AI_SUGGESTED.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Criterios propuestos"),
+            @ApiResponse(responseCode = "403", description = "No es el recruiter dueño de la vacante"),
+            @ApiResponse(responseCode = "404", description = "Vacante no encontrada"),
+            @ApiResponse(responseCode = "422", description = "La vacante no está en DRAFT")
+    })
+    public ResponseEntity<List<CriterionSuggestionResource>> suggestCriteria(@PathVariable Long jobPostingId) {
+        var suggestions = criterionSuggestionQueryService.handle(new GetCriterionSuggestionsQuery(jobPostingId));
+        return ResponseEntity.ok(suggestions.stream()
+                .map(CriterionSuggestionResourceFromValueAssembler::toResourceFromValue)
+                .toList());
+    }
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN') or (hasRole('RECRUITER') and @recruitmentAccess.ownsJobPosting(#jobPostingId, authentication))")
