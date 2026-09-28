@@ -36,7 +36,9 @@ import java.util.concurrent.atomic.AtomicInteger;
  *       The other applications stay RECEIVED.</li>
  * </ul>
  * The demo job posting is found through the shared facades; everything goes through the command
- * services, so the same rules as the API apply.
+ * services, so the same rules as the API apply. Idempotent: each step checks first whether its data
+ * already exists, and a session is only created for an application that is still RECEIVED. A failure
+ * is logged as WARN and never stops the application from starting.
  */
 @Slf4j
 @Service
@@ -190,9 +192,21 @@ public class InterviewsDemoDataSeeder {
     @EventListener(ApplicationReadyEvent.class)
     @Order(300)
     public void writeScript(ApplicationReadyEvent event) {
+        // Demo data must never keep the application from starting.
+        try {
+            seedScript();
+        } catch (RuntimeException ex) {
+            log.warn("Interviews demo data: the interview script could not be written; the application starts without it", ex);
+        }
+    }
+
+    private void seedScript() {
         var jobPostingId = demoJobPostingId();
-        if (jobPostingId == 0L || !recruitmentContextFacade.isJobPostingDraft(jobPostingId)
-                || !questionQueryService.handle(new GetQuestionsByJobPostingIdQuery(jobPostingId)).isEmpty()) {
+        if (jobPostingId == 0L || !recruitmentContextFacade.isJobPostingDraft(jobPostingId)) {
+            return;
+        }
+        if (!questionQueryService.handle(new GetQuestionsByJobPostingIdQuery(jobPostingId)).isEmpty()) {
+            log.info("Interviews demo data skipped: the demo job posting already has an interview script");
             return;
         }
         var criterionIds = recruitmentContextFacade.fetchCompetencyCriterionIds(jobPostingId);
@@ -208,13 +222,26 @@ public class InterviewsDemoDataSeeder {
     @EventListener(ApplicationReadyEvent.class)
     @Order(500)
     public void runInterviews(ApplicationReadyEvent event) {
+        // Demo data must never keep the application from starting.
+        try {
+            seedInterviews();
+        } catch (RuntimeException ex) {
+            log.warn("Interviews demo data: the demo interview sessions could not be seeded; the application starts without them", ex);
+        }
+    }
+
+    private void seedInterviews() {
         var jobPostingId = demoJobPostingId();
         if (jobPostingId == 0L || !recruitmentContextFacade.isJobPostingPublished(jobPostingId)) {
             return;
         }
         var applicationIds = recruitmentContextFacade.fetchApplicationIds(jobPostingId);
-        if (applicationIds.isEmpty() || applicationIds.stream().anyMatch(applicationId ->
+        if (applicationIds.isEmpty()) {
+            return;
+        }
+        if (applicationIds.stream().anyMatch(applicationId ->
                 interviewSessionQueryService.handle(new GetInterviewSessionByApplicationIdQuery(applicationId)).isPresent())) {
+            log.info("Interviews demo data skipped: the demo job posting already has interview sessions");
             return;
         }
         var script = questionQueryService.handle(new GetQuestionsByJobPostingIdQuery(jobPostingId));
@@ -223,7 +250,7 @@ public class InterviewsDemoDataSeeder {
         transactionTemplate.executeWithoutResult(status -> {
             for (var index = 0; index < COMPLETED_INTERVIEWS.size(); index++) {
                 var applicationId = applicationIdOf(COMPLETED_INTERVIEWS.get(index), applicationIds);
-                if (applicationId == 0L) {
+                if (!isReceived(applicationId, COMPLETED_INTERVIEWS.get(index))) {
                     continue;
                 }
                 var sessionId = startSession(applicationId);
@@ -233,7 +260,7 @@ public class InterviewsDemoDataSeeder {
             }
             for (var index = 0; index < IN_PROGRESS_INTERVIEWS.size(); index++) {
                 var applicationId = applicationIdOf(IN_PROGRESS_INTERVIEWS.get(index), applicationIds);
-                if (applicationId != 0L) {
+                if (isReceived(applicationId, IN_PROGRESS_INTERVIEWS.get(index))) {
                     answer(startSession(applicationId), script, INTERVIEWING_ANSWERS.get(index), false);
                     inProgress.incrementAndGet();
                 }
@@ -250,6 +277,20 @@ public class InterviewsDemoDataSeeder {
         var companyId = profilesContextFacade.fetchCompanyIdByUserId(userIdOf(COMPANY_USERNAME));
         var jobPostingIds = companyId == 0L ? List.<Long>of() : recruitmentContextFacade.fetchJobPostingIdsByCompanyId(companyId);
         return jobPostingIds.isEmpty() ? 0L : jobPostingIds.getFirst();
+    }
+
+    /** A session can only be created for a RECEIVED application; anything else is left as it is. */
+    private boolean isReceived(Long applicationId, String username) {
+        if (applicationId == 0L) {
+            return false;
+        }
+        var status = recruitmentContextFacade.fetchApplicationStatus(applicationId);
+        if (!"RECEIVED".equals(status)) {
+            log.info("Interviews demo data: {}'s application {} is {}, not RECEIVED; no session created for it",
+                    username, applicationId, status);
+            return false;
+        }
+        return true;
     }
 
     private Long applicationIdOf(String username, List<Long> applicationIds) {

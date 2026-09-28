@@ -76,6 +76,15 @@ public class RecruitmentDemoDataSeeder {
     @EventListener(ApplicationReadyEvent.class)
     @Order(200)
     public void draftJobPosting(ApplicationReadyEvent event) {
+        // Demo data must never keep the application from starting.
+        try {
+            seedDraftJobPosting();
+        } catch (RuntimeException ex) {
+            log.warn("Recruitment demo data: the DRAFT demo job posting could not be created; the application starts without it", ex);
+        }
+    }
+
+    private void seedDraftJobPosting() {
         if (!enabled) {
             return;
         }
@@ -96,6 +105,15 @@ public class RecruitmentDemoDataSeeder {
     @EventListener(ApplicationReadyEvent.class)
     @Order(400)
     public void publishAndApply(ApplicationReadyEvent event) {
+        // Demo data must never keep the application from starting.
+        try {
+            seedPublishedJobPosting();
+        } catch (RuntimeException ex) {
+            log.warn("Recruitment demo data: the demo job posting could not be published or the demo applications submitted; the application starts without them", ex);
+        }
+    }
+
+    private void seedPublishedJobPosting() {
         if (!enabled) {
             return;
         }
