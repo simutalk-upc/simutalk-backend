@@ -51,11 +51,12 @@ agregado (regla de negocio) → repositorio → `*ResourceFromEntityAssembler` �
 
 | Contexto | Responsabilidad | Estado |
 |---|---|---|
-| `shared` | `AuditableAbstractAggregateRoot`, `AuditableModel`, estrategia de nombres snake_case con tablas en plural, OpenAPI, excepciones de dominio base, manejador global de errores (`ErrorResource`), `MessageResource`, `PageResource`, contratos ACL entre contextos (`IamContextFacade`, `ProfilesContextFacade`, `RecruitmentContextFacade`, `InterviewsContextFacade`) y eventos de integración (`shared/interfaces/events`). | Implementado |
+| `shared` | `AuditableAbstractAggregateRoot`, `AuditableModel`, estrategia de nombres snake_case con tablas en plural, OpenAPI, excepciones de dominio base, manejador global de errores (`ErrorResource`), `MessageResource`, `PageResource`, contratos ACL entre contextos (`IamContextFacade`, `ProfilesContextFacade`, `RecruitmentContextFacade`, `InterviewsContextFacade`, `AssessmentContextFacade`) y eventos de integración (`shared/interfaces/events`, p. ej. `InterviewSessionCompletedEvent`). | Implementado |
 | `recruitment` | Vacantes (`JobPosting`) y sus criterios ponderados (`EvaluationCriterion`, `Weight`), ciclo DRAFT → PUBLISHED → CLOSED; postulaciones (`Application`) y su pipeline. | Implementado |
 | `iam` | Usuarios (`User`), roles (`Role`, `Roles`), registro, sign-in con JWT, autorización y `IamContextFacadeImpl`. | Implementado |
 | `profiles` | Perfiles de empresa (`CompanyProfile`) y de postulante (`CandidateProfile`, incluye PII), certificaciones (`Certification`) y su verificación con el emisor. `ProfilesContextFacadeImpl`. | Implementado |
 | `interviews` | Guion de preguntas por vacante (`Question`), sesión de entrevista asincrónica (`InterviewSession`) y respuestas (`Answer`). Solo registra qué se preguntó y qué se respondió; nada de puntuación ni IA. `InterviewsContextFacadeImpl`. | Implementado |
+| `analytics` | Reportes (embudo, promedios por criterio, emisiones evitadas, resumen de empresa) y `CarbonSaving`. Solo agregaciones en base de datos. | Implementado |
 | `assessment` | Evaluación por criterio (`Assessment`, `CriterionScore`, `Evidence`, `IntegrityFlag`) con evidencia textual anclada, anonimización previa (`TranscriptAnonymizer`), puerto de IA (`AnswerScoringService`, adaptador mock/Gemini) y ranking explicable. | Implementado |
 
 Los nombres de los contextos planificados son una propuesta; ajustar esta tabla cuando se creen.
@@ -78,7 +79,7 @@ Los nombres de los contextos planificados son una propuesta; ajustar esta tabla 
   - Visibilidad: un DRAFT solo lo ve su propia empresa; en los listados, las vacantes de otras empresas solo
     aparecen mientras están PUBLISHED (`isVisibleTo` / `isListedFor` con el VO `JobPostingViewer`).
 - `Application` (agregado raíz, tabla `applications`): `jobPostingId` y `candidateId` (solo ids), `status`
-  (`ApplicationStatus`), `appliedAt`. Solo se postula a una vacante PUBLISHED y una vez por candidato (también
+  (`ApplicationStatus`), `appliedAt`, `shortlistedAt` (momento en que llegó a SHORTLISTED, para el tiempo a la terna). Solo se postula a una vacante PUBLISHED y una vez por candidato (también
   `UNIQUE (job_posting_id, candidate_id)`). Transiciones dirigidas: RECEIVED → INTERVIEWING → ASSESSED →
   SHORTLISTED → HIRED, y REJECTED desde cualquier etapa no final; REJECTED y HIRED son finales. Un salto inválido
   lanza `InvalidStateTransitionException` (una `IllegalStateException`, 422 en la API).
@@ -161,6 +162,19 @@ Los nombres de los contextos planificados son una propuesta; ajustar esta tabla 
   estables `CANDIDATO-X-9999` (HMAC con `app.anonymization.secret`). Si la vacante tiene `anonymizedScreening`, la
   anonimización es forzada y además se redactan los datos personales dentro de los excerpts.
 
+### Modelo actual de `analytics`
+
+- `CarbonSaving` (agregado raíz, tabla `carbon_savings`): `applicationId` (único), copias de `jobPostingId` y
+  `companyId`, `distanceKm` (ida y vuelta), `emissionFactor` (kg CO2e/km), `kgCo2eAvoided = distanceKm ×
+  emissionFactor` (calculado en el agregado, 3 decimales) y `computedAt`. Se registra cuando `interviews` publica
+  `InterviewSessionCompletedEvent`, después del commit y en una transacción propia (si falla, no deshace la entrevista).
+- Distancia (`CommuteDistancePolicy`): distancia en línea recta entre los centroides de los distritos del candidato y
+  de la empresa × `road-factor` × 2. Factor, road-factor, distancia por defecto y centroides en `sustainability.*`;
+  el factor de emisión y los centroides son valores de referencia que el equipo debe validar antes de reportar.
+- Reportes: todo sale de agregaciones en base de datos (JPQL `COUNT`, `AVG`, `SUM` con `GROUP BY`). Las que tocan
+  datos de otro contexto se calculan en ese contexto y se exponen por su fachada; `analytics` no lee sus tablas.
+  "Tiempo medio hasta la terna" = promedio de días entre la postulación y SHORTLISTED.
+
 ## Seguridad
 
 - Rutas públicas: `/api/v1/authentication/**` y la documentación (`/v3/api-docs/**`, `/swagger-ui/**`). Todo lo
@@ -189,6 +203,8 @@ Los nombres de los contextos planificados son una propuesta; ajustar esta tabla 
   de la vacante.
 - `assessment` (`AssessmentAccessPolicy`, `@assessmentAccess`): calcular y leer evaluaciones, evidencias y el ranking
   es solo del recruiter dueño de la vacante o de un admin.
+- `analytics` (`AnalyticsAccessPolicy`, `@analyticsAccess`): los reportes de una vacante son del recruiter de la
+  empresa dueña o de un admin; el resumen de una empresa, del recruiter de esa empresa o de un admin.
 - `profiles`: un candidato solo lee y modifica su propio perfil y certificaciones; un recruiter lee perfiles y
   certificaciones de candidatos pero nunca los edita, y gestiona su propio perfil de empresa; un admin puede todo.
   El perfil propio se lee en `/candidate-profiles/me` y `/company-profiles/me` (el usuario sale del token, nunca de
