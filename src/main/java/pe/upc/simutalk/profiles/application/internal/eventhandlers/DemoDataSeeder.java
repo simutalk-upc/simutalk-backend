@@ -65,6 +65,15 @@ public class DemoDataSeeder {
     @EventListener(ApplicationReadyEvent.class)
     @Order(100)
     public void on(ApplicationReadyEvent event) {
+        // Demo data must never keep the application from starting.
+        try {
+            seedProfiles();
+        } catch (RuntimeException ex) {
+            log.warn("Demo data: the demo company and candidate profiles could not be seeded; the application starts without them", ex);
+        }
+    }
+
+    private void seedProfiles() {
         if (!enabled) {
             return;
         }

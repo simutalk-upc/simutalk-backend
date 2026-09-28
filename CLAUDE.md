@@ -89,7 +89,9 @@ Los nombres de los contextos planificados son una propuesta; ajustar esta tabla 
   (empresa y 6 candidatos) → 200 `recruitment` (vacante en DRAFT con criterios) → 300 `interviews` (guion) → 400
   `recruitment` (publica y hace postular a los 6) → 500 `interviews` (sesiones: 2 COMPLETED, 2 IN_PROGRESS) → 600
   `assessment` (evalúa las completadas, solo con el motor mock). Cada paso encuentra lo que dejó el anterior por las
-  fachadas de `shared` y revisa su propia precondición, así que es idempotente. No hay eventos de demo en `shared`.
+  fachadas de `shared` y revisa su propia precondición, así que es idempotente (una sesión solo se crea sobre una
+  postulación en RECEIVED). Un fallo de cualquier paso se registra como WARN y nunca impide que la app arranque.
+  No hay eventos de demo en `shared`.
 - `RecruitmentContextFacadeImpl` expone vacantes, criterios y postulaciones a otros contextos, y mueve postulaciones
   a INTERVIEWING / ASSESSED siempre a través del agregado `Application`.
 

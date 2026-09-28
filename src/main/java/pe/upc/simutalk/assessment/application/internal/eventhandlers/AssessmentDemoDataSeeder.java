@@ -60,6 +60,15 @@ public class AssessmentDemoDataSeeder {
     @EventListener(ApplicationReadyEvent.class)
     @Order(600)
     public void on(ApplicationReadyEvent event) {
+        // Demo data must never keep the application from starting.
+        try {
+            seedAssessments();
+        } catch (RuntimeException ex) {
+            log.warn("Assessment demo data: the completed demo interviews could not be assessed; the application starts without those assessments", ex);
+        }
+    }
+
+    private void seedAssessments() {
         if (!enabled) {
             return;
         }
