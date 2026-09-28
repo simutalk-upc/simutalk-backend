@@ -26,4 +26,14 @@ public interface ProfilesContextFacade {
      * @return the candidate district, or an empty string if the candidate does not exist
      */
     String fetchCandidateDistrict(Long candidateId);
+
+    /** Declared certifications the issuer did not match (REJECTED); 0 if the candidate does not exist. */
+    long fetchRejectedCertificationCount(Long candidateId);
+
+    /**
+     * PII of the candidate, for redaction and for authorized display only.
+     *
+     * @return the data, or {@code null} if the candidate does not exist
+     */
+    CandidatePersonalData fetchCandidatePersonalData(Long candidateId);
 }

@@ -1,0 +1,86 @@
+package pe.upc.simutalk.assessment.interfaces.rest;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
+import pe.upc.simutalk.assessment.domain.model.commands.ComputeAssessmentCommand;
+import pe.upc.simutalk.assessment.domain.model.queries.GetAssessmentByInterviewSessionIdQuery;
+import pe.upc.simutalk.assessment.domain.model.queries.GetEvidencesByCriterionScoreQuery;
+import pe.upc.simutalk.assessment.domain.model.queries.GetRankingByJobPostingIdQuery;
+import pe.upc.simutalk.assessment.domain.services.AssessmentCommandService;
+import pe.upc.simutalk.assessment.domain.services.AssessmentQueryService;
+import pe.upc.simutalk.assessment.interfaces.rest.resources.AssessmentResource;
+import pe.upc.simutalk.assessment.interfaces.rest.resources.EvidenceResource;
+import pe.upc.simutalk.assessment.interfaces.rest.resources.RankingResource;
+import pe.upc.simutalk.assessment.interfaces.rest.transform.AssessmentResourceFromEntityAssembler;
+import pe.upc.simutalk.assessment.interfaces.rest.transform.EvidenceResourceFromEntityAssembler;
+import pe.upc.simutalk.assessment.interfaces.rest.transform.RankingResourceFromEntityAssembler;
+import pe.upc.simutalk.shared.domain.exceptions.ResourceNotFoundException;
+
+import java.util.List;
+
+@RestController
+@RequestMapping(value = "/api/v1", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequiredArgsConstructor
+@SecurityRequirement(name = "bearerAuth")
+@Tag(name = "Assessments", description = "Puntuación por criterio con evidencia textual y ranking explicable")
+public class AssessmentsController {
+
+    private final AssessmentCommandService assessmentCommandService;
+    private final AssessmentQueryService assessmentQueryService;
+
+    @PostMapping("/interview-sessions/{sessionId}/assessment")
+    @PreAuthorize("hasRole('ADMIN') or (hasRole('RECRUITER') and @assessmentAccess.ownsSessionJobPosting(#sessionId, authentication))")
+    @Operation(summary = "Calcular la evaluación de una entrevista",
+            description = "Solo entrevistas COMPLETED y una vez. Las respuestas se anonimizan antes de ir al proveedor de IA.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "Evaluación calculada"),
+            @ApiResponse(responseCode = "403", description = "No es el recruiter dueño ni admin"),
+            @ApiResponse(responseCode = "404", description = "Sesión no encontrada"),
+            @ApiResponse(responseCode = "422", description = "Sesión no COMPLETED, ya evaluada o sin evidencia obtenible")
+    })
+    public ResponseEntity<AssessmentResource> computeAssessment(@PathVariable Long sessionId) {
+        var assessment = assessmentCommandService.handle(new ComputeAssessmentCommand(sessionId));
+        return ResponseEntity.status(HttpStatus.CREATED).body(AssessmentResourceFromEntityAssembler.toResourceFromEntity(assessment));
+    }
+
+    @GetMapping("/interview-sessions/{sessionId}/assessment")
+    @PreAuthorize("hasRole('ADMIN') or (hasRole('RECRUITER') and @assessmentAccess.ownsSessionJobPosting(#sessionId, authentication))")
+    @Operation(summary = "Ver la evaluación de una entrevista")
+    public ResponseEntity<AssessmentResource> getAssessment(@PathVariable Long sessionId) {
+        var assessment = assessmentQueryService.handle(new GetAssessmentByInterviewSessionIdQuery(sessionId))
+                .orElseThrow(() -> new ResourceNotFoundException("Interview session %s has no assessment".formatted(sessionId)));
+        return ResponseEntity.ok(AssessmentResourceFromEntityAssembler.toResourceFromEntity(assessment));
+    }
+
+    @GetMapping("/assessments/{assessmentId}/criterion-scores/{criterionScoreId}/evidences")
+    @PreAuthorize("hasRole('ADMIN') or (hasRole('RECRUITER') and @assessmentAccess.ownsAssessment(#assessmentId, authentication))")
+    @Operation(summary = "Ver la evidencia de un puntaje",
+            description = "Fragmentos literales de las respuestas con su posición. Con anonymizedScreening, los datos personales se ocultan.")
+    public ResponseEntity<List<EvidenceResource>> getEvidences(@PathVariable Long assessmentId, @PathVariable Long criterionScoreId) {
+        var evidences = assessmentQueryService.handle(new GetEvidencesByCriterionScoreQuery(assessmentId, criterionScoreId));
+        return ResponseEntity.ok(evidences.stream().map(EvidenceResourceFromEntityAssembler::toResourceFromEntity).toList());
+    }
+
+    @GetMapping("/job-postings/{jobPostingId}/ranking")
+    @PreAuthorize("hasRole('ADMIN') or (hasRole('RECRUITER') and @assessmentAccess.ownsJobPosting(#jobPostingId, authentication))")
+    @Operation(summary = "Ranking explicable de la vacante",
+            description = "Candidatos evaluados ordenados por puntaje ponderado, con desglose por criterio e insignias. "
+                    + "anonymized=true reemplaza nombre y documento por un código estable; si la vacante tiene "
+                    + "anonymizedScreening, la anonimización es forzada.")
+    public ResponseEntity<RankingResource> getRanking(
+            @PathVariable Long jobPostingId,
+            @Parameter(description = "Ocultar nombre y documento") @RequestParam(defaultValue = "false") boolean anonymized) {
+        var ranking = assessmentQueryService.handle(new GetRankingByJobPostingIdQuery(jobPostingId, anonymized));
+        return ResponseEntity.ok(RankingResourceFromEntityAssembler.toResourceFromEntity(ranking));
+    }
+}

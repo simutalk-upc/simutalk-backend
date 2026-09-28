@@ -21,6 +21,12 @@ public interface RecruitmentContextFacade {
 
     boolean existsCriterionInJobPosting(Long jobPostingId, Long criterionId);
 
+    /** Every criterion of the job posting, in creation order; empty if the posting does not exist. */
+    List<CriterionView> fetchCriteria(Long jobPostingId);
+
+    /** Whether the job posting hides candidates' personal data from human evaluators. */
+    boolean isAnonymizedScreening(Long jobPostingId);
+
     /** Ids of the job posting's COMPETENCY criteria (CERTIFICATION ones are not interviewed). */
     List<Long> fetchCompetencyCriterionIds(Long jobPostingId);
 

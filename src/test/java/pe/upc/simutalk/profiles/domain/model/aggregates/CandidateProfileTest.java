@@ -90,6 +90,19 @@ class CandidateProfileTest {
     }
 
     @Test
+    void countsRejectedCertifications() {
+        var candidate = candidate(ADULT_BIRTH_DATE, 3);
+        var rejected = add(candidate, "SHORT");
+        var verified = add(candidate, "COURSERA-001");
+        add(candidate, null);
+
+        candidate.rejectCertification(rejected.getId());
+        candidate.verifyCertification(verified.getId(), Instant.now());
+
+        assertThat(candidate.countRejectedCertifications()).isEqualTo(1);
+    }
+
+    @Test
     void countCertificationsForScoringExcludesExpired() {
         var candidate = candidate(ADULT_BIRTH_DATE, 3);
         var expiring = candidate.addCertification(new Certification("PSM I", "Credly", "CREDLY-778899",

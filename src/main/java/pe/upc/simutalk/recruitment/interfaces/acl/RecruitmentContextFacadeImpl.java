@@ -14,6 +14,7 @@ import pe.upc.simutalk.recruitment.domain.model.valueobjects.JobPostingViewer;
 import pe.upc.simutalk.recruitment.domain.services.ApplicationCommandService;
 import pe.upc.simutalk.recruitment.domain.services.ApplicationQueryService;
 import pe.upc.simutalk.recruitment.domain.services.JobPostingQueryService;
+import pe.upc.simutalk.shared.interfaces.acl.CriterionView;
 import pe.upc.simutalk.shared.interfaces.acl.RecruitmentContextFacade;
 
 import java.util.List;
@@ -57,6 +58,23 @@ public class RecruitmentContextFacadeImpl implements RecruitmentContextFacade {
                 .map(jobPosting -> jobPosting.getCriteria().stream()
                         .anyMatch(criterion -> criterionId.equals(criterion.getId())))
                 .orElse(false);
+    }
+
+    @Override
+    public List<CriterionView> fetchCriteria(Long jobPostingId) {
+        return findJobPosting(jobPostingId)
+                .map(jobPosting -> jobPosting.getCriteria().stream()
+                        .map(criterion -> new CriterionView(criterion.getId(), criterion.getName(),
+                                criterion.getDescription(), criterion.getWeight().value(),
+                                criterion.getCriterionType().name(), criterion.getCertificationName(),
+                                criterion.isMandatory()))
+                        .toList())
+                .orElse(List.of());
+    }
+
+    @Override
+    public boolean isAnonymizedScreening(Long jobPostingId) {
+        return findJobPosting(jobPostingId).map(JobPosting::isAnonymizedScreening).orElse(false);
     }
 
     @Override

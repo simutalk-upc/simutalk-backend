@@ -1,6 +1,7 @@
 package pe.upc.simutalk.interviews.application.internal.eventhandlers;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
@@ -12,9 +13,11 @@ import pe.upc.simutalk.interviews.domain.services.InterviewSessionCommandService
 import pe.upc.simutalk.interviews.domain.services.QuestionCommandService;
 import pe.upc.simutalk.interviews.domain.services.QuestionQueryService;
 import pe.upc.simutalk.shared.interfaces.events.DemoApplicationsSubmittedEvent;
+import pe.upc.simutalk.shared.interfaces.events.DemoInterviewsCompletedEvent;
 import pe.upc.simutalk.shared.interfaces.events.DemoJobPostingDraftedEvent;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -39,6 +42,7 @@ public class InterviewsDemoDataSeeder {
     private final QuestionCommandService questionCommandService;
     private final QuestionQueryService questionQueryService;
     private final InterviewSessionCommandService interviewSessionCommandService;
+    private final ApplicationEventPublisher eventPublisher;
 
     private record DemoQuestion(int criterionIndex, String statement, int maxDurationSeconds, boolean allowsFollowUp) {
     }
@@ -162,16 +166,19 @@ public class InterviewsDemoDataSeeder {
         var assessed = event.applications().stream().filter(app -> "ASSESSED".equals(app.targetStage())).toList();
         var interviewing = event.applications().stream().filter(app -> "INTERVIEWING".equals(app.targetStage())).toList();
 
+        var completedSessions = new ArrayList<Long>();
         for (var index = 0; index < assessed.size() && index < ASSESSED_ANSWERS.size(); index++) {
             var sessionId = startSession(assessed.get(index).applicationId());
             answer(sessionId, script, ASSESSED_ANSWERS.get(index), index == 1);
             interviewSessionCommandService.handle(new CompleteInterviewSessionCommand(sessionId));
+            completedSessions.add(sessionId);
         }
         for (var index = 0; index < interviewing.size() && index < INTERVIEWING_ANSWERS.size(); index++) {
             var sessionId = startSession(interviewing.get(index).applicationId());
             answer(sessionId, script, INTERVIEWING_ANSWERS.get(index), false);
         }
         log.info("Interviews demo data: {} completed and {} in-progress sessions", assessed.size(), interviewing.size());
+        eventPublisher.publishEvent(new DemoInterviewsCompletedEvent(event.jobPostingId(), completedSessions));
     }
 
     private Long startSession(Long applicationId) {
