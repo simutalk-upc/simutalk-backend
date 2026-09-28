@@ -51,11 +51,11 @@ agregado (regla de negocio) → repositorio → `*ResourceFromEntityAssembler` �
 
 | Contexto | Responsabilidad | Estado |
 |---|---|---|
-| `shared` | `AuditableAbstractAggregateRoot`, `AuditableModel`, estrategia de nombres snake_case con tablas en plural, OpenAPI, excepciones de dominio base, manejador global de errores (`ErrorResource`), `MessageResource` y contratos ACL entre contextos (`IamContextFacade`, `ProfilesContextFacade`). | Implementado |
+| `shared` | `AuditableAbstractAggregateRoot`, `AuditableModel`, estrategia de nombres snake_case con tablas en plural, OpenAPI, excepciones de dominio base, manejador global de errores (`ErrorResource`), `MessageResource`, `PageResource`, contratos ACL entre contextos (`IamContextFacade`, `ProfilesContextFacade`, `RecruitmentContextFacade`, `InterviewsContextFacade`) y eventos de integración (`shared/interfaces/events`). | Implementado |
 | `recruitment` | Vacantes (`JobPosting`) y sus criterios ponderados (`EvaluationCriterion`, `Weight`), ciclo DRAFT → PUBLISHED → CLOSED; postulaciones (`Application`) y su pipeline. | Implementado |
 | `iam` | Usuarios (`User`), roles (`Role`, `Roles`), registro, sign-in con JWT, autorización y `IamContextFacadeImpl`. | Implementado |
 | `profiles` | Perfiles de empresa (`CompanyProfile`) y de postulante (`CandidateProfile`, incluye PII), certificaciones (`Certification`) y su verificación con el emisor. `ProfilesContextFacadeImpl`. | Implementado |
-| `interviews` | Entrevista asincrónica: preguntas por vacante, sesiones y respuestas del postulante. | Planificado |
+| `interviews` | Guion de preguntas por vacante (`Question`), sesión de entrevista asincrónica (`InterviewSession`) y respuestas (`Answer`). Solo registra qué se preguntó y qué se respondió; nada de puntuación ni IA. `InterviewsContextFacadeImpl`. | Implementado |
 | `assessment` | Puntuación NLP por criterio con evidencia textual (fragmento + posición), anonimización previa y ranking. ACL hacia el proveedor de IA. | Planificado |
 
 Los nombres de los contextos planificados son una propuesta; ajustar esta tabla cuando se creen.
@@ -68,7 +68,9 @@ Los nombres de los contextos planificados son una propuesta; ajustar esta tabla 
   `weight` (VO `Weight`, entero 1..100), `criterionType` (`COMPETENCY|CERTIFICATION`) y, solo si es
   `CERTIFICATION`, `certificationName` (obligatorio) y `mandatory`. En `COMPETENCY` esos dos campos se descartan.
 - Invariantes del agregado:
-  - `publish()` falla si no hay criterios o si la suma de pesos ≠ 100; solo se publica desde DRAFT.
+  - `publish()` falla si no hay criterios, si la suma de pesos ≠ 100 o si algún criterio COMPETENCY no tiene
+    ninguna pregunta de entrevista (el agregado recibe un `InterviewQuestionCounter`, alimentado por
+    `InterviewsContextFacade`); solo se publica desde DRAFT.
   - Los criterios solo se agregan/editan/eliminan en DRAFT (todos los postulantes se evalúan con los mismos pesos).
   - Nombres de criterio únicos dentro de la vacante (sin distinguir mayúsculas).
   - CLOSED es de solo lectura; no se vuelve a DRAFT; `anonymizedScreening` solo cambia en DRAFT.
@@ -80,8 +82,12 @@ Los nombres de los contextos planificados son una propuesta; ajustar esta tabla 
   `UNIQUE (job_posting_id, candidate_id)`). Transiciones dirigidas: RECEIVED → INTERVIEWING → ASSESSED →
   SHORTLISTED → HIRED, y REJECTED desde cualquier etapa no final; REJECTED y HIRED son finales. Un salto inválido
   lanza `InvalidStateTransitionException` (una `IllegalStateException`, 422 en la API).
-- Con `app.seed-demo-data=true`, `RecruitmentDemoDataSeeder` (después del de `profiles`) publica una vacante demo
-  y hace postular a los 6 candidatos, repartidos en RECEIVED, INTERVIEWING y ASSESSED.
+- Con `app.seed-demo-data=true`, `RecruitmentDemoDataSeeder` (después del de `profiles`) crea una vacante demo en
+  DRAFT, deja que `interviews` escriba su guion (`DemoJobPostingDraftedEvent`), la publica, hace postular a los 6
+  candidatos y anuncia la etapa objetivo de cada uno (`DemoApplicationsSubmittedEvent`); `interviews` las lleva a
+  INTERVIEWING y ASSESSED creando y completando sesiones.
+- `RecruitmentContextFacadeImpl` expone vacantes, criterios y postulaciones a otros contextos, y mueve postulaciones
+  a INTERVIEWING / ASSESSED siempre a través del agregado `Application`.
 
 ### Modelo actual de `iam`
 
@@ -110,6 +116,28 @@ Los nombres de los contextos planificados son una propuesta; ajustar esta tabla 
 - Nada de puntuación aquí: cuánto vale una certificación lo decide `assessment` (vía `ProfilesContextFacade`).
 - `app.seed-demo-data=true` siembra datos demo (1 empresa, 6 candidatos) si las tablas de perfiles están vacías.
 
+### Modelo actual de `interviews`
+
+- `Question` (agregado raíz, tabla `questions`): `jobPostingId` y `criterionId` (solo ids), `statement` (1 a 500
+  caracteres), `maxDurationSeconds` (30 a 600), `position` (≥ 1, consecutivas dentro del guion), `origin`
+  (`AI_SUGGESTED|MANUAL`), `allowsFollowUp`.
+- `InterviewSession` (agregado raíz, tabla `interview_sessions`): `applicationId` (único: una sesión por
+  postulación), `jobPostingId` y `candidateId` (copias inmutables tomadas de la postulación, para autorización),
+  `status` (`PENDING|IN_PROGRESS|COMPLETED|EXPIRED`), `invitedAt`, `startedAt`, `finishedAt`, `expiresAt`,
+  `totalDurationSeconds` (suma de la duración de las respuestas) y `answers`.
+  - `start()` solo desde PENDING y sin vencer; `recordAnswer()` solo en IN_PROGRESS, una respuesta por pregunta y a
+    lo sumo una repregunta por pregunta, solo si la pregunta la permite y con su respuesta padre; `complete()` solo
+    desde IN_PROGRESS y con todas las preguntas del guion respondidas; `expire()` desde PENDING o IN_PROGRESS una
+    vez vencida. COMPLETED y EXPIRED son finales. Los saltos inválidos lanzan `InvalidStateTransitionException`.
+- `Answer` (entidad de la sesión, tabla `answers`): `questionId`, `parentAnswerId` (solo en repreguntas),
+  `transcript` (no vacío), `audioUrl`, `durationSeconds`, `answeredAt`, `isFollowUp`.
+- Reglas que cruzan contextos (en los servicios de aplicación, vía `RecruitmentContextFacade`): el guion solo cambia
+  con la vacante en DRAFT (publicada queda congelado, como los pesos); una pregunta apunta a un criterio COMPETENCY de
+  la misma vacante (uno de CERTIFICATION responde 422 con mensaje explícito); crear la sesión exige una postulación en
+  RECEIVED y la mueve a INTERVIEWING; completarla la mueve a ASSESSED.
+- Aún no hay un proceso que marque como EXPIRED las sesiones vencidas: `expire()` existe en el agregado, pero nada lo
+  invoca todavía.
+
 ## Seguridad
 
 - Rutas públicas: `/api/v1/authentication/**` y la documentación (`/v3/api-docs/**`, `/swagger-ui/**`). Todo lo
@@ -132,6 +160,10 @@ Los nombres de los contextos planificados son una propuesta; ajustar esta tabla 
 - Postulaciones: solo `ROLE_CANDIDATE` postula (el `candidateId` sale del usuario autenticado vía
   `ProfilesContextFacade.fetchCandidateIdByUserId`, nunca del cuerpo) y lista las suyas en `/api/v1/applications`;
   el pipeline de una vacante y el cambio de etapa son del recruiter dueño de la vacante o de un admin.
+- `interviews` (`InterviewsAccessPolicy`, `@interviewsAccess`): el recruiter dueño de la vacante (o un admin) gestiona
+  el guion e invita; el guion lo lee el dueño o el candidato con una sesión IN_PROGRESS en esa vacante; solo el
+  candidato dueño inicia, responde y completa su entrevista; las respuestas las leen el candidato dueño y el recruiter
+  de la vacante.
 - `profiles`: un candidato solo lee y modifica su propio perfil y certificaciones; un recruiter lee perfiles y
   certificaciones de candidatos pero nunca los edita, y gestiona su propio perfil de empresa; un admin puede todo.
   El perfil propio se lee en `/candidate-profiles/me` y `/company-profiles/me` (el usuario sale del token, nunca de

@@ -113,6 +113,25 @@ Datos demo: arranca con `SEED_DEMO_DATA=true` y `DEMO_USERS_PASSWORD=...`. Usuar
 Etapas: `RECEIVED → INTERVIEWING → ASSESSED → SHORTLISTED → HIRED`, y `REJECTED` desde cualquier etapa no final.
 Un salto inválido responde 422.
 
+## Entrevistas (contexto `interviews`, requieren token)
+
+| Método | Ruta | Acceso |
+|---|---|---|
+| POST | `/api/v1/job-postings/{jobPostingId}/questions` | Recruiter dueño o admin; solo en DRAFT y sobre criterios COMPETENCY |
+| GET | `/api/v1/job-postings/{jobPostingId}/questions` | Recruiter dueño, admin o candidato con entrevista IN_PROGRESS en la vacante |
+| PUT | `/api/v1/job-postings/{jobPostingId}/questions/{questionId}` | Recruiter dueño o admin; solo en DRAFT |
+| DELETE | `/api/v1/job-postings/{jobPostingId}/questions/{questionId}` | Recruiter dueño o admin; solo en DRAFT |
+| PATCH | `/api/v1/job-postings/{jobPostingId}/questions/order` | Recruiter dueño o admin; `{"orderedIds": [...]}` con todo el guion |
+| POST | `/api/v1/applications/{applicationId}/interview-session` | Recruiter dueño o admin; postulación RECEIVED → INTERVIEWING |
+| GET | `/api/v1/applications/{applicationId}/interview-session` | Recruiter dueño, admin o el candidato de la postulación |
+| POST | `/api/v1/interview-sessions/{sessionId}/start` | Solo el candidato dueño |
+| POST | `/api/v1/interview-sessions/{sessionId}/answers` | Solo el candidato dueño, en IN_PROGRESS |
+| POST | `/api/v1/interview-sessions/{sessionId}/completion` | Solo el candidato dueño; postulación → ASSESSED |
+| GET | `/api/v1/interview-sessions/{sessionId}/answers` | Candidato dueño, recruiter de la vacante o admin |
+
+Una vacante no se puede publicar mientras algún criterio COMPETENCY no tenga preguntas. Con la vacante publicada, el
+guion queda congelado.
+
 ## Endpoints de vacantes (contexto `recruitment`, requieren token)
 
 | Método | Ruta | Descripción |
