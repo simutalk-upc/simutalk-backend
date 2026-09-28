@@ -11,6 +11,7 @@ import pe.upc.simutalk.profiles.domain.model.queries.GetCompanyProfileByUserIdQu
 import pe.upc.simutalk.profiles.domain.model.queries.GetVerifiedCertificationCountQuery;
 import pe.upc.simutalk.profiles.domain.services.CandidateProfileQueryService;
 import pe.upc.simutalk.profiles.domain.services.CompanyProfileQueryService;
+import pe.upc.simutalk.shared.interfaces.acl.CandidateContact;
 import pe.upc.simutalk.shared.interfaces.acl.CandidatePersonalData;
 import pe.upc.simutalk.shared.interfaces.acl.ProfilesContextFacade;
 
@@ -80,8 +81,31 @@ public class ProfilesContextFacadeImpl implements ProfilesContextFacade {
         return candidateProfileQueryService.handle(new GetCandidateProfileByIdQuery(candidateId))
                 .map(candidate -> new CandidatePersonalData(candidate.getId(), candidate.getPersonName().firstName(),
                         candidate.getPersonName().lastName(), candidate.getDocumentNumber().value(),
-                        candidate.getPhone(), candidate.getDistrict(), candidate.getBirthDate()))
+                        candidate.getPhone(), candidate.getDistrict(), candidate.getBirthDate(),
+                        candidate.getEmail() == null ? null : candidate.getEmail().value()))
                 .orElse(null);
+    }
+
+    @Override
+    public CandidateContact fetchCandidateContact(Long candidateId) {
+        if (candidateId == null) {
+            return null;
+        }
+        return candidateProfileQueryService.handle(new GetCandidateProfileByIdQuery(candidateId))
+                .map(candidate -> new CandidateContact(candidate.getId(), candidate.getPersonName().firstName(),
+                        candidate.getPersonName().firstName() + " " + candidate.getPersonName().lastName(),
+                        candidate.getEmail() == null ? null : candidate.getEmail().value()))
+                .orElse(null);
+    }
+
+    @Override
+    public String fetchCompanyEmail(Long companyId) {
+        if (companyId == null) {
+            return "";
+        }
+        return companyProfileQueryService.handle(new GetCompanyProfileByIdQuery(companyId))
+                .map(company -> company.getEmail() == null ? "" : company.getEmail().value())
+                .orElse("");
     }
 
     @Override

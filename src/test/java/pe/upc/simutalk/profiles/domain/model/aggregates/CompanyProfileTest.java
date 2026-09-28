@@ -39,4 +39,16 @@ class CompanyProfileTest {
         assertThatThrownBy(() -> new CompanyProfile(new CreateCompanyProfileCommand(0L, "A", "B", "C",
                 "20554873621", CompanySize.MICRO, "Miraflores"))).isInstanceOf(IllegalArgumentException.class);
     }
+
+    @Test
+    void theEmailIsOptionalValidatedAndEditable() {
+        var company = new CompanyProfile(new CreateCompanyProfileCommand(5L, "Consultora Andina S.A.C.", "Andina",
+                "TI", "20554873621", CompanySize.MEDIANA, "San Isidro", "Seleccion@Andina.example.com"));
+        assertThat(company.getEmail().value()).isEqualTo("seleccion@andina.example.com");
+
+        company.updateDetails("Consultora Andina S.A.C.", "Andina", "TI", CompanySize.MEDIANA, "San Isidro", null);
+        assertThat(company.getEmail()).isNull();
+        assertThatThrownBy(() -> new CompanyProfile(new CreateCompanyProfileCommand(5L, "A", "B", "C", "20554873621",
+                CompanySize.MICRO, "Miraflores", "no-es-correo"))).isInstanceOf(IllegalArgumentException.class);
+    }
 }

@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.BatchSize;
 import pe.upc.simutalk.profiles.domain.model.commands.CreateCandidateProfileCommand;
 import pe.upc.simutalk.profiles.domain.model.entities.Certification;
+import pe.upc.simutalk.profiles.domain.model.valueobjects.EmailAddress;
 import pe.upc.simutalk.profiles.domain.model.valueobjects.DocumentNumber;
 import pe.upc.simutalk.profiles.domain.model.valueobjects.PersonName;
 import pe.upc.simutalk.profiles.domain.model.valueobjects.VerificationStatus;
@@ -51,6 +52,10 @@ public class CandidateProfile extends AuditableAbstractAggregateRoot<CandidatePr
     @Embedded
     private DocumentNumber documentNumber;
 
+    /** Optional contact e-mail (personal data: never sent to the AI provider). */
+    @Embedded
+    private EmailAddress email;
+
     @Column(name = "birth_date", nullable = false)
     private LocalDate birthDate;
 
@@ -78,11 +83,20 @@ public class CandidateProfile extends AuditableAbstractAggregateRoot<CandidatePr
         this.documentNumber = new DocumentNumber(command.documentNumber());
         applyDetails(new PersonName(command.firstName(), command.lastName()), command.birthDate(), command.phone(),
                 command.district(), command.yearsOfExperience());
+        this.email = EmailAddress.ofNullable(command.email());
     }
 
+    /** Changes the editable data; the e-mail is kept as it is. */
     public void updateDetails(PersonName personName, LocalDate birthDate, String phone, String district,
                               int yearsOfExperience) {
         applyDetails(personName, birthDate, phone, district, yearsOfExperience);
+    }
+
+    /** Changes the editable data, including the e-mail ({@code null} or blank removes it). */
+    public void updateDetails(PersonName personName, LocalDate birthDate, String phone, String district,
+                              int yearsOfExperience, String email) {
+        applyDetails(personName, birthDate, phone, district, yearsOfExperience);
+        this.email = EmailAddress.ofNullable(email);
     }
 
     public boolean isOwnedBy(Long otherUserId) {

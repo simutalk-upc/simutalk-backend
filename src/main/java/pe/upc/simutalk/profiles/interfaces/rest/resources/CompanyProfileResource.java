@@ -13,6 +13,7 @@ public record CompanyProfileResource(
         String ruc,
         CompanySize companySize,
         String district,
+        String email,
         Instant createdAt,
         Instant updatedAt) {
 }

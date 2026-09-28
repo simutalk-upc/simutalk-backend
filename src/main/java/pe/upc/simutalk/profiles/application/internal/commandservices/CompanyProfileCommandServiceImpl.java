@@ -45,7 +45,7 @@ public class CompanyProfileCommandServiceImpl implements CompanyProfileCommandSe
         var company = companyProfileRepository.findById(command.companyProfileId())
                 .orElseThrow(() -> new ResourceNotFoundException("Company profile", command.companyProfileId()));
         company.updateDetails(command.legalName(), command.tradeName(), command.industry(), command.companySize(),
-                command.district());
+                command.district(), command.email());
         companyProfileRepository.flush();
         return company;
     }

@@ -14,7 +14,7 @@ public class CandidateProfileResourceFromEntityAssembler {
         return new CandidateProfileResource(entity.getId(), entity.getUserId(),
                 entity.getPersonName().firstName(), entity.getPersonName().lastName(),
                 entity.getDocumentNumber().documentType(), entity.getDocumentNumber().value(),
-                entity.getBirthDate(), entity.getPhone(), entity.getDistrict(), entity.getYearsOfExperience(),
+                entity.getEmail() == null ? null : entity.getEmail().value(), entity.getBirthDate(), entity.getPhone(), entity.getDistrict(), entity.getYearsOfExperience(),
                 entity.countCertificationsForScoring(LocalDate.now()), certifications,
                 entity.getCreatedAt(), entity.getUpdatedAt());
     }

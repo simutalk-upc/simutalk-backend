@@ -2,6 +2,7 @@ package pe.upc.simutalk.assessment.interfaces.rest.authorization;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 import pe.upc.simutalk.assessment.domain.model.queries.GetAssessmentByIdQuery;
 import pe.upc.simutalk.assessment.domain.services.AssessmentQueryService;
@@ -41,6 +42,29 @@ public class AssessmentAccessPolicy {
         return assessmentQueryService.handle(new GetAssessmentByIdQuery(assessmentId))
                 .map(assessment -> ownsJobPosting(assessment.getJobPostingId(), authentication))
                 .orElse(false);
+    }
+
+    /** Whether the authenticated user is the candidate who took this interview. */
+    public boolean isSessionCandidate(Long interviewSessionId, Authentication authentication) {
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return false;
+        }
+        var candidateId = Optional.ofNullable(iamContextFacade.fetchUserIdByUsername(authentication.getName()))
+                .filter(id -> id != 0L)
+                .map(profilesContextFacade::fetchCandidateIdByUserId)
+                .filter(id -> id != null && id != 0L);
+        return candidateId.map(id -> id.equals(interviewsContextFacade.fetchCandidateIdBySessionId(interviewSessionId)))
+                .orElse(false);
+    }
+
+    /** Admins and the recruiter who owns the job posting see the full assessment; everyone else, at most the candidate view. */
+    public boolean seesFullAssessment(Long interviewSessionId, Authentication authentication) {
+        if (authentication == null) {
+            return false;
+        }
+        var authorities = authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList();
+        return authorities.contains("ROLE_ADMIN")
+                || (authorities.contains("ROLE_RECRUITER") && ownsSessionJobPosting(interviewSessionId, authentication));
     }
 
     private Optional<Long> currentCompanyId(Authentication authentication) {

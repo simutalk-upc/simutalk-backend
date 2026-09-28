@@ -8,6 +8,6 @@ public class CreateCandidateProfileCommandFromResourceAssembler {
     public static CreateCandidateProfileCommand toCommandFromResource(CreateCandidateProfileResource resource) {
         return new CreateCandidateProfileCommand(resource.userId(), resource.firstName(), resource.lastName(),
                 resource.documentNumber(), resource.birthDate(), resource.phone(), resource.district(),
-                resource.yearsOfExperience());
+                resource.yearsOfExperience(), resource.email());
     }
 }

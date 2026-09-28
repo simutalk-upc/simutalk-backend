@@ -45,6 +45,7 @@ public class TranscriptAnonymizer {
         if (candidate != null) {
             addLiteral(matches, transcript, candidate.documentNumber(), DOCUMENT);
             addLiteral(matches, transcript, candidate.phone(), PHONE);
+            addLiteral(matches, transcript, candidate.email(), EMAIL);
             addLiteral(matches, transcript, candidate.district(), ADDRESS);
             nameTokens(candidate).forEach(token -> addLiteral(matches, transcript, token, NAME));
         }

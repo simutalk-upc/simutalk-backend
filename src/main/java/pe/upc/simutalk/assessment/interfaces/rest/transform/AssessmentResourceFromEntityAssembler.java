@@ -19,6 +19,6 @@ public class AssessmentResourceFromEntityAssembler {
                 .toList();
         return new AssessmentResource(entity.getId(), entity.getInterviewSessionId(), entity.getApplicationId(),
                 entity.getJobPostingId(), entity.getWeightedScore(), entity.getEngineVersion(), entity.getComputedAt(),
-                scores, flags);
+                scores, flags, entity.getFeedbackSummary());
     }
 }

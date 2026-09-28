@@ -11,6 +11,7 @@ public record CandidateProfileResource(
         String lastName,
         String documentType,
         String documentNumber,
+        String email,
         LocalDate birthDate,
         String phone,
         String district,

@@ -110,4 +110,17 @@ class AssessmentTest {
         assertThat(assessment.getIntegrityFlags()).hasSize(1);
         assertThat(assessment.countEvidences()).isEqualTo(1);
     }
+
+    @Test
+    void recordsTheCandidateFeedbackWithinItsLimits() {
+        var assessment = Assessment.calculate(COMPLETED, List.of(competency(1, "8.0", 100)), List.of(), "mock-1", Instant.now());
+        assertThat(assessment.getFeedbackSummary()).isNull();
+
+        assessment.recordFeedback("  Tu puntaje ponderado fue 8 de 10.  ");
+
+        assertThat(assessment.getFeedbackSummary()).isEqualTo("Tu puntaje ponderado fue 8 de 10.");
+        assertThatThrownBy(() -> assessment.recordFeedback(" ")).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> assessment.recordFeedback("x".repeat(Assessment.FEEDBACK_MAX_LENGTH + 1)))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
 }

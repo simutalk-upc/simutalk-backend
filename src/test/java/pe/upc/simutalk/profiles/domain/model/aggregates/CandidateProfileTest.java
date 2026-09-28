@@ -144,4 +144,21 @@ class CandidateProfileTest {
         assertThat(candidate.getCertifications()).isEmpty();
         assertThatThrownBy(() -> candidate.removeCertification(500L)).isInstanceOf(ResourceNotFoundException.class);
     }
+
+    @Test
+    void theEmailIsOptionalValidatedAndEditable() {
+        var withoutEmail = candidate(ADULT_BIRTH_DATE, 3);
+        assertThat(withoutEmail.getEmail()).isNull();
+
+        var withEmail = new CandidateProfile(new CreateCandidateProfileCommand(10L, "Rosa", "Quispe Mamani", "45879632",
+                ADULT_BIRTH_DATE, "+51987654321", "Comas", 3, "Rosa.Quispe@Example.com"));
+        assertThat(withEmail.getEmail().value()).isEqualTo("rosa.quispe@example.com");
+
+        withEmail.updateDetails(new PersonName("Rosa", "Quispe"), ADULT_BIRTH_DATE, "+51987654321", "Comas", 3);
+        assertThat(withEmail.getEmail().value()).as("the update without e-mail keeps it").isEqualTo("rosa.quispe@example.com");
+        withEmail.updateDetails(new PersonName("Rosa", "Quispe"), ADULT_BIRTH_DATE, "+51987654321", "Comas", 3, " ");
+        assertThat(withEmail.getEmail()).as("a blank e-mail removes it").isNull();
+        assertThatThrownBy(() -> withEmail.updateDetails(new PersonName("Rosa", "Quispe"), ADULT_BIRTH_DATE,
+                "+51987654321", "Comas", 3, "rosa@")).isInstanceOf(IllegalArgumentException.class);
+    }
 }

@@ -3,15 +3,11 @@ package pe.upc.simutalk.assessment.infrastructure.external.ai;
 import tools.jackson.databind.ObjectMapper;
 import com.sun.net.httpserver.HttpServer;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClient;
-import pe.upc.simutalk.assessment.domain.services.AnswerScoringService.ScoringResult;
 
 import java.math.BigDecimal;
 import java.net.InetSocketAddress;
 import java.time.Duration;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -54,33 +50,6 @@ class AnswerScoringServiceImplTest {
     }
 
     @Test
-    void retriesOnRateLimitWithBackoffThenSucceeds() {
-        var attempts = new AtomicInteger();
-        var result = service("live", "k").callWithResilience(() -> {
-            if (attempts.incrementAndGet() < 3) {
-                throw HttpClientErrorException.create(HttpStatus.TOO_MANY_REQUESTS, "Too Many Requests", null, new byte[0], null);
-            }
-            return new ScoringResult(BigDecimal.ONE, BigDecimal.ONE, "x", 0, 1, false);
-        });
-
-        assertThat(result.isAvailable()).isTrue();
-        assertThat(attempts).hasValue(3);
-    }
-
-    @Test
-    void fallsBackWhenTheProviderFails() {
-        var attempts = new AtomicInteger();
-
-        var result = service("live", "k").callWithResilience(() -> {
-            attempts.incrementAndGet();
-            throw new IllegalStateException("boom");
-        });
-
-        assertThat(result.isAvailable()).isFalse();
-        assertThat(attempts).hasValue(1);
-    }
-
-    @Test
     void fallsBackWhenTheProviderDoesNotAnswerWithinTheTimeout() throws Exception {
         var server = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
         server.createContext("/", exchange -> {
@@ -106,19 +75,18 @@ class AnswerScoringServiceImplTest {
     }
 
     @Test
-    void discardsExcerptsThatAreNotLiteralFragments() throws Exception {
+    void discardsExcerptsThatAreNotLiteralFragments() {
         var live = service("live", "k");
-        var response = objectMapper.readTree("{\"candidates\":[{\"content\":{\"parts\":[{\"text\":"
-                + "\"{\\\"score\\\":9,\\\"confidence\\\":0.9,\\\"excerpt\\\":\\\"texto inventado por el modelo\\\"}\"}]}}]}");
+        var response = "{\"score\":9,\"confidence\":0.9,\"excerpt\":\"texto inventado por el modelo\"}";
 
         assertThat(live.parse(response, TRANSCRIPT).isAvailable()).isFalse();
     }
 
     @Test
-    void clampsScoresAndLocatesTheExcerpt() throws Exception {
+    void clampsScoresAndLocatesTheExcerpt() {
         var live = service("live", "k");
-        var response = objectMapper.readTree("{\"candidates\":[{\"content\":{\"parts\":[{\"text\":"
-                + "\"{\\\"score\\\":12,\\\"confidence\\\":1.4,\\\"excerpt\\\":\\\"separaría el volumen del ticket promedio\\\",\\\"aiGeneratedSuspicion\\\":true}\"}]}}]}");
+        var response = "{\"score\":12,\"confidence\":1.4,\"excerpt\":\"separaría el volumen del ticket promedio\","
+                + "\"aiGeneratedSuspicion\":true}";
 
         var result = live.parse(response, TRANSCRIPT);
 

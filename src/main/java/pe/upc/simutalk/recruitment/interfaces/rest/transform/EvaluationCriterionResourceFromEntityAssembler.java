@@ -8,6 +8,7 @@ public class EvaluationCriterionResourceFromEntityAssembler {
     public static EvaluationCriterionResource toResourceFromEntity(EvaluationCriterion entity) {
         return new EvaluationCriterionResource(entity.getId(), entity.getJobPostingId(), entity.getName(),
                 entity.getDescription(), entity.getWeight().value(), entity.getCriterionType(),
-                entity.getCertificationName(), entity.isMandatory(), entity.getCreatedAt(), entity.getUpdatedAt());
+                entity.getCertificationName(), entity.isMandatory(), entity.getOrigin(), entity.getCreatedAt(),
+                entity.getUpdatedAt());
     }
 }

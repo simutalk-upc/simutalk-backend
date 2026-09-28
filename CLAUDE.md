@@ -52,7 +52,7 @@ agregado (regla de negocio) → repositorio → `*ResourceFromEntityAssembler` �
 
 | Contexto | Responsabilidad | Estado |
 |---|---|---|
-| `shared` | `AuditableAbstractAggregateRoot`, `AuditableModel`, estrategia de nombres snake_case con tablas en plural, OpenAPI, excepciones de dominio base, manejador global de errores (`ErrorResource`), `PageResource`, contratos ACL entre contextos (`IamContextFacade`, `ProfilesContextFacade`, `RecruitmentContextFacade`, `InterviewsContextFacade`, `AssessmentContextFacade`) y eventos de integración (`shared/interfaces/events`, p. ej. `InterviewSessionCompletedEvent`). | Implementado |
+| `shared` | `AuditableAbstractAggregateRoot`, `AuditableModel`, estrategia de nombres snake_case con tablas en plural, OpenAPI, excepciones de dominio base, manejador global de errores (`ErrorResource`), `PageResource`, contratos ACL entre contextos (`IamContextFacade`, `ProfilesContextFacade`, `RecruitmentContextFacade`, `InterviewsContextFacade`, `AssessmentContextFacade`), eventos de integración (`shared/interfaces/events`, p. ej. `InterviewSessionCompletedEvent`) y el cliente del proveedor de IA (`shared/infrastructure/external/ai/GenerativeAiClient`, solo transporte, sin dominio). | Implementado |
 | `recruitment` | Vacantes (`JobPosting`) y sus criterios ponderados (`EvaluationCriterion`, `Weight`), ciclo DRAFT → PUBLISHED → CLOSED; postulaciones (`Application`) y su pipeline. | Implementado |
 | `iam` | Usuarios (`User`), roles (`Role`, `Roles`), registro, sign-in con JWT, autorización y `IamContextFacadeImpl`. | Implementado |
 | `profiles` | Perfiles de empresa (`CompanyProfile`) y de postulante (`CandidateProfile`, incluye PII), certificaciones (`Certification`) y su verificación con el emisor. `ProfilesContextFacadeImpl`. | Implementado |
@@ -69,6 +69,12 @@ Los nombres de los contextos planificados son una propuesta; ajustar esta tabla 
 - `EvaluationCriterion` (entidad del agregado, tabla `evaluation_criteria`): `name`, `description`,
   `weight` (VO `Weight`, entero 1..100), `criterionType` (`COMPETENCY|CERTIFICATION`) y, solo si es
   `CERTIFICATION`, `certificationName` (obligatorio) y `mandatory`. En `COMPETENCY` esos dos campos se descartan.
+  `origin` (`CriterionOrigin`: `AI_SUGGESTED|MANUAL`, MANUAL por defecto; las filas anteriores leen MANUAL).
+- Sugerencia de criterios (US-04): `POST /api/v1/job-postings/{id}/criteria/suggestions`, solo el recruiter dueño y
+  con la vacante en DRAFT (`ensureCriteriaCanBeSuggested()` en el agregado). Devuelve `CriterionSuggestion` (nombre,
+  descripción, justificación) SIN persistir y SIN peso: **el sistema nunca asigna un peso**; el reclutador acepta con
+  `POST /criteria`, poniendo él el peso y `origin=AI_SUGGESTED`. Puerto `CriterionSuggestionService`; en mock, 4
+  competencias por palabras clave de la descripción; en live, Gemini (se ignora cualquier peso que devuelva).
 - Invariantes del agregado:
   - `publish()` falla si no hay criterios, si la suma de pesos ≠ 100 o si algún criterio COMPETENCY no tiene
     ninguna pregunta de entrevista (el agregado recibe un `InterviewQuestionCounter`, alimentado por
@@ -94,6 +100,11 @@ Los nombres de los contextos planificados son una propuesta; ajustar esta tabla 
   No hay eventos de demo en `shared`.
 - `RecruitmentContextFacadeImpl` expone vacantes, criterios y postulaciones a otros contextos, y mueve postulaciones
   a INTERVIEWING / ASSESSED siempre a través del agregado `Application`.
+- Notificaciones al candidato (US-24): cada cambio de etapa publica `ApplicationStatusChangedEvent`
+  (`domain/model/events`); `CandidateNotificationEventHandler` lo atiende después del commit y envía, por el puerto
+  `NotificationService`, la invitación a entrevista (INTERVIEWING), el aviso de terna final (SHORTLISTED) o el descarte
+  (REJECTED). El destinatario sale de `ProfilesContextFacade.fetchCandidateContact`; sin correo, no se envía. Un fallo
+  del envío se registra como WARN y nunca interrumpe la operación que lo originó.
 
 ### Modelo actual de `iam`
 
@@ -109,10 +120,13 @@ Los nombres de los contextos planificados son una propuesta; ajustar esta tabla 
 
 - `CompanyProfile` (tabla `companies`): `userId` (solo el id, sin relación con `iam`), `legalName`, `tradeName`,
   `industry`, `ruc` (VO `Ruc`: 11 dígitos, empieza en 10 o 20; no cambia), `companySize`
-  (`MICRO|PEQUENA|MEDIANA|GRANDE`), `district`.
+  (`MICRO|PEQUENA|MEDIANA|GRANDE`), `district`, `email` (opcional).
+- `email` en ambos perfiles: VO `EmailAddress` (formato válido, hasta 254 caracteres, en minúsculas), opcional y
+  editable (vacío lo elimina). Es dato personal: se usa para notificar, se redacta en `TranscriptAnonymizer` y nunca
+  viaja al proveedor de IA (`AnswerScoringPrivacyTest` lo verifica).
 - `CandidateProfile` (tabla `candidates`): `userId`, `personName` (VO `PersonName`), `documentNumber`
   (VO `DocumentNumber`: DNI 8 dígitos o CE 9 a 12; no cambia), `birthDate` (mínimo 18 años), `phone`, `district`,
-  `yearsOfExperience` (≥ 0) y `certifications`.
+  `yearsOfExperience` (≥ 0), `email` (opcional) y `certifications`.
 - `Certification` (tabla `certifications`, entidad del agregado candidato): `title`, `issuer`, `credentialCode`
   (opcional), `issuedAt`, `expiresAt` (opcional), `verificationStatus` (`VERIFIED|UNVERIFIED|REJECTED`), `verifiedAt`.
   Nace UNVERIFIED y **nunca queda VERIFIED sin código de credencial**. `countsForScoring()` = VERIFIED y no expirada.
@@ -148,7 +162,8 @@ Los nombres de los contextos planificados son una propuesta; ajustar esta tabla 
 
 - `Assessment` (agregado raíz, tabla `assessments`): `interviewSessionId` (único), copias inmutables de
   `applicationId`, `jobPostingId` y `candidateId`, `weightedScore` (0.0 a 10.0), `engineVersion`, `computedAt`,
-  `criterionScores` e `integrityFlags`. Solo se calcula sobre una sesión COMPLETED. `weightedScore = Σ(score ×
+  `criterionScores`, `integrityFlags` y `feedbackSummary` (retroalimentación para el candidato, hasta 2000 caracteres:
+  qué sostuvo el puntaje y en qué criterio se perdieron más puntos; `null` en evaluaciones anteriores). Solo se calcula sobre una sesión COMPLETED. `weightedScore = Σ(score ×
   weightApplied) / 100`, calculado dentro del agregado y redondeado a 1 decimal (HALF_UP); los pesos suman 100.
 - `CriterionScore` (tabla `criterion_scores`): `criterionId`, `criterionName` (copia), `criterionKind`
   (`COMPETENCY|CERTIFICATION`), `score`, `weightApplied`, `confidence`, `evidences`. Un COMPETENCY necesita al menos
@@ -162,6 +177,9 @@ Los nombres de los contextos planificados son una propuesta; ajustar esta tabla 
 - Flujo: cada respuesta se anonimiza, se puntúa con `AnswerScoringService` (solo transcript anonimizado y criterio),
   el fragmento devuelto se vuelve a ubicar en el texto anonimizado y se traduce al original. Si el proveedor no da
   evidencia para un criterio COMPETENCY, no se guarda nada (422).
+- Retroalimentación (US-22): al calcular, `AnswerScoringService.summarizeFeedback` recibe solo los puntajes, pesos y
+  los fragmentos ANONIMIZADOS (nunca el ranking, otros candidatos ni las señales de integridad); en mock, o si el
+  proveedor falla, un texto determinista a partir de los números.
 - Ranking explicable (`RankingPolicy`): orden por `weightedScore`, desglose por criterio, insignias (`TOP_RANKED`,
   `STRONG_EVIDENCE`, `VERIFIED_CERTIFICATIONS`, `MISSING_MANDATORY_CERTIFICATION`, `INTEGRITY_ALERT`) y códigos
   estables `CANDIDATO-X-9999` (HMAC con `app.anonymization.secret`). Si la vacante tiene `anonymizedScreening`, la
@@ -195,7 +213,7 @@ Los nombres de los contextos planificados son una propuesta; ajustar esta tabla 
 - Para saber quién es un usuario desde otro contexto se usa `shared.interfaces.acl.IamContextFacade`, nunca
   `UserRepository` ni clases de `iam`. Así lo hace `ProfileAccessPolicy` (`@profileAccess` en `@PreAuthorize`).
 - `recruitment`: toda escritura (vacantes, criterios, estado) exige `ROLE_RECRUITER` dueño de la vacante o
-  `ROLE_ADMIN`. El dueño se resuelve en `RecruitmentAccessPolicy` (`@recruitmentAccess`): username →
+  `ROLE_ADMIN`; pedir sugerencias de criterios es solo del recruiter dueño. El dueño se resuelve en `RecruitmentAccessPolicy` (`@recruitmentAccess`): username →
   `IamContextFacade` → userId → `ProfilesContextFacade.fetchCompanyIdByUserId` → companyId de la vacante. Al crear,
   el `companyId` sale del usuario autenticado, nunca del cuerpo. Las lecturas siguen abiertas a cualquier
   autenticado con las reglas de visibilidad del agregado.
@@ -206,8 +224,11 @@ Los nombres de los contextos planificados son una propuesta; ajustar esta tabla 
   el guion e invita; el guion lo lee el dueño o el candidato con una sesión IN_PROGRESS en esa vacante; solo el
   candidato dueño inicia, responde y completa su entrevista; las respuestas las leen el candidato dueño y el recruiter
   de la vacante.
-- `assessment` (`AssessmentAccessPolicy`, `@assessmentAccess`): calcular y leer evaluaciones, evidencias y el ranking
-  es solo del recruiter dueño de la vacante o de un admin.
+- `assessment` (`AssessmentAccessPolicy`, `@assessmentAccess`): calcular evaluaciones y leer evidencias y el ranking
+  es solo del recruiter dueño de la vacante o de un admin. `GET /interview-sessions/{id}/assessment` también lo lee el
+  candidato dueño de la entrevista, pero con otra vista (`CandidateAssessmentResource`): su puntaje ponderado, su
+  desglose por criterio y la retroalimentación; nunca su posición en el ranking, puntajes de otros ni señales de
+  integridad.
 - `analytics` (`AnalyticsAccessPolicy`, `@analyticsAccess`): los reportes de una vacante son del recruiter de la
   empresa dueña o de un admin; el resumen de una empresa, del recruiter de esa empresa o de un admin.
 - `profiles`: un candidato solo lee y modifica su propio perfil y certificaciones; un recruiter lee perfiles y
@@ -241,8 +262,9 @@ Los nombres de los contextos planificados son una propuesta; ajustar esta tabla 
 
 | Servicio | Uso | Límites y reglas |
 |---|---|---|
-| **Proveedor de IA / NLP**: Google Gemini (`generateContent`) | Puntuar respuestas contra criterios y extraer el fragmento que sustenta cada puntaje. | Puerto `assessment/domain/services/AnswerScoringService`, adaptador `assessment/infrastructure/external/ai` vía `RestClient`. `external.ai.mode` = `mock` (por defecto, sin red) o `live` (requiere `GEMINI_API_KEY`; modelo en `GEMINI_MODEL`). Caché LRU por SHA-256 del texto y criterio. Timeout explícito, reintentos acotados con backoff y manejo de límites de tasa (HTTP 429). Tamaño de prompt y de respuesta acotados. La respuesta se valida: todo puntaje debe traer un fragmento que exista literalmente en la respuesta del postulante; si no, se descarta. Nunca se envía PII (ver abajo). Clave en variable de entorno. |
+| **Proveedor de IA / NLP**: Google Gemini (`generateContent`) | Puntuar respuestas contra criterios y extraer el fragmento que sustenta cada puntaje; sugerir criterios a partir de la descripción del puesto. | Un solo cliente de transporte, `shared/infrastructure/external/ai/GenerativeAiClient` (vía `RestClient`): recibe un prompt y devuelve texto; concentra `external.ai.mode` = `mock` (por defecto, sin red) o `live` (requiere `GEMINI_API_KEY`; modelo en `GEMINI_MODEL`), timeout, reintentos acotados con backoff ante 429/503 y caché LRU por SHA-256 del modelo y el prompt. Cada contexto conserva su puerto y su adaptador en `<contexto>/infrastructure/external/ai`, que arma su prompt, valida la respuesta contra su esquema y en mock responde con su propia lógica: `assessment` (`AnswerScoringService`) y `recruitment` (`CriterionSuggestionService`). La anonimización ocurre en el adaptador, antes del cliente, nunca dentro de él. Tamaño de prompt y de respuesta acotados. La respuesta se valida: todo puntaje debe traer un fragmento que exista literalmente en la respuesta del postulante; si no, se descarta. Nunca se envía PII (ver abajo). Clave en variable de entorno. |
 | **Verificación de credenciales** (Coursera, Credly, CertiProf) | Confirmar que una certificación declarada existe. | `profiles/infrastructure/external/credentials`. `external.credentials.mode` = `mock` (por defecto, sin red: código ≥ 8 caracteres coincide) o `live` (`RestClient`; emisores aún sin conectar, TODO por emisor, nunca inventar endpoints). Timeout, reintento con backoff exponencial ante 429 y respuesta de reserva que deja la certificación en UNVERIFIED. Al emisor solo viajan emisor, código, título y nombre del titular (necesario para el cotejo); nada de eso va al proveedor de IA. |
+| **Correo transaccional**: Brevo | Invitación a entrevista, aviso de terna final y descarte al candidato. | Puerto `recruitment/domain/services/NotificationService`, adaptador `recruitment/infrastructure/external/mail` vía `RestClient` (`POST {mail.brevo.base-url}/v3/smtp/email`, cabecera `api-key`). `mail.mode` = `mock` (por defecto: solo registra en el log lo que habría enviado, con la dirección enmascarada) o `live` (requiere `BREVO_API_KEY` y `MAIL_SENDER_EMAIL`). Timeout de 5 s; un fallo se registra como WARN y nunca lanza. Al proveedor solo viajan el correo, el nombre de pila, el asunto y el texto. |
 | **PostgreSQL 16** | Persistencia (`simutalk_db`). | Credenciales por `DB_USERNAME` / `DB_PASSWORD`. `ddl-auto: update` solo para desarrollo. |
 
 Pendiente: documentar las cuotas y costos del plan de Gemini que use el equipo.
