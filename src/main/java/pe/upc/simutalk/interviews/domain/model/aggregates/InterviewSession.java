@@ -12,6 +12,7 @@ import pe.upc.simutalk.shared.domain.model.aggregates.AuditableAbstractAggregate
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -76,6 +77,9 @@ public class InterviewSession extends AuditableAbstractAggregateRoot<InterviewSe
         }
         if (expiresAt == null) {
             throw new IllegalArgumentException("Expiration date is required");
+        }
+        if (expiresAt.isBefore(LocalDate.ofInstant(invitedAt, ZoneOffset.UTC))) {
+            throw new IllegalArgumentException("The expiration date cannot be before the invitation date");
         }
         this.applicationId = applicationId;
         this.jobPostingId = jobPostingId;
