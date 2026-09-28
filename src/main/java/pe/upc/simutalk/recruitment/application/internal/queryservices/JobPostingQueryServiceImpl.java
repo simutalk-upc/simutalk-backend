@@ -5,6 +5,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pe.upc.simutalk.recruitment.domain.model.aggregates.JobPosting;
 import pe.upc.simutalk.recruitment.domain.model.queries.GetJobPostingByIdQuery;
+import pe.upc.simutalk.recruitment.domain.model.queries.GetJobPostingIdsByCompanyIdQuery;
+import pe.upc.simutalk.recruitment.domain.model.queries.GetPublishedJobPostingCountByCompanyIdQuery;
+import pe.upc.simutalk.recruitment.domain.model.valueobjects.JobPostingStatus;
 import pe.upc.simutalk.recruitment.domain.model.queries.SearchJobPostingsQuery;
 import pe.upc.simutalk.recruitment.domain.model.valueobjects.CompanyId;
 import pe.upc.simutalk.recruitment.domain.services.JobPostingQueryService;
@@ -31,6 +34,16 @@ public class JobPostingQueryServiceImpl implements JobPostingQueryService {
         return findByFilters(query).stream()
                 .filter(jobPosting -> jobPosting.isListedFor(query.viewer()))
                 .toList();
+    }
+
+    @Override
+    public long handle(GetPublishedJobPostingCountByCompanyIdQuery query) {
+        return jobPostingRepository.countByCompanyIdAndStatus(new CompanyId(query.companyId()), JobPostingStatus.PUBLISHED);
+    }
+
+    @Override
+    public List<Long> handle(GetJobPostingIdsByCompanyIdQuery query) {
+        return jobPostingRepository.findIdsByCompanyId(new CompanyId(query.companyId()));
     }
 
     private List<JobPosting> findByFilters(SearchJobPostingsQuery query) {

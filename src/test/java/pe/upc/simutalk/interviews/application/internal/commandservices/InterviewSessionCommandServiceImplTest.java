@@ -32,8 +32,9 @@ class InterviewSessionCommandServiceImplTest {
     private final InterviewSessionRepository sessions = mock(InterviewSessionRepository.class);
     private final QuestionRepository questions = mock(QuestionRepository.class);
     private final RecruitmentContextFacade recruitment = mock(RecruitmentContextFacade.class);
+    private final org.springframework.context.ApplicationEventPublisher events = mock(org.springframework.context.ApplicationEventPublisher.class);
     private final InterviewSessionCommandServiceImpl service =
-            new InterviewSessionCommandServiceImpl(sessions, questions, new ExternalRecruitmentService(recruitment));
+            new InterviewSessionCommandServiceImpl(sessions, questions, new ExternalRecruitmentService(recruitment), events);
 
     @BeforeEach
     void setUp() {
@@ -105,5 +106,7 @@ class InterviewSessionCommandServiceImplTest {
 
         assertThat(completed.getStatus()).isEqualTo(InterviewSessionStatus.COMPLETED);
         verify(recruitment).markApplicationAsAssessed(50L);
+        verify(events).publishEvent(new pe.upc.simutalk.shared.interfaces.events.InterviewSessionCompletedEvent(
+                900L, 50L, 1L, 7L, completed.getFinishedAt()));
     }
 }

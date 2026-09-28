@@ -7,7 +7,11 @@ import pe.upc.simutalk.assessment.application.internal.outboundservices.acl.Exte
 import pe.upc.simutalk.assessment.application.internal.outboundservices.anonymization.TranscriptAnonymizer;
 import pe.upc.simutalk.assessment.domain.model.aggregates.Assessment;
 import pe.upc.simutalk.assessment.domain.model.entities.Evidence;
+import pe.upc.simutalk.assessment.domain.model.queries.CountAssessmentsByJobPostingIdsQuery;
+import pe.upc.simutalk.assessment.domain.model.queries.CountEvidencesByJobPostingIdsQuery;
 import pe.upc.simutalk.assessment.domain.model.queries.GetAssessmentByIdQuery;
+import pe.upc.simutalk.assessment.domain.model.queries.GetCriterionAveragesQuery;
+import pe.upc.simutalk.assessment.domain.model.valueobjects.CriterionAverage;
 import pe.upc.simutalk.assessment.domain.model.queries.GetAssessmentByInterviewSessionIdQuery;
 import pe.upc.simutalk.assessment.domain.model.queries.GetEvidencesByCriterionScoreQuery;
 import pe.upc.simutalk.assessment.domain.model.queries.GetRankingByJobPostingIdQuery;
@@ -21,6 +25,8 @@ import pe.upc.simutalk.shared.domain.exceptions.ResourceNotFoundException;
 import pe.upc.simutalk.shared.interfaces.acl.CandidatePersonalData;
 import pe.upc.simutalk.shared.interfaces.acl.CriterionView;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -110,6 +116,24 @@ public class AssessmentQueryServiceImpl implements AssessmentQueryService {
                     RankingPolicy.badgesFor(assessment, rank, verified, mandatoryCertifications)));
         }
         return new Ranking(query.jobPostingId(), anonymized, forced, entries);
+    }
+
+    @Override
+    public List<CriterionAverage> handle(GetCriterionAveragesQuery query) {
+        return assessmentRepository.averageScoreByCriterion(query.jobPostingId()).stream()
+                .map(row -> new CriterionAverage(row.getCriterionId(), row.getCriterionName(),
+                        BigDecimal.valueOf(row.getAverageScore()).setScale(1, RoundingMode.HALF_UP), row.getAssessedCount()))
+                .toList();
+    }
+
+    @Override
+    public long handle(CountAssessmentsByJobPostingIdsQuery query) {
+        return query.jobPostingIds().isEmpty() ? 0L : assessmentRepository.countByJobPostingIdIn(query.jobPostingIds());
+    }
+
+    @Override
+    public long handle(CountEvidencesByJobPostingIdsQuery query) {
+        return query.jobPostingIds().isEmpty() ? 0L : assessmentRepository.countEvidencesByJobPostingIds(query.jobPostingIds());
     }
 
     /** Initializes the batched collections inside the transaction (open-in-view is disabled). */

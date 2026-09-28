@@ -39,6 +39,16 @@ public interface RecruitmentContextFacade {
     /** @return the ApplicationStatus name, or an empty string if the application does not exist */
     String fetchApplicationStatus(Long applicationId);
 
+    /** Applications per pipeline stage (every ApplicationStatus name, 0 included). */
+    java.util.Map<String, Long> countApplicationsByStatus(Long jobPostingId);
+
+    long countPublishedJobPostingsByCompanyId(Long companyId);
+
+    List<Long> fetchJobPostingIdsByCompanyId(Long companyId);
+
+    /** Average seconds from applying to SHORTLISTED over the given postings, or {@code null} if nobody was shortlisted. */
+    Long fetchAverageSecondsToShortlist(List<Long> jobPostingIds);
+
     /** Moves the application to INTERVIEWING through its aggregate (transition rules apply). */
     void markApplicationAsInterviewing(Long applicationId);
 

@@ -2,6 +2,8 @@ package pe.upc.simutalk.recruitment.infrastructure.persistence.jpa.repositories;
 
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import pe.upc.simutalk.recruitment.domain.model.aggregates.JobPosting;
 import pe.upc.simutalk.recruitment.domain.model.valueobjects.CompanyId;
@@ -31,4 +33,9 @@ public interface JobPostingRepository extends JpaRepository<JobPosting, Long> {
 
     @EntityGraph(attributePaths = "criteria")
     List<JobPosting> findAllByCompanyIdAndStatusOrderByIdAsc(CompanyId companyId, JobPostingStatus status);
+
+    long countByCompanyIdAndStatus(CompanyId companyId, JobPostingStatus status);
+
+    @Query("select j.id from JobPosting j where j.companyId = :companyId order by j.id")
+    List<Long> findIdsByCompanyId(@Param("companyId") CompanyId companyId);
 }

@@ -111,6 +111,18 @@ class ApplicationTest {
     }
 
     @Test
+    void recordsWhenTheApplicationWasShortlisted() {
+        var application = in(ASSESSED);
+        var shortlistedAt = Instant.parse("2026-10-01T15:00:00Z");
+
+        application.changeStatus(SHORTLISTED, shortlistedAt);
+
+        assertThat(application.getShortlistedAt()).isEqualTo(shortlistedAt);
+        application.changeStatus(HIRED, shortlistedAt.plusSeconds(3600));
+        assertThat(application.getShortlistedAt()).isEqualTo(shortlistedAt);
+    }
+
+    @Test
     void walksTheWholePipelineToHired() {
         var application = submitted();
 

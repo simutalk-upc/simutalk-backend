@@ -40,6 +40,10 @@ public class Application extends AuditableAbstractAggregateRoot<Application> {
     @Column(name = "applied_at", nullable = false)
     private Instant appliedAt;
 
+    /** When the application reached SHORTLISTED (the "terna"); used for time-to-shortlist reports. */
+    @Column(name = "shortlisted_at")
+    private Instant shortlistedAt;
+
     private Application(Long jobPostingId, Long candidateId, Instant appliedAt) {
         this.jobPostingId = jobPostingId;
         this.candidateId = candidateId;
@@ -80,6 +84,13 @@ public class Application extends AuditableAbstractAggregateRoot<Application> {
      * @throws InvalidStateTransitionException (an IllegalStateException) if the transition is not allowed
      */
     public void changeStatus(ApplicationStatus target) {
+        changeStatus(target, Instant.now());
+    }
+
+    /**
+     * @param changedAt when the change happens; stored as {@code shortlistedAt} when moving to SHORTLISTED
+     */
+    public void changeStatus(ApplicationStatus target, Instant changedAt) {
         if (target == null) {
             throw new IllegalArgumentException("Target status is required");
         }
@@ -88,6 +99,9 @@ public class Application extends AuditableAbstractAggregateRoot<Application> {
                     .formatted(status, target, status.allowedNextStatuses()));
         }
         this.status = target;
+        if (target == ApplicationStatus.SHORTLISTED) {
+            this.shortlistedAt = changedAt;
+        }
     }
 
     public boolean belongsToCandidate(Long otherCandidateId) {
