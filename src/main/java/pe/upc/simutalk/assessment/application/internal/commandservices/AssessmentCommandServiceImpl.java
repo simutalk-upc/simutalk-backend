@@ -1,0 +1,134 @@
+package pe.upc.simutalk.assessment.application.internal.commandservices;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import pe.upc.simutalk.assessment.application.internal.outboundservices.acl.ExternalContextsService;
+import pe.upc.simutalk.assessment.application.internal.outboundservices.anonymization.TranscriptAnonymizer;
+import pe.upc.simutalk.assessment.domain.model.aggregates.Assessment;
+import pe.upc.simutalk.assessment.domain.model.commands.ComputeAssessmentCommand;
+import pe.upc.simutalk.assessment.domain.model.entities.CriterionScore;
+import pe.upc.simutalk.assessment.domain.model.entities.Evidence;
+import pe.upc.simutalk.assessment.domain.model.entities.IntegrityFlag;
+import pe.upc.simutalk.assessment.domain.model.valueobjects.CriterionKind;
+import pe.upc.simutalk.assessment.domain.model.valueobjects.FlagSeverity;
+import pe.upc.simutalk.assessment.domain.model.valueobjects.IntegrityFlagType;
+import pe.upc.simutalk.assessment.domain.model.valueobjects.InterviewSessionSnapshot;
+import pe.upc.simutalk.assessment.domain.services.AnswerScoringService;
+import pe.upc.simutalk.assessment.domain.services.AssessmentCommandService;
+import pe.upc.simutalk.assessment.domain.services.CertificationScoringPolicy;
+import pe.upc.simutalk.assessment.infrastructure.persistence.jpa.repositories.AssessmentRepository;
+import pe.upc.simutalk.shared.domain.exceptions.BusinessRuleViolationException;
+import pe.upc.simutalk.shared.interfaces.acl.CandidatePersonalData;
+import pe.upc.simutalk.shared.interfaces.acl.CriterionView;
+import pe.upc.simutalk.shared.interfaces.acl.InterviewAnswerView;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Scores a completed interview:
+ * <ol>
+ *   <li>each answer is anonymized and sent, with its criterion only, to the scoring port;</li>
+ *   <li>the excerpt returned is mapped back and anchored in the ORIGINAL transcript as evidence;</li>
+ *   <li>CERTIFICATION criteria are scored from the candidate's verified certifications;</li>
+ *   <li>the Assessment aggregate checks its rules and computes the weighted score.</li>
+ * </ol>
+ * Not transactional on purpose: the provider may be slow and no database transaction is kept
+ * open while waiting for it. The aggregate is saved at the end in its own transaction.
+ */
+@Slf4j
+@Service
+@RequiredArgsConstructor
+public class AssessmentCommandServiceImpl implements AssessmentCommandService {
+
+    private final AssessmentRepository assessmentRepository;
+    private final ExternalContextsService externalContextsService;
+    private final TranscriptAnonymizer transcriptAnonymizer;
+    private final AnswerScoringService answerScoringService;
+
+    @Override
+    public Assessment handle(ComputeAssessmentCommand command) {
+        var session = externalContextsService.fetchSession(command.interviewSessionId());
+        if (!session.isCompleted()) {
+            throw new BusinessRuleViolationException(
+                    "Only a COMPLETED interview can be assessed (current: %s)".formatted(session.status()));
+        }
+        if (assessmentRepository.existsByInterviewSessionId(session.interviewSessionId())) {
+            throw new BusinessRuleViolationException("This interview has already been assessed");
+        }
+        var criteria = externalContextsService.fetchCriteria(session.jobPostingId());
+        var answers = externalContextsService.fetchAnswers(session.interviewSessionId());
+        var candidate = externalContextsService.fetchCandidatePersonalData(session.candidateId()).orElse(null);
+
+        var aiSuspicions = new int[]{0};
+        var scores = new ArrayList<CriterionScore>();
+        for (var criterion : criteria) {
+            scores.add(criterion.isCompetency()
+                    ? scoreCompetency(criterion, answers, candidate, aiSuspicions)
+                    : scoreCertification(criterion, session.candidateId()));
+        }
+        var flags = integrityFlags(session, answers.size(), aiSuspicions[0]);
+        var assessment = Assessment.calculate(session, scores, flags, answerScoringService.engineVersion(), Instant.now());
+        return assessmentRepository.save(assessment);
+    }
+
+    private CriterionScore scoreCompetency(CriterionView criterion, List<InterviewAnswerView> answers,
+                                           CandidatePersonalData candidate, int[] aiSuspicions) {
+        var evidences = new ArrayList<Evidence>();
+        var scoreSum = BigDecimal.ZERO;
+        var confidenceSum = BigDecimal.ZERO;
+        for (var answer : answers.stream().filter(answer -> criterion.criterionId().equals(answer.criterionId())).toList()) {
+            var anonymized = transcriptAnonymizer.anonymize(answer.transcript(), candidate);
+            var result = answerScoringService.score(anonymized.text(), criterion.name(), criterion.description());
+            if (!result.isAvailable()) {
+                continue;
+            }
+            var start = anonymized.toOriginalOffset(result.startOffset(), false);
+            var end = anonymized.toOriginalOffset(result.endOffset(), true);
+            if (start >= end) {
+                continue;
+            }
+            evidences.add(new Evidence(answer.answerId(), answer.transcript().substring(start, end), start, end));
+            scoreSum = scoreSum.add(result.score());
+            confidenceSum = confidenceSum.add(result.confidence());
+            if (result.aiGeneratedSuspicion()) {
+                aiSuspicions[0]++;
+            }
+        }
+        if (evidences.isEmpty()) {
+            throw new BusinessRuleViolationException(
+                    "No evidence could be obtained for criterion '%s'; the assessment was not computed. Try again later."
+                            .formatted(criterion.name()));
+        }
+        var count = BigDecimal.valueOf(evidences.size());
+        return new CriterionScore(criterion.criterionId(), criterion.name(), CriterionKind.COMPETENCY,
+                scoreSum.divide(count, 1, RoundingMode.HALF_UP), criterion.weight(),
+                confidenceSum.divide(count, 2, RoundingMode.HALF_UP), evidences);
+    }
+
+    private CriterionScore scoreCertification(CriterionView criterion, Long candidateId) {
+        var verified = externalContextsService.fetchVerifiedCertificationCount(candidateId);
+        return new CriterionScore(criterion.criterionId(), criterion.name(), CriterionKind.CERTIFICATION,
+                CertificationScoringPolicy.scoreFor(verified), criterion.weight(), BigDecimal.ONE, List.of());
+    }
+
+    private List<IntegrityFlag> integrityFlags(InterviewSessionSnapshot session, int answerCount, int aiSuspicions) {
+        var flags = new ArrayList<IntegrityFlag>();
+        var now = Instant.now();
+        if (aiSuspicions > 0) {
+            var severity = aiSuspicions * 2 >= answerCount ? FlagSeverity.HIGH : FlagSeverity.MEDIUM;
+            flags.add(new IntegrityFlag(IntegrityFlagType.AI_GENERATED_CONTENT, severity,
+                    "%d de %d respuestas parecen redactadas por un asistente de IA".formatted(aiSuspicions, answerCount), now));
+        }
+        var rejected = externalContextsService.fetchRejectedCertificationCount(session.candidateId());
+        if (rejected > 0) {
+            flags.add(new IntegrityFlag(IntegrityFlagType.CV_INCONSISTENCY, FlagSeverity.MEDIUM,
+                    "%d certificación(es) declarada(s) no coincidieron con el emisor".formatted(rejected), now));
+        }
+        return flags;
+    }
+}
