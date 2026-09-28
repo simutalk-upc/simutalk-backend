@@ -1,7 +1,7 @@
 package pe.upc.simutalk.assessment.infrastructure.external.ai;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
@@ -149,12 +149,12 @@ public class AnswerScoringServiceImpl implements AnswerScoringService {
     /** Reads Gemini's JSON answer; anything malformed or not literally anchored becomes unavailable. */
     ScoringResult parse(JsonNode response, String anonymizedTranscript) {
         try {
-            var text = response.path("candidates").path(0).path("content").path("parts").path(0).path("text").asText("");
+            var text = response.path("candidates").path(0).path("content").path("parts").path(0).path("text").asString("");
             if (text.isBlank()) {
                 return ScoringResult.unavailable();
             }
             var json = objectMapper.readTree(text);
-            var excerpt = json.path("excerpt").asText("").strip();
+            var excerpt = json.path("excerpt").asString("").strip();
             var start = excerpt.isEmpty() ? -1 : anonymizedTranscript.indexOf(excerpt);
             if (start < 0) {
                 log.info("Discarding AI score: the excerpt is not a literal fragment of the answer");

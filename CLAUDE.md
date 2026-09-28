@@ -19,10 +19,11 @@ Guía para cualquier agente (o persona) que trabaje en este repositorio. Léela 
 | Pieza | Versión / herramienta |
 |---|---|
 | Lenguaje | Java 21 |
-| Framework | Spring Boot 3.5.x (web, data-jpa, security, validation); llamadas HTTP salientes con `RestClient` (incluido en `spring-boot-starter-web`) |
+| Framework | Spring Boot 4.1.x (webmvc, data-jpa, security, validation); llamadas HTTP salientes con `RestClient` (`spring-boot-starter-restclient`) |
 | Persistencia | Spring Data JPA + Hibernate, PostgreSQL 16 (`simutalk_db`) |
 | Seguridad | Spring Security + JWT HS256 (jjwt 0.12.6), BCrypt — contexto `iam` |
-| Documentación | OpenAPI 3 con springdoc 2.8.5 (Swagger UI en `/swagger-ui.html`) |
+| Documentación | OpenAPI 3.1 con springdoc 3.1.1 (Swagger UI en `/swagger-ui.html`) |
+| JSON | Jackson 3 (`tools.jackson`; las anotaciones siguen en `com.fasterxml.jackson.annotation`), con `spring.jackson.use-jackson2-defaults=true` |
 | Utilidades | Lombok |
 | Build | Maven (usar siempre `./mvnw`) |
 

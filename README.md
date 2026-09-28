@@ -8,7 +8,7 @@ Curso 1ASI0705 Arquitectura de Aplicaciones Web — UPC — ciclo 202620.
 
 ## Stack
 
-Java 21 · Spring Boot 3.5 · Spring Data JPA + Hibernate · PostgreSQL 16 · Spring Security + JWT · springdoc OpenAPI 3 · Maven
+Java 21 · Spring Boot 4.1 · Spring Data JPA + Hibernate · PostgreSQL 16 · Spring Security + JWT · springdoc OpenAPI 3 · Maven
 
 La arquitectura (DDD por bounded contexts), las reglas del proyecto y las convenciones están en [CLAUDE.md](CLAUDE.md).
 
