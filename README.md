@@ -48,7 +48,7 @@ La arquitectura (DDD por bounded contexts), las reglas del proyecto y las conven
 | `MAIL_SENDER_EMAIL` | solo en `live` | remitente verificado en Brevo |
 | `MAIL_SENDER_NAME` | no | `SimuTalk` |
 | `ANONYMIZATION_SECRET` | no | derivado de `JWT_SECRET` (clave de los códigos `CANDIDATO-X-9999`) |
-| `SUSTAINABILITY_EMISSION_FACTOR` | no | `0.12` kg CO2e/km (valor de referencia a validar) |
+| `SUSTAINABILITY_EMISSION_FACTOR` | no | `0.121` kg CO2e/km (valor de referencia a validar) |
 | `SEED_DEMO_DATA` | no | `false` |
 | `DEMO_USERS_PASSWORD` | no | — (contraseña de los usuarios demo; sin ella no pueden iniciar sesión) |
 | `DB_HOST` | no | `localhost` |
