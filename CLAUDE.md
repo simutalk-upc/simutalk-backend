@@ -19,11 +19,11 @@ Guía para cualquier agente (o persona) que trabaje en este repositorio. Léela 
 | Pieza | Versión / herramienta |
 |---|---|
 | Lenguaje | Java 21 |
-| Framework | Spring Boot 3.5.x (web, data-jpa, security, validation, webflux para `WebClient`) |
+| Framework | Spring Boot 3.5.x (web, data-jpa, security, validation); llamadas HTTP salientes con `RestClient` (incluido en `spring-boot-starter-web`) |
 | Persistencia | Spring Data JPA + Hibernate, PostgreSQL 16 (`simutalk_db`) |
 | Seguridad | Spring Security + JWT HS256 (jjwt 0.12.6), BCrypt — contexto `iam` |
 | Documentación | OpenAPI 3 con springdoc 2.8.5 (Swagger UI en `/swagger-ui.html`) |
-| Utilidades | Lombok, ModelMapper 3.2.1 |
+| Utilidades | Lombok |
 | Build | Maven (usar siempre `./mvnw`) |
 
 Comandos:
@@ -51,7 +51,7 @@ agregado (regla de negocio) → repositorio → `*ResourceFromEntityAssembler` �
 
 | Contexto | Responsabilidad | Estado |
 |---|---|---|
-| `shared` | `AuditableAbstractAggregateRoot`, `AuditableModel`, estrategia de nombres snake_case con tablas en plural, OpenAPI, excepciones de dominio base, manejador global de errores (`ErrorResource`), `MessageResource`, `PageResource`, contratos ACL entre contextos (`IamContextFacade`, `ProfilesContextFacade`, `RecruitmentContextFacade`, `InterviewsContextFacade`, `AssessmentContextFacade`) y eventos de integración (`shared/interfaces/events`, p. ej. `InterviewSessionCompletedEvent`). | Implementado |
+| `shared` | `AuditableAbstractAggregateRoot`, `AuditableModel`, estrategia de nombres snake_case con tablas en plural, OpenAPI, excepciones de dominio base, manejador global de errores (`ErrorResource`), `PageResource`, contratos ACL entre contextos (`IamContextFacade`, `ProfilesContextFacade`, `RecruitmentContextFacade`, `InterviewsContextFacade`, `AssessmentContextFacade`) y eventos de integración (`shared/interfaces/events`, p. ej. `InterviewSessionCompletedEvent`). | Implementado |
 | `recruitment` | Vacantes (`JobPosting`) y sus criterios ponderados (`EvaluationCriterion`, `Weight`), ciclo DRAFT → PUBLISHED → CLOSED; postulaciones (`Application`) y su pipeline. | Implementado |
 | `iam` | Usuarios (`User`), roles (`Role`, `Roles`), registro, sign-in con JWT, autorización y `IamContextFacadeImpl`. | Implementado |
 | `profiles` | Perfiles de empresa (`CompanyProfile`) y de postulante (`CandidateProfile`, incluye PII), certificaciones (`Certification`) y su verificación con el emisor. `ProfilesContextFacadeImpl`. | Implementado |
@@ -83,10 +83,12 @@ Los nombres de los contextos planificados son una propuesta; ajustar esta tabla 
   `UNIQUE (job_posting_id, candidate_id)`). Transiciones dirigidas: RECEIVED → INTERVIEWING → ASSESSED →
   SHORTLISTED → HIRED, y REJECTED desde cualquier etapa no final; REJECTED y HIRED son finales. Un salto inválido
   lanza `InvalidStateTransitionException` (una `IllegalStateException`, 422 en la API).
-- Con `app.seed-demo-data=true`, `RecruitmentDemoDataSeeder` (después del de `profiles`) crea una vacante demo en
-  DRAFT, deja que `interviews` escriba su guion (`DemoJobPostingDraftedEvent`), la publica, hace postular a los 6
-  candidatos y anuncia la etapa objetivo de cada uno (`DemoApplicationsSubmittedEvent`); `interviews` las lleva a
-  INTERVIEWING y ASSESSED creando y completando sesiones.
+- Con `app.seed-demo-data=true`, los datos demo se siembran en una sola secuencia de listeners de
+  `ApplicationReadyEvent` ordenados con `@Order`, cada paso en su contexto y en su propia transacción: 100 `profiles`
+  (empresa y 6 candidatos) → 200 `recruitment` (vacante en DRAFT con criterios) → 300 `interviews` (guion) → 400
+  `recruitment` (publica y hace postular a los 6) → 500 `interviews` (sesiones: 2 COMPLETED, 2 IN_PROGRESS) → 600
+  `assessment` (evalúa las completadas, solo con el motor mock). Cada paso encuentra lo que dejó el anterior por las
+  fachadas de `shared` y revisa su propia precondición, así que es idempotente. No hay eventos de demo en `shared`.
 - `RecruitmentContextFacadeImpl` expone vacantes, criterios y postulaciones a otros contextos, y mueve postulaciones
   a INTERVIEWING / ASSESSED siempre a través del agregado `Application`.
 
@@ -227,7 +229,7 @@ Los nombres de los contextos planificados son una propuesta; ajustar esta tabla 
 8. `open-in-view` está desactivado: los repositorios cargan el agregado completo (`@EntityGraph`).
    En command services no se llama a `save()` sobre agregados ya cargados; se usa `flush()`.
 9. Ningún secreto en el repositorio: credenciales, `JWT_SECRET` y llaves de API solo por variables de entorno o
-   `.env` (ignorado por git). Nada de valores reales en `application.yml`.
+   `.env` (ignorado por git). Nada de valores reales en `application.properties`.
 10. Todo cambio de dominio viene con su prueba unitaria del agregado.
 11. Entidades JPA: constructor protegido sin argumentos, `@Getter` donde haga falta, nunca `@Data` ni setters
     públicos. Siempre `jakarta.persistence`, nunca `javax.persistence`.
@@ -236,8 +238,8 @@ Los nombres de los contextos planificados son una propuesta; ajustar esta tabla 
 
 | Servicio | Uso | Límites y reglas |
 |---|---|---|
-| **Proveedor de IA / NLP**: Google Gemini (`generateContent`) | Puntuar respuestas contra criterios y extraer el fragmento que sustenta cada puntaje. | Puerto `assessment/domain/services/AnswerScoringService`, adaptador `assessment/infrastructure/external/ai` vía `WebClient`. `external.ai.mode` = `mock` (por defecto, sin red) o `live` (requiere `GEMINI_API_KEY`; modelo en `GEMINI_MODEL`). Caché LRU por SHA-256 del texto y criterio. Timeout explícito, reintentos acotados con backoff y manejo de límites de tasa (HTTP 429). Tamaño de prompt y de respuesta acotados. La respuesta se valida: todo puntaje debe traer un fragmento que exista literalmente en la respuesta del postulante; si no, se descarta. Nunca se envía PII (ver abajo). Clave en variable de entorno. |
-| **Verificación de credenciales** (Coursera, Credly, CertiProf) | Confirmar que una certificación declarada existe. | `profiles/infrastructure/external/credentials`. `external.credentials.mode` = `mock` (por defecto, sin red: código ≥ 8 caracteres coincide) o `live` (`WebClient`; emisores aún sin conectar, TODO por emisor, nunca inventar endpoints). Timeout, reintento con backoff exponencial ante 429 y respuesta de reserva que deja la certificación en UNVERIFIED. Al emisor solo viajan emisor, código, título y nombre del titular (necesario para el cotejo); nada de eso va al proveedor de IA. |
+| **Proveedor de IA / NLP**: Google Gemini (`generateContent`) | Puntuar respuestas contra criterios y extraer el fragmento que sustenta cada puntaje. | Puerto `assessment/domain/services/AnswerScoringService`, adaptador `assessment/infrastructure/external/ai` vía `RestClient`. `external.ai.mode` = `mock` (por defecto, sin red) o `live` (requiere `GEMINI_API_KEY`; modelo en `GEMINI_MODEL`). Caché LRU por SHA-256 del texto y criterio. Timeout explícito, reintentos acotados con backoff y manejo de límites de tasa (HTTP 429). Tamaño de prompt y de respuesta acotados. La respuesta se valida: todo puntaje debe traer un fragmento que exista literalmente en la respuesta del postulante; si no, se descarta. Nunca se envía PII (ver abajo). Clave en variable de entorno. |
+| **Verificación de credenciales** (Coursera, Credly, CertiProf) | Confirmar que una certificación declarada existe. | `profiles/infrastructure/external/credentials`. `external.credentials.mode` = `mock` (por defecto, sin red: código ≥ 8 caracteres coincide) o `live` (`RestClient`; emisores aún sin conectar, TODO por emisor, nunca inventar endpoints). Timeout, reintento con backoff exponencial ante 429 y respuesta de reserva que deja la certificación en UNVERIFIED. Al emisor solo viajan emisor, código, título y nombre del titular (necesario para el cotejo); nada de eso va al proveedor de IA. |
 | **PostgreSQL 16** | Persistencia (`simutalk_db`). | Credenciales por `DB_USERNAME` / `DB_PASSWORD`. `ddl-auto: update` solo para desarrollo. |
 
 Pendiente: documentar las cuotas y costos del plan de Gemini que use el equipo.

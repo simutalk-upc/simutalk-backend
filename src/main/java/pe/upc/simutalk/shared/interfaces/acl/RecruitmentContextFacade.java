@@ -33,6 +33,9 @@ public interface RecruitmentContextFacade {
     /** @return the job posting id of the application, or {@code 0L} */
     Long fetchJobPostingIdByApplicationId(Long applicationId);
 
+    /** @return ids of the job posting's applications in the order they were submitted; empty if there are none */
+    List<Long> fetchApplicationIds(Long jobPostingId);
+
     /** @return the candidate profile id of the application, or {@code 0L} */
     Long fetchCandidateIdByApplicationId(Long applicationId);
 

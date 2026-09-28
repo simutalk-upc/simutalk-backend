@@ -1,13 +1,13 @@
 package pe.upc.simutalk.profiles.infrastructure.external.credentials;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.web.reactive.function.client.WebClientResponseException;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.ResourceAccessException;
+import org.springframework.web.client.RestClient;
 import pe.upc.simutalk.profiles.domain.services.CredentialVerificationService.VerificationResult;
-import reactor.core.publisher.Mono;
 
+import java.net.SocketTimeoutException;
 import java.time.Duration;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -17,7 +17,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class CredentialVerificationServiceImplTest {
 
     private static CredentialVerificationServiceImpl service(String mode, Duration timeout) {
-        return new CredentialVerificationServiceImpl(mode, timeout, 3, Duration.ofMillis(10), WebClient.builder());
+        return new CredentialVerificationServiceImpl(mode, timeout, 3, Duration.ofMillis(10), RestClient.builder());
     }
 
     private final CredentialVerificationServiceImpl mock = service("mock", Duration.ofSeconds(5));
@@ -60,11 +60,12 @@ class CredentialVerificationServiceImplTest {
     @Test
     void retriesOnTooManyRequestsAndThenSucceeds() {
         var attempts = new AtomicInteger();
-        var call = Mono.defer(() -> attempts.incrementAndGet() < 3
-                ? Mono.<VerificationResult>error(tooManyRequests())
-                : Mono.just(new VerificationResult(true, "ok")));
-
-        var result = mock.callWithResilience(call);
+        var result = mock.callWithResilience(() -> {
+            if (attempts.incrementAndGet() < 3) {
+                throw tooManyRequests();
+            }
+            return new VerificationResult(true, "ok");
+        });
 
         assertThat(result.matched()).isTrue();
         assertThat(attempts).hasValue(3);
@@ -73,12 +74,10 @@ class CredentialVerificationServiceImplTest {
     @Test
     void fallsBackWhenRetriesAreExhausted() {
         var attempts = new AtomicInteger();
-        var call = Mono.defer(() -> {
+        var result = mock.callWithResilience(() -> {
             attempts.incrementAndGet();
-            return Mono.<VerificationResult>error(tooManyRequests());
+            throw tooManyRequests();
         });
-
-        var result = mock.callWithResilience(call);
 
         assertThat(result.conclusive()).isFalse();
         assertThat(attempts).hasValue(4);
@@ -87,22 +86,26 @@ class CredentialVerificationServiceImplTest {
     @Test
     void doesNotRetryOtherErrorsAndFallsBack() {
         var attempts = new AtomicInteger();
-        var call = Mono.defer(() -> {
+        var result = mock.callWithResilience(() -> {
             attempts.incrementAndGet();
-            return Mono.<VerificationResult>error(new IllegalStateException("boom"));
+            throw new IllegalStateException("boom");
         });
 
-        assertThat(mock.callWithResilience(call).conclusive()).isFalse();
+        assertThat(result.conclusive()).isFalse();
         assertThat(attempts).hasValue(1);
     }
 
     @Test
-    void fallsBackOnTimeout() {
-        var slow = service("live", Duration.ofMillis(50));
+    void fallsBackOnTimeoutWithoutRetrying() {
+        var attempts = new AtomicInteger();
 
-        var result = slow.callWithResilience(Mono.never());
+        var result = mock.callWithResilience(() -> {
+            attempts.incrementAndGet();
+            throw new ResourceAccessException("Read timed out", new SocketTimeoutException("Read timed out"));
+        });
 
         assertThat(result.conclusive()).isFalse();
+        assertThat(attempts).hasValue(1);
     }
 
     @Test
@@ -110,8 +113,7 @@ class CredentialVerificationServiceImplTest {
         assertThatThrownBy(() -> service("sandbox", Duration.ofSeconds(1))).isInstanceOf(IllegalStateException.class);
     }
 
-    private static WebClientResponseException tooManyRequests() {
-        return WebClientResponseException.create(HttpStatus.TOO_MANY_REQUESTS.value(), "Too Many Requests",
-                HttpHeaders.EMPTY, new byte[0], null);
+    private static HttpClientErrorException tooManyRequests() {
+        return HttpClientErrorException.create(HttpStatus.TOO_MANY_REQUESTS, "Too Many Requests", null, new byte[0], null);
     }
 }

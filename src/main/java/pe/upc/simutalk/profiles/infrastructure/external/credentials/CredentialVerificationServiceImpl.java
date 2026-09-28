@@ -3,17 +3,17 @@ package pe.upc.simutalk.profiles.infrastructure.external.credentials;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.web.reactive.function.client.WebClientResponseException;
+import org.springframework.web.client.RestClient;
+import org.springframework.web.client.RestClientResponseException;
 import pe.upc.simutalk.profiles.domain.services.CredentialVerificationService;
-import reactor.core.publisher.Mono;
-import reactor.util.retry.Retry;
 
 import java.time.Duration;
 import java.util.Locale;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 /**
  * Adapter for {@link CredentialVerificationService}.
@@ -22,12 +22,12 @@ import java.util.function.Function;
  * <ul>
  *   <li>{@code mock} (default): no network. A code of 8 or more characters matches,
  *       a shorter one does not.</li>
- *   <li>{@code live}: calls the issuer through {@link WebClient}. No issuer is wired yet
+ *   <li>{@code live}: calls the issuer through {@link RestClient}. No issuer is wired yet
  *       (see TODOs), so every live request answers "unavailable" and the certification
  *       stays UNVERIFIED.</li>
  * </ul>
- * Every live call has a timeout, retries with exponential backoff on HTTP 429 and falls
- * back to an inconclusive result instead of throwing.
+ * Every live call has connect and read timeouts, retries with exponential backoff on HTTP 429
+ * and falls back to an inconclusive result instead of throwing.
  */
 @Slf4j
 @Service
@@ -38,11 +38,10 @@ public class CredentialVerificationServiceImpl implements CredentialVerification
     enum Mode { MOCK, LIVE }
 
     private final Mode mode;
-    private final Duration timeout;
     private final int maxRetries;
     private final Duration initialBackoff;
-    /** HTTP client for the issuer calls registered in {@link #issuerClients}. */
-    private final WebClient webClient;
+    /** HTTP client for the issuer calls registered in {@link #issuerClients}; carries the timeouts. */
+    private final RestClient restClient;
 
     /**
      * Issuer name (lower case) -> call that verifies a credential with that issuer.
@@ -50,19 +49,21 @@ public class CredentialVerificationServiceImpl implements CredentialVerification
      * TODO(credly): wire the official Credly badge verification API once access is granted.
      * TODO(certiprof): wire CertiProf's verification service once its API is documented.
      */
-    private final Map<String, Function<CredentialRequest, Mono<VerificationResult>>> issuerClients = Map.of();
+    private final Map<String, Function<CredentialRequest, VerificationResult>> issuerClients = Map.of();
 
     public CredentialVerificationServiceImpl(
             @Value("${external.credentials.mode:mock}") String mode,
             @Value("${external.credentials.timeout:5s}") Duration timeout,
             @Value("${external.credentials.max-retries:3}") int maxRetries,
             @Value("${external.credentials.initial-backoff:500ms}") Duration initialBackoff,
-            WebClient.Builder webClientBuilder) {
+            RestClient.Builder restClientBuilder) {
         this.mode = parseMode(mode);
-        this.timeout = timeout;
         this.maxRetries = maxRetries;
         this.initialBackoff = initialBackoff;
-        this.webClient = webClientBuilder.build();
+        var requestFactory = new SimpleClientHttpRequestFactory();
+        requestFactory.setConnectTimeout(timeout);
+        requestFactory.setReadTimeout(timeout);
+        this.restClient = restClientBuilder.requestFactory(requestFactory).build();
         log.info("Credential verification running in {} mode", this.mode);
     }
 
@@ -91,33 +92,37 @@ public class CredentialVerificationServiceImpl implements CredentialVerification
             return VerificationResult.unavailable(
                     "Live verification is not available yet for issuer '%s'".formatted(request.issuer()));
         }
-        return callWithResilience(client.apply(request));
+        return callWithResilience(() -> client.apply(request));
     }
 
     /**
-     * Timeout, exponential backoff on HTTP 429 and an inconclusive fallback. Package
-     * visible so the resilience policy can be tested without network.
+     * Exponential backoff on HTTP 429 and an inconclusive fallback; the timeouts live in
+     * {@link #restClient}. Package visible so the policy can be tested without network.
      */
-    VerificationResult callWithResilience(Mono<VerificationResult> call) {
-        try {
-            var result = call
-                    .timeout(timeout)
-                    .retryWhen(Retry.backoff(maxRetries, initialBackoff)
-                            .filter(CredentialVerificationServiceImpl::isTooManyRequests))
-                    .onErrorResume(ex -> {
-                        log.warn("Credential verification unavailable: {}", ex.toString());
-                        return Mono.just(VerificationResult.unavailable("Issuer unavailable; try again later"));
-                    })
-                    .block();
-            return result != null ? result : VerificationResult.unavailable("Issuer returned no answer");
-        } catch (RuntimeException ex) {
-            log.warn("Credential verification failed: {}", ex.toString());
-            return VerificationResult.unavailable("Issuer unavailable; try again later");
+    VerificationResult callWithResilience(Supplier<VerificationResult> call) {
+        var backoff = initialBackoff;
+        for (var attempt = 0; ; attempt++) {
+            try {
+                var result = call.get();
+                return result != null ? result : VerificationResult.unavailable("Issuer returned no answer");
+            } catch (RuntimeException ex) {
+                if (!isTooManyRequests(ex) || attempt >= maxRetries) {
+                    log.warn("Credential verification unavailable: {}", ex.toString());
+                    return VerificationResult.unavailable("Issuer unavailable; try again later");
+                }
+            }
+            try {
+                Thread.sleep(backoff);
+            } catch (InterruptedException ex) {
+                Thread.currentThread().interrupt();
+                return VerificationResult.unavailable("Issuer unavailable; try again later");
+            }
+            backoff = backoff.multipliedBy(2);
         }
     }
 
-    private static boolean isTooManyRequests(Throwable ex) {
-        return ex instanceof WebClientResponseException response
+    private static boolean isTooManyRequests(RuntimeException ex) {
+        return ex instanceof RestClientResponseException response
                 && response.getStatusCode().value() == HttpStatus.TOO_MANY_REQUESTS.value();
     }
 

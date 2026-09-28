@@ -3,7 +3,7 @@ package pe.upc.simutalk.assessment.infrastructure.external.ai;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.net.httpserver.HttpServer;
 import org.junit.jupiter.api.Test;
-import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.client.RestClient;
 import pe.upc.simutalk.assessment.application.internal.outboundservices.anonymization.TranscriptAnonymizer;
 import pe.upc.simutalk.assessment.domain.services.AnswerScoringService;
 import pe.upc.simutalk.shared.interfaces.acl.CandidatePersonalData;
@@ -73,7 +73,7 @@ class AnswerScoringPrivacyTest {
         try {
             var baseUrl = "http://127.0.0.1:" + server.getAddress().getPort();
             var service = new AnswerScoringServiceImpl("live", baseUrl, "gemini-test", "test-key", Duration.ofSeconds(5),
-                    1, Duration.ofMillis(10), 10, WebClient.builder(), objectMapper);
+                    1, Duration.ofMillis(10), 10, RestClient.builder(), objectMapper);
 
             var anonymized = anonymizer.anonymize(TRANSCRIPT, ROSA).text();
             var result = service.score(anonymized, "Pensamiento analítico", "Resuelve problemas con datos.");
