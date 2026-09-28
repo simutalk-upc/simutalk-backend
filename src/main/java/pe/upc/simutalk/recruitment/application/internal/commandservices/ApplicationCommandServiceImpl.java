@@ -1,11 +1,13 @@
 package pe.upc.simutalk.recruitment.application.internal.commandservices;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pe.upc.simutalk.recruitment.domain.model.aggregates.Application;
 import pe.upc.simutalk.recruitment.domain.model.commands.ChangeApplicationStatusCommand;
 import pe.upc.simutalk.recruitment.domain.model.commands.SubmitApplicationCommand;
+import pe.upc.simutalk.recruitment.domain.model.events.ApplicationStatusChangedEvent;
 import pe.upc.simutalk.recruitment.domain.services.ApplicationCommandService;
 import pe.upc.simutalk.recruitment.infrastructure.persistence.jpa.repositories.ApplicationRepository;
 import pe.upc.simutalk.recruitment.infrastructure.persistence.jpa.repositories.JobPostingRepository;
@@ -20,6 +22,7 @@ public class ApplicationCommandServiceImpl implements ApplicationCommandService 
 
     private final ApplicationRepository applicationRepository;
     private final JobPostingRepository jobPostingRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Override
     public Application handle(SubmitApplicationCommand command) {
@@ -37,6 +40,8 @@ public class ApplicationCommandServiceImpl implements ApplicationCommandService 
                 .orElseThrow(() -> new ResourceNotFoundException("Application", command.applicationId()));
         application.changeStatus(command.status());
         applicationRepository.flush();
+        eventPublisher.publishEvent(new ApplicationStatusChangedEvent(application.getId(), application.getJobPostingId(),
+                application.getCandidateId(), application.getStatus()));
         return application;
     }
 }

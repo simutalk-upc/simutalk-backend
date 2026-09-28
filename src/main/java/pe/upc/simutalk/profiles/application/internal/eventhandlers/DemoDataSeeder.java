@@ -33,6 +33,8 @@ import java.util.UUID;
 public class DemoDataSeeder {
 
     private static final String COMPANY_USERNAME = "consultora.andina";
+    /** Reserved domain (RFC 2606): demo notifications can never reach a real inbox. */
+    private static final String DEMO_EMAIL_DOMAIN = "@example.com";
 
     private final boolean enabled;
     private final String demoPassword;
@@ -90,13 +92,13 @@ public class DemoDataSeeder {
         var companyUserId = iamContextFacade.signUpUserIfAbsent(COMPANY_USERNAME, password, "ROLE_RECRUITER");
         companyProfileCommandService.handle(new CreateCompanyProfileCommand(companyUserId,
                 "Consultora Andina S.A.C.", "Consultora Andina", "Consultoría de TI", "20554873621",
-                CompanySize.MEDIANA, "San Isidro"));
+                CompanySize.MEDIANA, "San Isidro", COMPANY_USERNAME + DEMO_EMAIL_DOMAIN));
 
         for (var demo : DEMO_CANDIDATES) {
             var userId = iamContextFacade.signUpUserIfAbsent(demo.username(), password, "ROLE_CANDIDATE");
             var candidate = candidateProfileCommandService.handle(new CreateCandidateProfileCommand(userId,
                     demo.firstName(), demo.lastName(), demo.documentNumber(), demo.birthDate(), demo.phone(),
-                    demo.district(), demo.yearsOfExperience()));
+                    demo.district(), demo.yearsOfExperience(), demo.username() + DEMO_EMAIL_DOMAIN));
             for (var cert : demo.certifications()) {
                 var certification = candidateProfileCommandService.handle(new AddCertificationCommand(
                         candidate.getId(), cert.title(), cert.issuer(), cert.credentialCode(), cert.issuedAt(),

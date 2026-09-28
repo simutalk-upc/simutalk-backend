@@ -13,5 +13,6 @@ public record CreateCandidateProfileResource(
         @Schema(example = "1998-04-15", description = "El candidato debe tener al menos 18 años") @NotNull @Past LocalDate birthDate,
         @Schema(example = "+51987654321") @NotBlank @Size(max = 20) String phone,
         @Schema(example = "San Juan de Lurigancho") @NotBlank @Size(max = 80) String district,
-        @Schema(example = "3") @NotNull @PositiveOrZero Integer yearsOfExperience) {
+        @Schema(example = "3") @NotNull @PositiveOrZero Integer yearsOfExperience,
+        @Schema(example = "rosa.quispe@example.com", description = "Opcional. Correo de contacto para notificaciones; nunca se envía al proveedor de IA") @Email @Size(max = 254) String email) {
 }

@@ -43,6 +43,10 @@ La arquitectura (DDD por bounded contexts), las reglas del proyecto y las conven
 | `AI_MODE` | no | `mock` (`live` usa Google Gemini) |
 | `GEMINI_API_KEY` | solo en `live` | — |
 | `GEMINI_MODEL` | no | `gemini-2.5-flash` |
+| `MAIL_MODE` | no | `mock` (solo registra en el log; `live` envía con Brevo) |
+| `BREVO_API_KEY` | solo en `live` | — |
+| `MAIL_SENDER_EMAIL` | solo en `live` | remitente verificado en Brevo |
+| `MAIL_SENDER_NAME` | no | `SimuTalk` |
 | `ANONYMIZATION_SECRET` | no | derivado de `JWT_SECRET` (clave de los códigos `CANDIDATO-X-9999`) |
 | `SUSTAINABILITY_EMISSION_FACTOR` | no | `0.12` kg CO2e/km (valor de referencia a validar) |
 | `SEED_DEMO_DATA` | no | `false` |

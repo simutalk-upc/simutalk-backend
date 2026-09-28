@@ -100,6 +100,11 @@ Los nombres de los contextos planificados son una propuesta; ajustar esta tabla 
   No hay eventos de demo en `shared`.
 - `RecruitmentContextFacadeImpl` expone vacantes, criterios y postulaciones a otros contextos, y mueve postulaciones
   a INTERVIEWING / ASSESSED siempre a través del agregado `Application`.
+- Notificaciones al candidato (US-24): cada cambio de etapa publica `ApplicationStatusChangedEvent`
+  (`domain/model/events`); `CandidateNotificationEventHandler` lo atiende después del commit y envía, por el puerto
+  `NotificationService`, la invitación a entrevista (INTERVIEWING), el aviso de terna final (SHORTLISTED) o el descarte
+  (REJECTED). El destinatario sale de `ProfilesContextFacade.fetchCandidateContact`; sin correo, no se envía. Un fallo
+  del envío se registra como WARN y nunca interrumpe la operación que lo originó.
 
 ### Modelo actual de `iam`
 
@@ -115,10 +120,13 @@ Los nombres de los contextos planificados son una propuesta; ajustar esta tabla 
 
 - `CompanyProfile` (tabla `companies`): `userId` (solo el id, sin relación con `iam`), `legalName`, `tradeName`,
   `industry`, `ruc` (VO `Ruc`: 11 dígitos, empieza en 10 o 20; no cambia), `companySize`
-  (`MICRO|PEQUENA|MEDIANA|GRANDE`), `district`.
+  (`MICRO|PEQUENA|MEDIANA|GRANDE`), `district`, `email` (opcional).
+- `email` en ambos perfiles: VO `EmailAddress` (formato válido, hasta 254 caracteres, en minúsculas), opcional y
+  editable (vacío lo elimina). Es dato personal: se usa para notificar, se redacta en `TranscriptAnonymizer` y nunca
+  viaja al proveedor de IA (`AnswerScoringPrivacyTest` lo verifica).
 - `CandidateProfile` (tabla `candidates`): `userId`, `personName` (VO `PersonName`), `documentNumber`
   (VO `DocumentNumber`: DNI 8 dígitos o CE 9 a 12; no cambia), `birthDate` (mínimo 18 años), `phone`, `district`,
-  `yearsOfExperience` (≥ 0) y `certifications`.
+  `yearsOfExperience` (≥ 0), `email` (opcional) y `certifications`.
 - `Certification` (tabla `certifications`, entidad del agregado candidato): `title`, `issuer`, `credentialCode`
   (opcional), `issuedAt`, `expiresAt` (opcional), `verificationStatus` (`VERIFIED|UNVERIFIED|REJECTED`), `verifiedAt`.
   Nace UNVERIFIED y **nunca queda VERIFIED sin código de credencial**. `countsForScoring()` = VERIFIED y no expirada.
@@ -256,6 +264,7 @@ Los nombres de los contextos planificados son una propuesta; ajustar esta tabla 
 |---|---|---|
 | **Proveedor de IA / NLP**: Google Gemini (`generateContent`) | Puntuar respuestas contra criterios y extraer el fragmento que sustenta cada puntaje; sugerir criterios a partir de la descripción del puesto. | Un solo cliente de transporte, `shared/infrastructure/external/ai/GenerativeAiClient` (vía `RestClient`): recibe un prompt y devuelve texto; concentra `external.ai.mode` = `mock` (por defecto, sin red) o `live` (requiere `GEMINI_API_KEY`; modelo en `GEMINI_MODEL`), timeout, reintentos acotados con backoff ante 429/503 y caché LRU por SHA-256 del modelo y el prompt. Cada contexto conserva su puerto y su adaptador en `<contexto>/infrastructure/external/ai`, que arma su prompt, valida la respuesta contra su esquema y en mock responde con su propia lógica: `assessment` (`AnswerScoringService`) y `recruitment` (`CriterionSuggestionService`). La anonimización ocurre en el adaptador, antes del cliente, nunca dentro de él. Tamaño de prompt y de respuesta acotados. La respuesta se valida: todo puntaje debe traer un fragmento que exista literalmente en la respuesta del postulante; si no, se descarta. Nunca se envía PII (ver abajo). Clave en variable de entorno. |
 | **Verificación de credenciales** (Coursera, Credly, CertiProf) | Confirmar que una certificación declarada existe. | `profiles/infrastructure/external/credentials`. `external.credentials.mode` = `mock` (por defecto, sin red: código ≥ 8 caracteres coincide) o `live` (`RestClient`; emisores aún sin conectar, TODO por emisor, nunca inventar endpoints). Timeout, reintento con backoff exponencial ante 429 y respuesta de reserva que deja la certificación en UNVERIFIED. Al emisor solo viajan emisor, código, título y nombre del titular (necesario para el cotejo); nada de eso va al proveedor de IA. |
+| **Correo transaccional**: Brevo | Invitación a entrevista, aviso de terna final y descarte al candidato. | Puerto `recruitment/domain/services/NotificationService`, adaptador `recruitment/infrastructure/external/mail` vía `RestClient` (`POST {mail.brevo.base-url}/v3/smtp/email`, cabecera `api-key`). `mail.mode` = `mock` (por defecto: solo registra en el log lo que habría enviado, con la dirección enmascarada) o `live` (requiere `BREVO_API_KEY` y `MAIL_SENDER_EMAIL`). Timeout de 5 s; un fallo se registra como WARN y nunca lanza. Al proveedor solo viajan el correo, el nombre de pila, el asunto y el texto. |
 | **PostgreSQL 16** | Persistencia (`simutalk_db`). | Credenciales por `DB_USERNAME` / `DB_PASSWORD`. `ddl-auto: update` solo para desarrollo. |
 
 Pendiente: documentar las cuotas y costos del plan de Gemini que use el equipo.

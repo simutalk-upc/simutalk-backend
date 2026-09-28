@@ -5,6 +5,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import pe.upc.simutalk.profiles.domain.model.commands.CreateCompanyProfileCommand;
+import pe.upc.simutalk.profiles.domain.model.valueobjects.EmailAddress;
 import pe.upc.simutalk.profiles.domain.model.valueobjects.CompanySize;
 import pe.upc.simutalk.profiles.domain.model.valueobjects.Ruc;
 import pe.upc.simutalk.shared.domain.model.aggregates.AuditableAbstractAggregateRoot;
@@ -37,6 +38,10 @@ public class CompanyProfile extends AuditableAbstractAggregateRoot<CompanyProfil
     @Embedded
     private Ruc ruc;
 
+    /** Optional contact e-mail. */
+    @Embedded
+    private EmailAddress email;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "company_size", nullable = false, length = 20)
     private CompanySize companySize;
@@ -52,11 +57,20 @@ public class CompanyProfile extends AuditableAbstractAggregateRoot<CompanyProfil
         this.ruc = new Ruc(command.ruc());
         applyDetails(command.legalName(), command.tradeName(), command.industry(), command.companySize(),
                 command.district());
+        this.email = EmailAddress.ofNullable(command.email());
     }
 
+    /** Changes the editable data; the e-mail is kept as it is. */
     public void updateDetails(String legalName, String tradeName, String industry, CompanySize companySize,
                               String district) {
         applyDetails(legalName, tradeName, industry, companySize, district);
+    }
+
+    /** Changes the editable data, including the e-mail ({@code null} or blank removes it). */
+    public void updateDetails(String legalName, String tradeName, String industry, CompanySize companySize,
+                              String district, String email) {
+        applyDetails(legalName, tradeName, industry, companySize, district);
+        this.email = EmailAddress.ofNullable(email);
     }
 
     public boolean isOwnedBy(Long otherUserId) {

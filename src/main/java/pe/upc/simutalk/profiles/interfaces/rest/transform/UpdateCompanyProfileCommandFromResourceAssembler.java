@@ -8,6 +8,6 @@ public class UpdateCompanyProfileCommandFromResourceAssembler {
     public static UpdateCompanyProfileCommand toCommandFromResource(Long companyProfileId,
                                                                     UpdateCompanyProfileResource resource) {
         return new UpdateCompanyProfileCommand(companyProfileId, resource.legalName(), resource.tradeName(),
-                resource.industry(), resource.companySize(), resource.district());
+                resource.industry(), resource.companySize(), resource.district(), resource.email());
     }
 }

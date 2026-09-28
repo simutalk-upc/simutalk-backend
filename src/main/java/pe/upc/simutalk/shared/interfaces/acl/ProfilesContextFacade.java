@@ -39,4 +39,14 @@ public interface ProfilesContextFacade {
      * @return the data, or {@code null} if the candidate does not exist
      */
     CandidatePersonalData fetchCandidatePersonalData(Long candidateId);
+
+    /**
+     * Name and e-mail of the candidate, to notify them.
+     *
+     * @return the contact ({@code email} may be {@code null}), or {@code null} if the candidate does not exist
+     */
+    CandidateContact fetchCandidateContact(Long candidateId);
+
+    /** @return the company's contact e-mail, or an empty string if it has none or does not exist */
+    String fetchCompanyEmail(Long companyId);
 }

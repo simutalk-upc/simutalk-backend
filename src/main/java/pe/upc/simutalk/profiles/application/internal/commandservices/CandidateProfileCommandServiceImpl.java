@@ -53,7 +53,7 @@ public class CandidateProfileCommandServiceImpl implements CandidateProfileComma
     public CandidateProfile handle(UpdateCandidateProfileCommand command) {
         var candidate = loadCandidate(command.candidateId());
         candidate.updateDetails(new PersonName(command.firstName(), command.lastName()), command.birthDate(),
-                command.phone(), command.district(), command.yearsOfExperience());
+                command.phone(), command.district(), command.yearsOfExperience(), command.email());
         candidateProfileRepository.flush();
         return candidate;
     }

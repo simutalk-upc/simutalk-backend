@@ -27,10 +27,11 @@ class AnswerScoringPrivacyTest {
 
     private static final long CANDIDATE_ID = 48213L;
     private static final CandidatePersonalData ROSA = new CandidatePersonalData(CANDIDATE_ID, "Rosa", "Quispe Mamani",
-            "45879632", "+51987654321", "San Juan de Lurigancho", LocalDate.of(1996, 3, 14));
+            "45879632", "+51987654321", "San Juan de Lurigancho", LocalDate.of(1996, 3, 14), "rquispe.contacto@gmail.com");
     private static final String TRANSCRIPT = "Buenas tardes, soy Rosa Quispe Mamani, con DNI 45879632, tengo 30 años y vivo "
             + "en San Juan de Lurigancho. Para limpiar la tabla primero contaría los clientes duplicados por documento "
-            + "y normalizaría las fechas a formato ISO. Pueden escribirme a rosa.quispe@correo.pe o llamarme al 987654321.";
+            + "y normalizaría las fechas a formato ISO. Pueden escribirme a rosa.quispe@correo.pe o llamarme al 987654321. "
+            + "Mi correo personal es RQuispe.Contacto@gmail.com.";
     private static final List<String> FORBIDDEN = List.of("Rosa", "Quispe", "Mamani", "45879632", "30 años",
             "San Juan de Lurigancho", "Lurigancho", "1996", "rosa.quispe@correo.pe", "987654321", String.valueOf(CANDIDATE_ID));
 
@@ -47,6 +48,7 @@ class AnswerScoringPrivacyTest {
 
         assertThat(payload).containsOnlyKeys("contents", "generationConfig");
         FORBIDDEN.forEach(value -> assertThat(json).as("payload must not contain '%s'", value).doesNotContain(value));
+        assertThat(json).as("the profile e-mail never reaches the AI provider").doesNotContainIgnoringCase(ROSA.email());
         assertThat(json).contains("Pensamiento analítico", "[NOMBRE]", "[DOCUMENTO]", "[EDAD]", "[DIRECCION]",
                 "contaría los clientes duplicados");
     }
@@ -82,6 +84,7 @@ class AnswerScoringPrivacyTest {
             assertThat(sentApiKey.get()).isEqualTo("test-key");
             assertThat(sentBody.get()).isNotBlank().contains("contaría los clientes duplicados");
             FORBIDDEN.forEach(value -> assertThat(sentBody.get()).as("HTTP body must not contain '%s'", value).doesNotContain(value));
+            assertThat(sentBody.get()).as("the profile e-mail never reaches the AI provider").doesNotContainIgnoringCase(ROSA.email());
             assertThat(result.isAvailable()).isTrue();
             assertThat(anonymized.substring(result.startOffset(), result.endOffset()))
                     .isEqualTo("normalizaría las fechas a formato ISO");

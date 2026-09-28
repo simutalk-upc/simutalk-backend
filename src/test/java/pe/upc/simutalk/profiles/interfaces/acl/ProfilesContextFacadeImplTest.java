@@ -3,10 +3,14 @@ package pe.upc.simutalk.profiles.interfaces.acl;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 import pe.upc.simutalk.profiles.domain.model.aggregates.CandidateProfile;
+import pe.upc.simutalk.profiles.domain.model.aggregates.CompanyProfile;
 import pe.upc.simutalk.profiles.domain.model.commands.CreateCandidateProfileCommand;
+import pe.upc.simutalk.profiles.domain.model.commands.CreateCompanyProfileCommand;
 import pe.upc.simutalk.profiles.domain.model.queries.*;
+import pe.upc.simutalk.profiles.domain.model.valueobjects.CompanySize;
 import pe.upc.simutalk.profiles.domain.services.CandidateProfileQueryService;
 import pe.upc.simutalk.profiles.domain.services.CompanyProfileQueryService;
+import pe.upc.simutalk.shared.interfaces.acl.CandidateContact;
 
 import java.time.LocalDate;
 import java.util.Optional;
@@ -46,5 +50,22 @@ class ProfilesContextFacadeImplTest {
         assertThat(facade.fetchCompanyIdByUserId(99L)).isZero();
         assertThat(facade.fetchCandidateDistrict(99L)).isEmpty();
         assertThat(facade.fetchVerifiedCertificationCount(null)).isZero();
+    }
+
+    @Test
+    void exposesTheEmailsForNotificationsAndRedaction() {
+        var candidate = new CandidateProfile(new CreateCandidateProfileCommand(10L, "Rosa", "Quispe", "45879632",
+                LocalDate.now().minusYears(25), "+51987654321", "Comas", 2, "rosa@example.com"));
+        ReflectionTestUtils.setField(candidate, "id", 3L);
+        var company = new CompanyProfile(new CreateCompanyProfileCommand(20L, "Andina S.A.C.", "Andina", "TI",
+                "20554873621", CompanySize.MEDIANA, "San Isidro", "seleccion@andina.example.com"));
+        when(candidates.handle(new GetCandidateProfileByIdQuery(3L))).thenReturn(Optional.of(candidate));
+        when(companies.handle(new GetCompanyProfileByIdQuery(1L))).thenReturn(Optional.of(company));
+        when(companies.handle(new GetCompanyProfileByIdQuery(2L))).thenReturn(Optional.empty());
+
+        assertThat(facade.fetchCandidateContact(3L)).isEqualTo(new CandidateContact(3L, "Rosa", "Rosa Quispe", "rosa@example.com"));
+        assertThat(facade.fetchCandidatePersonalData(3L).email()).isEqualTo("rosa@example.com");
+        assertThat(facade.fetchCompanyEmail(1L)).isEqualTo("seleccion@andina.example.com");
+        assertThat(facade.fetchCompanyEmail(2L)).isEmpty();
     }
 }

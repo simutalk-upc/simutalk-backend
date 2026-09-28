@@ -10,5 +10,12 @@ public record UpdateCandidateProfileCommand(
         LocalDate birthDate,
         String phone,
         String district,
-        int yearsOfExperience) {
+        int yearsOfExperience,
+        String email) {
+
+    /** Updates without e-mail, which leaves the profile without one. */
+    public UpdateCandidateProfileCommand(Long candidateId, String firstName, String lastName, LocalDate birthDate,
+                                         String phone, String district, int yearsOfExperience) {
+        this(candidateId, firstName, lastName, birthDate, phone, district, yearsOfExperience, null);
+    }
 }
