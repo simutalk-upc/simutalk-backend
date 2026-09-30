@@ -71,6 +71,31 @@ Pruebas:
 ./mvnw test
 ```
 
+## Ejecución con Docker
+
+Alternativa que no requiere instalar JDK 21 ni PostgreSQL: solo [Docker Desktop](https://www.docker.com/products/docker-desktop/).
+
+1. Copia `.env.example` a `.env` y completa al menos `DB_USERNAME`, `DB_PASSWORD` y `JWT_SECRET`.
+   No hace falta cambiar `DB_HOST`: el `docker-compose.yml` lo reemplaza por `db`, el nombre del
+   contenedor de PostgreSQL.
+2. Levanta la API y la base de datos:
+   
+   ```bash
+      docker compose up --build
+   ```
+   
+   La primera ejecución tarda varios minutos porque descarga las imágenes y las dependencias de Maven.
+   La API está lista cuando el log muestra `Started SimutalkApplication`.
+3. Abre Swagger UI en http://localhost:8080/swagger-ui.html
+4. Para detenerlo: `Ctrl + C` y luego `docker compose down`. Los datos se conservan en el volumen
+   `pgdata`; para borrarlos usa `docker compose down -v`.
+
+| Archivo | Propósito |
+|---|---|
+| `Dockerfile` | Build en dos etapas: compila con Maven (JDK 21) y ejecuta solo el `.jar` sobre una imagen JRE 21 |
+| `docker-compose.yml` | Levanta `db` (PostgreSQL 16 con la base `simutalk_db`) y `api`, que espera a que la base esté lista |
+| `.dockerignore` | Evita que `.env`, `target/`, `.idea/` y `.git/` entren a la imagen |
+
 ## Autenticación
 
 1. `POST /api/v1/authentication/sign-up` con `{"username", "password", "roles": ["ROLE_RECRUITER"]}`
