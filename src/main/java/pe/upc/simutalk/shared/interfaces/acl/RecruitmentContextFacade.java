@@ -19,6 +19,12 @@ public interface RecruitmentContextFacade {
     /** @return the owning company profile id, or {@code 0L} */
     Long fetchCompanyIdByJobPostingId(Long jobPostingId);
 
+    /** @return the job posting title, or an empty string if the posting does not exist */
+    String fetchJobPostingTitle(Long jobPostingId);
+
+    /** @return the job posting description, or an empty string if the posting does not exist */
+    String fetchJobPostingDescription(Long jobPostingId);
+
     boolean existsCriterionInJobPosting(Long jobPostingId, Long criterionId);
 
     /** Every criterion of the job posting, in creation order; empty if the posting does not exist. */
