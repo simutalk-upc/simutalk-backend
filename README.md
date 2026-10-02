@@ -1,5 +1,5 @@
 # SimuTalk Backend
-
+[![CI](https://github.com/simutalk-upc/simutalk-backend/actions/workflows/ci.yml/badge.svg?branch=develop)](https://github.com/simutalk-upc/simutalk-backend/actions/workflows/ci.yml)
 API REST de **SimuTalk**, plataforma de preselección de talento: cada empresa define criterios de evaluación
 ponderados para su vacante, el sistema entrevista de forma asincrónica al postulante, puntúa cada respuesta con NLP
 y devuelve un ranking donde cada puntaje se rastrea hasta el fragmento textual que lo sustenta.
