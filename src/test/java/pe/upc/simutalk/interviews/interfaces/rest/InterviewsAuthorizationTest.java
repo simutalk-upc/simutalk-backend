@@ -7,7 +7,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -17,10 +20,12 @@ import pe.upc.simutalk.interviews.domain.model.commands.*;
 import pe.upc.simutalk.interviews.domain.model.entities.Answer;
 import pe.upc.simutalk.interviews.domain.model.queries.*;
 import pe.upc.simutalk.interviews.domain.model.valueobjects.QuestionOrigin;
+import pe.upc.simutalk.interviews.domain.model.valueobjects.QuestionSuggestion;
 import pe.upc.simutalk.interviews.domain.services.InterviewSessionCommandService;
 import pe.upc.simutalk.interviews.domain.services.InterviewSessionQueryService;
 import pe.upc.simutalk.interviews.domain.services.QuestionCommandService;
 import pe.upc.simutalk.interviews.domain.services.QuestionQueryService;
+import pe.upc.simutalk.interviews.domain.services.QuestionSuggestionQueryService;
 import pe.upc.simutalk.interviews.interfaces.rest.authorization.InterviewsAccessPolicy;
 import pe.upc.simutalk.interviews.interfaces.rest.resources.CreateInterviewSessionResource;
 import pe.upc.simutalk.interviews.interfaces.rest.resources.CreateQuestionResource;
@@ -51,6 +56,7 @@ class InterviewsAuthorizationTest {
     static class Config {
         @Bean QuestionCommandService questionCommandService() { return mock(QuestionCommandService.class); }
         @Bean QuestionQueryService questionQueryService() { return mock(QuestionQueryService.class); }
+        @Bean QuestionSuggestionQueryService questionSuggestionQueryService() { return mock(QuestionSuggestionQueryService.class); }
         @Bean InterviewSessionCommandService interviewSessionCommandService() { return mock(InterviewSessionCommandService.class); }
         @Bean InterviewSessionQueryService interviewSessionQueryService() { return mock(InterviewSessionQueryService.class); }
         @Bean IamContextFacade iamContextFacade() { return mock(IamContextFacade.class); }
@@ -63,8 +69,9 @@ class InterviewsAuthorizationTest {
             return new InterviewsAccessPolicy(iam, profiles, recruitment, sessions);
         }
 
-        @Bean QuestionsController questionsController(QuestionCommandService commands, QuestionQueryService queries) {
-            return new QuestionsController(commands, queries);
+        @Bean QuestionsController questionsController(QuestionCommandService commands, QuestionQueryService queries,
+                                                      QuestionSuggestionQueryService suggestions) {
+            return new QuestionsController(commands, queries, suggestions);
         }
 
         @Bean InterviewSessionsController interviewSessionsController(InterviewSessionCommandService commands,
@@ -77,6 +84,7 @@ class InterviewsAuthorizationTest {
     @Autowired InterviewSessionsController sessions;
     @Autowired QuestionCommandService questionCommands;
     @Autowired QuestionQueryService questionQueries;
+    @Autowired QuestionSuggestionQueryService questionSuggestions;
     @Autowired InterviewSessionCommandService sessionCommands;
     @Autowired InterviewSessionQueryService sessionQueries;
     @Autowired IamContextFacade iam;
@@ -87,7 +95,7 @@ class InterviewsAuthorizationTest {
 
     @BeforeEach
     void setUp() {
-        reset(questionCommands, questionQueries, sessionCommands, sessionQueries, iam, profiles, recruitment);
+        reset(questionCommands, questionQueries, questionSuggestions, sessionCommands, sessionQueries, iam, profiles, recruitment);
         var question = new Question(10L, 11L, "¿Qué es un LEFT JOIN?", 120, 1, QuestionOrigin.MANUAL, false);
         ReflectionTestUtils.setField(question, "id", 5L);
         session = new InterviewSession(50L, 10L, 7L, LocalDate.now().plusDays(7), Instant.now());
@@ -144,6 +152,39 @@ class InterviewsAuthorizationTest {
                 .isInstanceOf(AccessDeniedException.class);
         assertThatThrownBy(() -> sessions.getAnswers(900L)).isInstanceOf(AccessDeniedException.class);
         verifyNoInteractions(questionCommands, sessionCommands);
+    }
+
+    @Test
+    @WithMockUser(username = "andina", roles = "RECRUITER")
+    void owningRecruiterCanAskForQuestionSuggestions() {
+        when(questionSuggestions.handle(new GetQuestionSuggestionsQuery(10L, 11L)))
+                .thenReturn(List.of(new QuestionSuggestion("¿Cómo validas un reporte?", "Rigor")));
+
+        var response = questions.suggestQuestions(10L, 11L);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).hasSize(1);
+        assertThat(response.getBody().get(0).criterionId()).isEqualTo(11L);
+        assertThat(response.getBody().get(0).origin()).isEqualTo(QuestionOrigin.AI_SUGGESTED);
+        verifyNoInteractions(questionCommands);
+    }
+
+    @Test
+    void onlyTheOwningRecruiterCanAskForQuestionSuggestions() {
+        for (var user : List.of(
+                User.withUsername("otra").password("x").roles("RECRUITER").build(),
+                User.withUsername("rosa").password("x").roles("CANDIDATE").build(),
+                User.withUsername("admin").password("x").roles("ADMIN").build())) {
+            SecurityContextHolder.getContext().setAuthentication(
+                    new UsernamePasswordAuthenticationToken(user, "x", user.getAuthorities()));
+            try {
+                assertThatThrownBy(() -> questions.suggestQuestions(10L, 11L))
+                        .as(user.getUsername()).isInstanceOf(AccessDeniedException.class);
+            } finally {
+                SecurityContextHolder.clearContext();
+            }
+        }
+        verifyNoInteractions(questionSuggestions);
     }
 
     @Test

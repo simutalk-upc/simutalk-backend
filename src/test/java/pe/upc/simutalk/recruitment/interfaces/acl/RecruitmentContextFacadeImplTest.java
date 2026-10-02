@@ -55,6 +55,8 @@ class RecruitmentContextFacadeImplTest {
         assertThat(facade.isJobPostingPublished(10L)).isTrue();
         assertThat(facade.isJobPostingDraft(10L)).isFalse();
         assertThat(facade.fetchCompanyIdByJobPostingId(10L)).isEqualTo(3L);
+        assertThat(facade.fetchJobPostingTitle(10L)).isEqualTo("Analista");
+        assertThat(facade.fetchJobPostingDescription(10L)).isEqualTo("SQL");
         assertThat(facade.existsCriterionInJobPosting(10L, 102L)).isTrue();
         assertThat(facade.fetchCompetencyCriterionIds(10L)).containsExactly(101L);
     }
@@ -70,6 +72,8 @@ class RecruitmentContextFacadeImplTest {
     void neutralValuesForUnknownIds() {
         assertThat(facade.existsJobPostingById(99L)).isFalse();
         assertThat(facade.fetchCompanyIdByJobPostingId(99L)).isZero();
+        assertThat(facade.fetchJobPostingTitle(99L)).isEmpty();
+        assertThat(facade.fetchJobPostingDescription(null)).isEmpty();
         assertThat(facade.fetchCompetencyCriterionIds(99L)).isEmpty();
         assertThat(facade.existsCriterionInJobPosting(10L, null)).isFalse();
         assertThat(facade.fetchApplicationStatus(99L)).isEmpty();

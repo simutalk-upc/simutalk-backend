@@ -177,6 +177,7 @@ el criterio.
 | Método | Ruta | Acceso |
 |---|---|---|
 | POST | `/api/v1/job-postings/{jobPostingId}/questions` | Recruiter dueño o admin; solo en DRAFT y sobre criterios COMPETENCY |
+| POST | `/api/v1/job-postings/{jobPostingId}/questions/suggestions?criterionId=` | Solo el recruiter dueño; vacante en DRAFT y criterio COMPETENCY. Propone preguntas sin guardarlas |
 | GET | `/api/v1/job-postings/{jobPostingId}/questions` | Recruiter dueño, admin o candidato con entrevista IN_PROGRESS en la vacante |
 | PUT | `/api/v1/job-postings/{jobPostingId}/questions/{questionId}` | Recruiter dueño o admin; solo en DRAFT |
 | DELETE | `/api/v1/job-postings/{jobPostingId}/questions/{questionId}` | Recruiter dueño o admin; solo en DRAFT |
@@ -190,6 +191,11 @@ el criterio.
 
 Una vacante no se puede publicar mientras algún criterio COMPETENCY no tenga preguntas. Con la vacante publicada, el
 guion queda congelado.
+
+Las sugerencias devuelven `[{"criterionId", "statement", "origin": "AI_SUGGESTED", "rationale"}]` y no se guardan:
+para aceptar una, envíala a `POST /questions` con `origin=AI_SUGGESTED` y el `maxDurationSeconds` que elijas. Con
+`AI_MODE=mock` son 3 preguntas de plantilla derivadas del criterio; con `live` las propone Gemini, que solo recibe
+el texto de la vacante, del criterio y del guion (ningún dato de candidatos).
 
 ## Endpoints de vacantes (contexto `recruitment`, requieren token)
 

@@ -1,6 +1,7 @@
 package pe.upc.simutalk.interviews.interfaces.rest;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -13,15 +14,19 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import pe.upc.simutalk.interviews.domain.model.commands.DeleteQuestionCommand;
+import pe.upc.simutalk.interviews.domain.model.queries.GetQuestionSuggestionsQuery;
 import pe.upc.simutalk.interviews.domain.model.queries.GetQuestionsByJobPostingIdQuery;
 import pe.upc.simutalk.interviews.domain.services.QuestionCommandService;
 import pe.upc.simutalk.interviews.domain.services.QuestionQueryService;
+import pe.upc.simutalk.interviews.domain.services.QuestionSuggestionQueryService;
 import pe.upc.simutalk.interviews.interfaces.rest.resources.CreateQuestionResource;
 import pe.upc.simutalk.interviews.interfaces.rest.resources.QuestionResource;
+import pe.upc.simutalk.interviews.interfaces.rest.resources.QuestionSuggestionResource;
 import pe.upc.simutalk.interviews.interfaces.rest.resources.ReorderQuestionsResource;
 import pe.upc.simutalk.interviews.interfaces.rest.resources.UpdateQuestionResource;
 import pe.upc.simutalk.interviews.interfaces.rest.transform.CreateQuestionCommandFromResourceAssembler;
 import pe.upc.simutalk.interviews.interfaces.rest.transform.QuestionResourceFromEntityAssembler;
+import pe.upc.simutalk.interviews.interfaces.rest.transform.QuestionSuggestionResourceFromValueAssembler;
 import pe.upc.simutalk.interviews.interfaces.rest.transform.ReorderQuestionsCommandFromResourceAssembler;
 import pe.upc.simutalk.interviews.interfaces.rest.transform.UpdateQuestionCommandFromResourceAssembler;
 
@@ -36,6 +41,29 @@ public class QuestionsController {
 
     private final QuestionCommandService questionCommandService;
     private final QuestionQueryService questionQueryService;
+    private final QuestionSuggestionQueryService questionSuggestionQueryService;
+
+    @PostMapping("/suggestions")
+    @PreAuthorize("hasRole('RECRUITER') and @interviewsAccess.ownsJobPosting(#jobPostingId, authentication)")
+    @Operation(summary = "Sugerir preguntas para un criterio",
+            description = "Solo el recruiter dueño y con la vacante en DRAFT. Devuelve preguntas propuestas para el "
+                    + "criterio COMPETENCY indicado SIN persistirlas: el reclutador acepta las que quiera con "
+                    + "POST /questions, poniendo él el tiempo de respuesta y origin=AI_SUGGESTED.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Preguntas propuestas"),
+            @ApiResponse(responseCode = "400", description = "Falta criterionId o no es un número"),
+            @ApiResponse(responseCode = "403", description = "No es el recruiter dueño de la vacante"),
+            @ApiResponse(responseCode = "404", description = "Vacante no encontrada"),
+            @ApiResponse(responseCode = "422", description = "Vacante no DRAFT, criterio de otra vacante o de CERTIFICATION")
+    })
+    public ResponseEntity<List<QuestionSuggestionResource>> suggestQuestions(
+            @PathVariable Long jobPostingId,
+            @Parameter(description = "Criterio COMPETENCY de la misma vacante") @RequestParam Long criterionId) {
+        var suggestions = questionSuggestionQueryService.handle(new GetQuestionSuggestionsQuery(jobPostingId, criterionId));
+        return ResponseEntity.ok(suggestions.stream()
+                .map(suggestion -> QuestionSuggestionResourceFromValueAssembler.toResourceFromValue(criterionId, suggestion))
+                .toList());
+    }
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN') or (hasRole('RECRUITER') and @interviewsAccess.ownsJobPosting(#jobPostingId, authentication))")

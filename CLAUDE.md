@@ -56,7 +56,7 @@ agregado (regla de negocio) → repositorio → `*ResourceFromEntityAssembler` �
 | `recruitment` | Vacantes (`JobPosting`) y sus criterios ponderados (`EvaluationCriterion`, `Weight`), ciclo DRAFT → PUBLISHED → CLOSED; postulaciones (`Application`) y su pipeline. | Implementado |
 | `iam` | Usuarios (`User`), roles (`Role`, `Roles`), registro, sign-in con JWT, autorización y `IamContextFacadeImpl`. | Implementado |
 | `profiles` | Perfiles de empresa (`CompanyProfile`) y de postulante (`CandidateProfile`, incluye PII), certificaciones (`Certification`) y su verificación con el emisor. `ProfilesContextFacadeImpl`. | Implementado |
-| `interviews` | Guion de preguntas por vacante (`Question`), sesión de entrevista asincrónica (`InterviewSession`) y respuestas (`Answer`). Solo registra qué se preguntó y qué se respondió; nada de puntuación ni IA. `InterviewsContextFacadeImpl`. | Implementado |
+| `interviews` | Guion de preguntas por vacante (`Question`), sesión de entrevista asincrónica (`InterviewSession`) y respuestas (`Answer`). Solo registra qué se preguntó y qué se respondió; nada de puntuación. La única IA es la sugerencia de preguntas para el guion (`QuestionSuggestionService`), que no ve datos de candidatos. `InterviewsContextFacadeImpl`. | Implementado |
 | `analytics` | Reportes (embudo, promedios por criterio, emisiones evitadas, resumen de empresa) y `CarbonSaving`. Solo agregaciones en base de datos. | Implementado |
 | `assessment` | Evaluación por criterio (`Assessment`, `CriterionScore`, `Evidence`, `IntegrityFlag`) con evidencia textual anclada, anonimización previa (`TranscriptAnonymizer`), puerto de IA (`AnswerScoringService`, adaptador mock/Gemini) y ranking explicable. | Implementado |
 
@@ -155,6 +155,15 @@ Los nombres de los contextos planificados son una propuesta; ajustar esta tabla 
   con la vacante en DRAFT (publicada queda congelado, como los pesos); una pregunta apunta a un criterio COMPETENCY de
   la misma vacante (uno de CERTIFICATION responde 422 con mensaje explícito); crear la sesión exige una postulación en
   RECEIVED y la mueve a INTERVIEWING; completarla la mueve a ASSESSED.
+- Sugerencia de preguntas: `POST /api/v1/job-postings/{id}/questions/suggestions?criterionId=`, solo el recruiter
+  dueño, con la vacante en DRAFT (`ExternalRecruitmentService.ensureQuestionsCanBeSuggested`) y sobre un criterio
+  COMPETENCY de la misma vacante. Devuelve `QuestionSuggestion` (enunciado y justificación) SIN persistir; el
+  reclutador acepta con `POST /questions`, poniendo él `maxDurationSeconds`, `allowsFollowUp` y
+  `origin=AI_SUGGESTED`. Puerto `QuestionSuggestionService`; el título y la descripción de la vacante y el criterio
+  llegan por `RecruitmentContextFacade` (`fetchJobPostingTitle`, `fetchJobPostingDescription`, `fetchCriteria`). En
+  mock, 3 preguntas de plantilla con el nombre y la descripción del criterio, sin repetir las del guion; en live,
+  Gemini (se descartan enunciados vacíos, de más de 500 caracteres, repetidos o que ya están en el guion; si el
+  proveedor falla, responden las plantillas).
 - Aún no hay un proceso que marque como EXPIRED las sesiones vencidas: `expire()` existe en el agregado, pero nada lo
   invoca todavía.
 
@@ -221,7 +230,7 @@ Los nombres de los contextos planificados son una propuesta; ajustar esta tabla 
   `ProfilesContextFacade.fetchCandidateIdByUserId`, nunca del cuerpo) y lista las suyas en `/api/v1/applications`;
   el pipeline de una vacante y el cambio de etapa son del recruiter dueño de la vacante o de un admin.
 - `interviews` (`InterviewsAccessPolicy`, `@interviewsAccess`): el recruiter dueño de la vacante (o un admin) gestiona
-  el guion e invita; el guion lo lee el dueño o el candidato con una sesión IN_PROGRESS en esa vacante; solo el
+  el guion e invita; pedir sugerencias de preguntas es solo del recruiter dueño; el guion lo lee el dueño o el candidato con una sesión IN_PROGRESS en esa vacante; solo el
   candidato dueño inicia, responde y completa su entrevista; las respuestas las leen el candidato dueño y el recruiter
   de la vacante.
 - `assessment` (`AssessmentAccessPolicy`, `@assessmentAccess`): calcular evaluaciones y leer evidencias y el ranking
@@ -262,7 +271,7 @@ Los nombres de los contextos planificados son una propuesta; ajustar esta tabla 
 
 | Servicio | Uso | Límites y reglas |
 |---|---|---|
-| **Proveedor de IA / NLP**: Google Gemini (`generateContent`) | Puntuar respuestas contra criterios y extraer el fragmento que sustenta cada puntaje; sugerir criterios a partir de la descripción del puesto. | Un solo cliente de transporte, `shared/infrastructure/external/ai/GenerativeAiClient` (vía `RestClient`): recibe un prompt y devuelve texto; concentra `external.ai.mode` = `mock` (por defecto, sin red) o `live` (requiere `GEMINI_API_KEY`; modelo en `GEMINI_MODEL`), timeout, reintentos acotados con backoff ante 429/503 y caché LRU por SHA-256 del modelo y el prompt. Cada contexto conserva su puerto y su adaptador en `<contexto>/infrastructure/external/ai`, que arma su prompt, valida la respuesta contra su esquema y en mock responde con su propia lógica: `assessment` (`AnswerScoringService`) y `recruitment` (`CriterionSuggestionService`). La anonimización ocurre en el adaptador, antes del cliente, nunca dentro de él. Tamaño de prompt y de respuesta acotados. La respuesta se valida: todo puntaje debe traer un fragmento que exista literalmente en la respuesta del postulante; si no, se descarta. Nunca se envía PII (ver abajo). Clave en variable de entorno. |
+| **Proveedor de IA / NLP**: Google Gemini (`generateContent`) | Puntuar respuestas contra criterios y extraer el fragmento que sustenta cada puntaje; sugerir criterios a partir de la descripción del puesto; sugerir preguntas de entrevista para un criterio. | Un solo cliente de transporte, `shared/infrastructure/external/ai/GenerativeAiClient` (vía `RestClient`): recibe un prompt y devuelve texto; concentra `external.ai.mode` = `mock` (por defecto, sin red) o `live` (requiere `GEMINI_API_KEY`; modelo en `GEMINI_MODEL`), timeout, reintentos acotados con backoff ante 429/503 y caché LRU por SHA-256 del modelo y el prompt. Cada contexto conserva su puerto y su adaptador en `<contexto>/infrastructure/external/ai`, que arma su prompt, valida la respuesta contra su esquema y en mock responde con su propia lógica: `assessment` (`AnswerScoringService`), `recruitment` (`CriterionSuggestionService`) e `interviews` (`QuestionSuggestionService`, que solo envía texto de la vacante, del criterio y del guion: ningún dato de candidatos). La anonimización ocurre en el adaptador, antes del cliente, nunca dentro de él. Tamaño de prompt y de respuesta acotados. La respuesta se valida: todo puntaje debe traer un fragmento que exista literalmente en la respuesta del postulante; si no, se descarta. Nunca se envía PII (ver abajo). Clave en variable de entorno. |
 | **Verificación de credenciales** (Coursera, Credly, CertiProf) | Confirmar que una certificación declarada existe. | `profiles/infrastructure/external/credentials`. `external.credentials.mode` = `mock` (por defecto, sin red: código ≥ 8 caracteres coincide) o `live` (`RestClient`; emisores aún sin conectar, TODO por emisor, nunca inventar endpoints). Timeout, reintento con backoff exponencial ante 429 y respuesta de reserva que deja la certificación en UNVERIFIED. Al emisor solo viajan emisor, código, título y nombre del titular (necesario para el cotejo); nada de eso va al proveedor de IA. |
 | **Correo transaccional**: Brevo | Invitación a entrevista, aviso de terna final y descarte al candidato. | Puerto `recruitment/domain/services/NotificationService`, adaptador `recruitment/infrastructure/external/mail` vía `RestClient` (`POST {mail.brevo.base-url}/v3/smtp/email`, cabecera `api-key`). `mail.mode` = `mock` (por defecto: solo registra en el log lo que habría enviado, con la dirección enmascarada) o `live` (requiere `BREVO_API_KEY` y `MAIL_SENDER_EMAIL`). Timeout de 5 s; un fallo se registra como WARN y nunca lanza. Al proveedor solo viajan el correo, el nombre de pila, el asunto y el texto. |
 | **PostgreSQL 16** | Persistencia (`simutalk_db`). | Credenciales por `DB_USERNAME` / `DB_PASSWORD`. `ddl-auto: update` solo para desarrollo. |

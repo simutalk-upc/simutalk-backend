@@ -61,6 +61,16 @@ public class RecruitmentContextFacadeImpl implements RecruitmentContextFacade {
     }
 
     @Override
+    public String fetchJobPostingTitle(Long jobPostingId) {
+        return findJobPosting(jobPostingId).map(JobPosting::getTitle).orElse("");
+    }
+
+    @Override
+    public String fetchJobPostingDescription(Long jobPostingId) {
+        return findJobPosting(jobPostingId).map(JobPosting::getDescription).orElse("");
+    }
+
+    @Override
     public boolean existsCriterionInJobPosting(Long jobPostingId, Long criterionId) {
         return criterionId != null && findJobPosting(jobPostingId)
                 .map(jobPosting -> jobPosting.getCriteria().stream()
