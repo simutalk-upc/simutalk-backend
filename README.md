@@ -147,6 +147,64 @@ Datos demo: arranca con `SEED_DEMO_DATA=true` y `DEMO_USERS_PASSWORD=...`. Usuar
 Etapas: `RECEIVED → INTERVIEWING → ASSESSED → SHORTLISTED → HIRED`, y `REJECTED` desde cualquier etapa no final.
 Un salto inválido responde 422.
 
+## Notificaciones por correo al candidato (contexto `recruitment`)
+
+No tienen endpoint propio: el correo sale solo cuando una postulación cambia a una de estas etapas.
+
+| Etapa nueva | Correo | Qué la provoca | Quién puede |
+|---|---|---|---|
+| `INTERVIEWING` | Invitación a entrevista | `POST /api/v1/applications/{applicationId}/interview-session` | Recruiter dueño o admin |
+| `SHORTLISTED` | Aviso de terna final | `PATCH /api/v1/applications/{applicationId}/status` | Recruiter dueño o admin |
+| `REJECTED` | Descarte | `PATCH /api/v1/applications/{applicationId}/status` | Recruiter dueño o admin |
+
+`ASSESSED` y `HIRED` no envían correo. El destinatario es el `email` del perfil del candidato; si no tiene, no se
+envía y queda un WARN en el log. El correo sale después de guardar el cambio y un fallo del envío nunca lo deshace.
+
+Request (el mismo que mueve la postulación):
+
+```http
+PATCH /api/v1/applications/5/status
+Authorization: Bearer <token del recruiter>
+Content-Type: application/json
+
+{ "status": "SHORTLISTED" }
+```
+
+Response `200` (la postulación; el correo no aparece en la respuesta):
+
+```json
+{
+  "id": 5,
+  "jobPostingId": 1,
+  "candidateId": 3,
+  "status": "SHORTLISTED",
+  "appliedAt": "2026-09-28T15:04:11.120Z",
+  "createdAt": "2026-09-28T15:04:11.131Z",
+  "updatedAt": "2026-09-30T18:22:40.502Z"
+}
+```
+
+Con `MAIL_MODE=mock` (por defecto) no se envía nada; solo se registra en el log, con la dirección enmascarada:
+
+```
+Mail (mock, not sent) SHORTLISTED to r***@example.com: "Avanzaste a la terna final de «Analista de Datos Junior»"
+```
+
+Con `MAIL_MODE=live` (requiere `BREVO_API_KEY` y `MAIL_SENDER_EMAIL`) se llama a Brevo con
+`POST https://api.brevo.com/v3/smtp/email`, cabecera `api-key` y este cuerpo:
+
+```json
+{
+  "sender": { "name": "SimuTalk", "email": "seleccion@tu-dominio.pe" },
+  "to": [{ "email": "rosa@example.com", "name": "Rosa" }],
+  "subject": "Avanzaste a la terna final de «Analista de Datos Junior»",
+  "textContent": "Hola, Rosa:\n\n¡Buenas noticias! Formas parte de la terna final para «Analista de Datos Junior». La empresa se pondrá en contacto contigo para los siguientes pasos.\n\nEquipo de selección"
+}
+```
+
+Asuntos: invitación «Te invitamos a la entrevista para «…»», terna «Avanzaste a la terna final de «…»», descarte
+«Actualización de tu postulación a «…»».
+
 ## Reportes (contexto `analytics`, requieren token)
 
 | Método | Ruta | Contenido |
@@ -163,7 +221,7 @@ Acceso: recruiter de la empresa dueña o admin. Todos los valores se calculan co
 | Método | Ruta | Acceso |
 |---|---|---|
 | POST | `/api/v1/interview-sessions/{sessionId}/assessment` | Recruiter dueño o admin; entrevista COMPLETED, una vez |
-| GET | `/api/v1/interview-sessions/{sessionId}/assessment` | Recruiter dueño o admin |
+| GET | `/api/v1/interview-sessions/{sessionId}/assessment` | Recruiter dueño o admin (evaluación completa); candidato dueño de la entrevista (vista reducida, ver abajo) |
 | GET | `/api/v1/assessments/{assessmentId}/criterion-scores/{criterionScoreId}/evidences` | Recruiter dueño o admin |
 | GET | `/api/v1/job-postings/{jobPostingId}/ranking?anonymized=` | Recruiter dueño o admin |
 
@@ -171,6 +229,44 @@ Acceso: recruiter de la empresa dueña o admin. Todos los valores se calculan co
 fragmento literal de la respuesta y su posición. Con `anonymized=true` (o forzado por `anonymizedScreening`) el ranking
 muestra `CANDIDATO-X-9999` en lugar de nombre y documento. Al proveedor de IA solo viaja el transcript anonimizado y
 el criterio.
+
+## Evaluación vista por el candidato (contexto `assessment`, requiere token)
+
+| Método | Ruta | Acceso |
+|---|---|---|
+| GET | `/api/v1/interview-sessions/{sessionId}/assessment` | Candidato dueño de la entrevista (`ROLE_CANDIDATE`) |
+
+Es la misma ruta que usa el recruiter, pero el candidato recibe otra vista: su puntaje ponderado, su desglose por
+criterio y `feedbackSummary`. No incluye posición en el ranking, puntajes de otros candidatos, señales de integridad,
+confianza ni evidencias. Otro candidato recibe 403; si la entrevista aún no fue evaluada, 404.
+
+Request:
+
+```http
+GET /api/v1/interview-sessions/1/assessment
+Authorization: Bearer <token del candidato>
+```
+
+Response `200`:
+
+```json
+{
+  "interviewSessionId": 1,
+  "jobPostingId": 1,
+  "weightedScore": 7.5,
+  "computedAt": "2026-09-30T18:05:12.345Z",
+  "criterionScores": [
+    { "criterionName": "Pensamiento analítico", "criterionKind": "COMPETENCY", "weightApplied": 50, "score": 8.2 },
+    { "criterionName": "Comunicación efectiva", "criterionKind": "COMPETENCY", "weightApplied": 30, "score": 6.5 },
+    { "criterionName": "Certificación en análisis de datos", "criterionKind": "CERTIFICATION", "weightApplied": 20, "score": 7.0 }
+  ],
+  "feedbackSummary": "Tu puntaje ponderado fue 7,5 de 10. Lo que más sostuvo tu puntaje fue «Pensamiento analítico» (8,2 de 10), donde tus respuestas mostraron evidencia concreta de lo que pide el criterio. Donde más puntos se perdieron fue «Comunicación efectiva» (6,5 de 10, peso 30 %): respuestas con ejemplos concretos de ese criterio lo mejorarían. Cada punto que mejores ahí suma 0,3 a tu puntaje ponderado."
+}
+```
+
+El `feedbackSummary` del ejemplo es el de `AI_MODE=mock` (texto determinista a partir de los puntajes). Con `live` lo
+redacta Gemini a partir de los puntajes, pesos y fragmentos anonimizados; es `null` en evaluaciones calculadas antes
+de que existiera la retroalimentación.
 
 ## Entrevistas (contexto `interviews`, requieren token)
 
@@ -215,7 +311,77 @@ Escrituras (POST/PUT/DELETE de vacantes y criterios, PATCH de estado): solo el r
 admin; los demás reciben 403. Lecturas: cualquier autenticado, pero un DRAFT solo lo ve su empresa y los listados
 muestran de otras empresas solo las PUBLISHED.
 
-Errores: todas las respuestas de error tienen la forma
+## Sugerencia de criterios (contexto `recruitment`, requiere token)
+
+| Método | Ruta | Acceso |
+|---|---|---|
+| POST | `/api/v1/job-postings/{jobPostingId}/criteria/suggestions` | Solo el recruiter dueño de la vacante; vacante en DRAFT |
+
+Propone hasta 4 criterios COMPETENCY a partir del título y la descripción de la vacante, sin repetir los que ya
+tiene. No guarda nada y **no trae peso**: el peso lo pone siempre el reclutador. Un admin u otro recruiter recibe 403;
+vacante inexistente, 404; vacante que no está en DRAFT, 422.
+
+Request (sin cuerpo):
+
+```http
+POST /api/v1/job-postings/1/criteria/suggestions
+Authorization: Bearer <token del recruiter>
+```
+
+Response `200` (con `AI_MODE=mock`, para la vacante «Analista de Datos Junior» cuya descripción es «Análisis de datos
+comerciales con SQL, Excel y Python; elaboración de reportes para clientes y presentación de hallazgos al equipo
+comercial.»):
+
+```json
+[
+  {
+    "name": "Pensamiento analítico",
+    "description": "Descompone problemas y los resuelve apoyándose en datos.",
+    "criterionType": "COMPETENCY",
+    "origin": "AI_SUGGESTED",
+    "rationale": "La descripción menciona: datos, analisis, sql, excel, python, reporte"
+  },
+  {
+    "name": "Comunicación efectiva",
+    "description": "Explica ideas y hallazgos con claridad a públicos técnicos y no técnicos.",
+    "criterionType": "COMPETENCY",
+    "origin": "AI_SUGGESTED",
+    "rationale": "La descripción menciona: presenta, cliente, reporte"
+  },
+  {
+    "name": "Trabajo en equipo",
+    "description": "Colabora con otras personas y áreas para lograr objetivos comunes.",
+    "criterionType": "COMPETENCY",
+    "origin": "AI_SUGGESTED",
+    "rationale": "La descripción menciona: equipo"
+  },
+  {
+    "name": "Orientación al cliente",
+    "description": "Entiende y atiende las necesidades del cliente interno o externo.",
+    "criterionType": "COMPETENCY",
+    "origin": "AI_SUGGESTED",
+    "rationale": "La descripción menciona: cliente"
+  }
+]
+```
+
+Para aceptar una sugerencia, envíala a `POST /api/v1/job-postings/{jobPostingId}/criteria` con el peso que elijas:
+
+```json
+{
+  "name": "Pensamiento analítico",
+  "description": "Descompone problemas y los resuelve apoyándose en datos.",
+  "weight": 40,
+  "criterionType": "COMPETENCY",
+  "origin": "AI_SUGGESTED"
+}
+```
+
+Con `AI_MODE=live` las propone Gemini a partir del texto de la vacante; cualquier peso que devuelva se ignora.
+
+## Errores
+
+Todas las respuestas de error tienen la forma
 
 ```json
 {
