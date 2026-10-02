@@ -52,6 +52,36 @@ public class ExternalRecruitmentService {
                 "Criterion %s does not belong to job posting %s".formatted(criterionId, jobPostingId));
     }
 
+    /**
+     * Questions can only be suggested while they can still be added: suggestions exist to be accepted
+     * into the script, and the script of a published job posting is frozen.
+     */
+    public void ensureQuestionsCanBeSuggested(Long jobPostingId) {
+        if (!recruitmentContextFacade.existsJobPostingById(jobPostingId)) {
+            throw new ResourceNotFoundException("Job posting", jobPostingId);
+        }
+        if (!recruitmentContextFacade.isJobPostingDraft(jobPostingId)) {
+            throw new BusinessRuleViolationException(
+                    "Questions can only be suggested while the job posting is in DRAFT");
+        }
+    }
+
+    /**
+     * The job posting's and the criterion's own text, which is all the question suggestion port may
+     * know. The criterion must be a COMPETENCY of the job posting (same rule as adding a question).
+     */
+    public CriterionContext fetchCompetencyCriterionContext(Long jobPostingId, Long criterionId) {
+        ensureCompetencyCriterion(jobPostingId, criterionId);
+        var criterion = recruitmentContextFacade.fetchCriteria(jobPostingId).stream()
+                .filter(view -> criterionId.equals(view.criterionId()))
+                .findFirst()
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Criterion %s not found in job posting %s".formatted(criterionId, jobPostingId)));
+        return new CriterionContext(recruitmentContextFacade.fetchJobPostingTitle(jobPostingId),
+                recruitmentContextFacade.fetchJobPostingDescription(jobPostingId), criterion.name(),
+                criterion.description());
+    }
+
     /** @return the job posting and candidate of an application that is still RECEIVED */
     public ApplicationSnapshot fetchApplicationReadyForInterview(Long applicationId) {
         var status = recruitmentContextFacade.fetchApplicationStatus(applicationId);
@@ -76,5 +106,9 @@ public class ExternalRecruitmentService {
     }
 
     public record ApplicationSnapshot(Long applicationId, Long jobPostingId, Long candidateId) {
+    }
+
+    public record CriterionContext(String jobTitle, String jobDescription, String criterionName,
+                                   String criterionDescription) {
     }
 }
