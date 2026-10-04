@@ -1,4 +1,4 @@
-package pe.upc.simutalk.shared.interfaces.rest;
+package pe.upc.simutalk.exceptions;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
@@ -15,12 +15,12 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
-import pe.upc.simutalk.shared.domain.exceptions.BusinessRuleViolationException;
-import pe.upc.simutalk.shared.domain.exceptions.InvalidCredentialsException;
-import pe.upc.simutalk.shared.domain.exceptions.InvalidStateTransitionException;
-import pe.upc.simutalk.shared.domain.exceptions.ResourceNotFoundException;
-import pe.upc.simutalk.shared.interfaces.rest.resources.ErrorResource;
-import pe.upc.simutalk.shared.interfaces.rest.resources.ErrorResource.FieldErrorResource;
+import pe.upc.simutalk.exceptions.BusinessRuleViolationException;
+import pe.upc.simutalk.exceptions.InvalidCredentialsException;
+import pe.upc.simutalk.exceptions.InvalidStateTransitionException;
+import pe.upc.simutalk.exceptions.ResourceNotFoundException;
+import pe.upc.simutalk.exceptions.ErrorResource;
+import pe.upc.simutalk.exceptions.ErrorResource.FieldErrorResource;
 
 import java.time.Instant;
 import java.util.List;

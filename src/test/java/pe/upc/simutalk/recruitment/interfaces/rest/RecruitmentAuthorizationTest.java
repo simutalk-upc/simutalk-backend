@@ -32,7 +32,7 @@ import pe.upc.simutalk.recruitment.domain.services.JobPostingCommandService;
 import pe.upc.simutalk.recruitment.domain.services.JobPostingQueryService;
 import pe.upc.simutalk.recruitment.interfaces.rest.authorization.RecruitmentAccessPolicy;
 import pe.upc.simutalk.recruitment.interfaces.rest.resources.*;
-import pe.upc.simutalk.shared.domain.exceptions.BusinessRuleViolationException;
+import pe.upc.simutalk.exceptions.BusinessRuleViolationException;
 import pe.upc.simutalk.shared.interfaces.acl.IamContextFacade;
 import pe.upc.simutalk.shared.interfaces.acl.ProfilesContextFacade;
 

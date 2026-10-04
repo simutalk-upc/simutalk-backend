@@ -14,8 +14,8 @@ import pe.upc.simutalk.interviews.domain.model.entities.Answer;
 import pe.upc.simutalk.interviews.domain.services.InterviewSessionCommandService;
 import pe.upc.simutalk.interviews.infrastructure.persistence.jpa.repositories.InterviewSessionRepository;
 import pe.upc.simutalk.interviews.infrastructure.persistence.jpa.repositories.QuestionRepository;
-import pe.upc.simutalk.shared.domain.exceptions.BusinessRuleViolationException;
-import pe.upc.simutalk.shared.domain.exceptions.ResourceNotFoundException;
+import pe.upc.simutalk.exceptions.BusinessRuleViolationException;
+import pe.upc.simutalk.exceptions.ResourceNotFoundException;
 import pe.upc.simutalk.shared.interfaces.events.InterviewSessionCompletedEvent;
 
 import java.time.Instant;

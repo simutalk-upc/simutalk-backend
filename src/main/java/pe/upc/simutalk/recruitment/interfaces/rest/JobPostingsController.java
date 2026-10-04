@@ -29,8 +29,8 @@ import pe.upc.simutalk.recruitment.interfaces.rest.transform.CreateJobPostingCom
 import pe.upc.simutalk.recruitment.interfaces.rest.transform.JobPostingResourceFromEntityAssembler;
 import pe.upc.simutalk.recruitment.interfaces.rest.authorization.RecruitmentAccessPolicy;
 import pe.upc.simutalk.recruitment.interfaces.rest.transform.UpdateJobPostingCommandFromResourceAssembler;
-import pe.upc.simutalk.shared.domain.exceptions.BusinessRuleViolationException;
-import pe.upc.simutalk.shared.domain.exceptions.ResourceNotFoundException;
+import pe.upc.simutalk.exceptions.BusinessRuleViolationException;
+import pe.upc.simutalk.exceptions.ResourceNotFoundException;
 
 import java.util.List;
 

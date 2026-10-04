@@ -3,7 +3,7 @@ package pe.upc.simutalk.assessment.application.internal.outboundservices.acl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import pe.upc.simutalk.assessment.domain.model.valueobjects.InterviewSessionSnapshot;
-import pe.upc.simutalk.shared.domain.exceptions.ResourceNotFoundException;
+import pe.upc.simutalk.exceptions.ResourceNotFoundException;
 import pe.upc.simutalk.shared.interfaces.acl.*;
 
 import java.util.List;

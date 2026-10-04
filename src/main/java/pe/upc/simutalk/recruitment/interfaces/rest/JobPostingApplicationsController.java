@@ -21,7 +21,7 @@ import pe.upc.simutalk.recruitment.domain.services.ApplicationQueryService;
 import pe.upc.simutalk.recruitment.interfaces.rest.authorization.RecruitmentAccessPolicy;
 import pe.upc.simutalk.recruitment.interfaces.rest.resources.ApplicationResource;
 import pe.upc.simutalk.recruitment.interfaces.rest.transform.ApplicationResourceFromEntityAssembler;
-import pe.upc.simutalk.shared.domain.exceptions.BusinessRuleViolationException;
+import pe.upc.simutalk.exceptions.BusinessRuleViolationException;
 
 import java.util.List;
 

@@ -11,8 +11,8 @@ import pe.upc.simutalk.interviews.domain.model.commands.ReorderQuestionsCommand;
 import pe.upc.simutalk.interviews.domain.model.commands.UpdateQuestionCommand;
 import pe.upc.simutalk.interviews.domain.model.valueobjects.QuestionOrigin;
 import pe.upc.simutalk.interviews.infrastructure.persistence.jpa.repositories.QuestionRepository;
-import pe.upc.simutalk.shared.domain.exceptions.BusinessRuleViolationException;
-import pe.upc.simutalk.shared.domain.exceptions.ResourceNotFoundException;
+import pe.upc.simutalk.exceptions.BusinessRuleViolationException;
+import pe.upc.simutalk.exceptions.ResourceNotFoundException;
 import pe.upc.simutalk.shared.interfaces.acl.RecruitmentContextFacade;
 
 import java.util.ArrayList;

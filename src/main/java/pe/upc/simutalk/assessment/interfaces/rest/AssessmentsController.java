@@ -30,7 +30,7 @@ import pe.upc.simutalk.assessment.interfaces.rest.transform.AssessmentResourceFr
 import pe.upc.simutalk.assessment.interfaces.rest.transform.CandidateAssessmentResourceFromEntityAssembler;
 import pe.upc.simutalk.assessment.interfaces.rest.transform.EvidenceResourceFromEntityAssembler;
 import pe.upc.simutalk.assessment.interfaces.rest.transform.RankingResourceFromEntityAssembler;
-import pe.upc.simutalk.shared.domain.exceptions.ResourceNotFoundException;
+import pe.upc.simutalk.exceptions.ResourceNotFoundException;
 
 import java.util.List;
 

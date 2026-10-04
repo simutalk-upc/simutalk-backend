@@ -10,7 +10,7 @@ import pe.upc.simutalk.assessment.domain.model.valueobjects.CriterionKind;
 import pe.upc.simutalk.assessment.domain.model.valueobjects.FlagSeverity;
 import pe.upc.simutalk.assessment.domain.model.valueobjects.IntegrityFlagType;
 import pe.upc.simutalk.assessment.domain.model.valueobjects.InterviewSessionSnapshot;
-import pe.upc.simutalk.shared.domain.exceptions.BusinessRuleViolationException;
+import pe.upc.simutalk.exceptions.BusinessRuleViolationException;
 
 import java.math.BigDecimal;
 import java.time.Instant;

@@ -21,7 +21,7 @@ import pe.upc.simutalk.assessment.domain.model.valueobjects.RankingEntry;
 import pe.upc.simutalk.assessment.domain.services.AssessmentQueryService;
 import pe.upc.simutalk.assessment.domain.services.RankingPolicy;
 import pe.upc.simutalk.assessment.infrastructure.persistence.jpa.repositories.AssessmentRepository;
-import pe.upc.simutalk.shared.domain.exceptions.ResourceNotFoundException;
+import pe.upc.simutalk.exceptions.ResourceNotFoundException;
 import pe.upc.simutalk.shared.interfaces.acl.CandidatePersonalData;
 import pe.upc.simutalk.shared.interfaces.acl.CriterionView;
 

@@ -1,4 +1,4 @@
-package pe.upc.simutalk.shared.domain.exceptions;
+package pe.upc.simutalk.exceptions;
 
 /**
  * Thrown when a sign-in attempt fails. The message never reveals whether the

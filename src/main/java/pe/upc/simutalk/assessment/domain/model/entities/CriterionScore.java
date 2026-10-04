@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.BatchSize;
 import pe.upc.simutalk.assessment.domain.model.valueobjects.CriterionKind;
-import pe.upc.simutalk.shared.domain.exceptions.BusinessRuleViolationException;
+import pe.upc.simutalk.exceptions.BusinessRuleViolationException;
 import pe.upc.simutalk.shared.domain.model.entities.AuditableModel;
 
 import java.math.BigDecimal;

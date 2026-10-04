@@ -17,7 +17,7 @@ public interface InterviewSessionQueryService {
     Optional<InterviewSession> handle(GetInterviewSessionByApplicationIdQuery query);
 
     /**
-     * @throws pe.upc.simutalk.shared.domain.exceptions.ResourceNotFoundException if the session does not exist
+     * @throws pe.upc.simutalk.exceptions.ResourceNotFoundException if the session does not exist
      */
     List<Answer> handle(GetAnswersByInterviewSessionIdQuery query);
 

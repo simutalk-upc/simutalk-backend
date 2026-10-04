@@ -18,7 +18,7 @@ import pe.upc.simutalk.iam.domain.model.queries.GetUserByIdQuery;
 import pe.upc.simutalk.iam.domain.services.UserQueryService;
 import pe.upc.simutalk.iam.interfaces.rest.resources.UserResource;
 import pe.upc.simutalk.iam.interfaces.rest.transform.UserResourceFromEntityAssembler;
-import pe.upc.simutalk.shared.domain.exceptions.ResourceNotFoundException;
+import pe.upc.simutalk.exceptions.ResourceNotFoundException;
 
 import java.util.List;
 

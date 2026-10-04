@@ -13,8 +13,8 @@ import pe.upc.simutalk.recruitment.domain.model.valueobjects.JobPostingStatus;
 import pe.upc.simutalk.recruitment.domain.model.valueobjects.JobPostingViewer;
 import pe.upc.simutalk.recruitment.domain.model.valueobjects.Weight;
 import pe.upc.simutalk.recruitment.domain.services.InterviewQuestionCounter;
-import pe.upc.simutalk.shared.domain.exceptions.BusinessRuleViolationException;
-import pe.upc.simutalk.shared.domain.exceptions.ResourceNotFoundException;
+import pe.upc.simutalk.exceptions.BusinessRuleViolationException;
+import pe.upc.simutalk.exceptions.ResourceNotFoundException;
 import pe.upc.simutalk.shared.domain.model.aggregates.AuditableAbstractAggregateRoot;
 
 import java.time.LocalDate;

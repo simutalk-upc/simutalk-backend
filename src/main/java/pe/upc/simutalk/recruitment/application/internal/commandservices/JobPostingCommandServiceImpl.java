@@ -10,7 +10,7 @@ import pe.upc.simutalk.recruitment.domain.model.entities.EvaluationCriterion;
 import pe.upc.simutalk.recruitment.domain.model.valueobjects.Weight;
 import pe.upc.simutalk.recruitment.domain.services.JobPostingCommandService;
 import pe.upc.simutalk.recruitment.infrastructure.persistence.jpa.repositories.JobPostingRepository;
-import pe.upc.simutalk.shared.domain.exceptions.ResourceNotFoundException;
+import pe.upc.simutalk.exceptions.ResourceNotFoundException;
 
 /**
  * Loads the aggregate, delegates the change to it and persists the result.

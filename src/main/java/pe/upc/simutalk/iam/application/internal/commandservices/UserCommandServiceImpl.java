@@ -15,8 +15,8 @@ import pe.upc.simutalk.iam.domain.model.valueobjects.Roles;
 import pe.upc.simutalk.iam.domain.services.UserCommandService;
 import pe.upc.simutalk.iam.infrastructure.persistence.jpa.repositories.RoleRepository;
 import pe.upc.simutalk.iam.infrastructure.persistence.jpa.repositories.UserRepository;
-import pe.upc.simutalk.shared.domain.exceptions.BusinessRuleViolationException;
-import pe.upc.simutalk.shared.domain.exceptions.InvalidCredentialsException;
+import pe.upc.simutalk.exceptions.BusinessRuleViolationException;
+import pe.upc.simutalk.exceptions.InvalidCredentialsException;
 
 import java.util.List;
 import java.util.Optional;

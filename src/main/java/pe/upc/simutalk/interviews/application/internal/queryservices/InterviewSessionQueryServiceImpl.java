@@ -12,7 +12,7 @@ import pe.upc.simutalk.interviews.domain.model.queries.HasInterviewSessionInProg
 import pe.upc.simutalk.interviews.domain.model.valueobjects.InterviewSessionStatus;
 import pe.upc.simutalk.interviews.domain.services.InterviewSessionQueryService;
 import pe.upc.simutalk.interviews.infrastructure.persistence.jpa.repositories.InterviewSessionRepository;
-import pe.upc.simutalk.shared.domain.exceptions.ResourceNotFoundException;
+import pe.upc.simutalk.exceptions.ResourceNotFoundException;
 
 import java.util.List;
 import java.util.Optional;

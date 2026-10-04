@@ -29,7 +29,7 @@ import pe.upc.simutalk.profiles.interfaces.rest.resources.UpdateCandidateProfile
 import pe.upc.simutalk.profiles.interfaces.rest.transform.CandidateProfileResourceFromEntityAssembler;
 import pe.upc.simutalk.profiles.interfaces.rest.transform.CreateCandidateProfileCommandFromResourceAssembler;
 import pe.upc.simutalk.profiles.interfaces.rest.transform.UpdateCandidateProfileCommandFromResourceAssembler;
-import pe.upc.simutalk.shared.domain.exceptions.ResourceNotFoundException;
+import pe.upc.simutalk.exceptions.ResourceNotFoundException;
 import pe.upc.simutalk.shared.interfaces.rest.resources.PageResource;
 
 @RestController

@@ -11,8 +11,8 @@ import pe.upc.simutalk.profiles.domain.model.valueobjects.Ruc;
 import pe.upc.simutalk.profiles.domain.services.CompanyProfileCommandService;
 import pe.upc.simutalk.profiles.infrastructure.persistence.jpa.repositories.CandidateProfileRepository;
 import pe.upc.simutalk.profiles.infrastructure.persistence.jpa.repositories.CompanyProfileRepository;
-import pe.upc.simutalk.shared.domain.exceptions.BusinessRuleViolationException;
-import pe.upc.simutalk.shared.domain.exceptions.ResourceNotFoundException;
+import pe.upc.simutalk.exceptions.BusinessRuleViolationException;
+import pe.upc.simutalk.exceptions.ResourceNotFoundException;
 
 @Service
 @Transactional

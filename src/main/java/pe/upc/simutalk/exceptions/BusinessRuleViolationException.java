@@ -1,4 +1,4 @@
-package pe.upc.simutalk.shared.domain.exceptions;
+package pe.upc.simutalk.exceptions;
 
 /**
  * Thrown by an aggregate when an operation would break one of its invariants.

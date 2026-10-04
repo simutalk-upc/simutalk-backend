@@ -8,7 +8,7 @@ import pe.upc.simutalk.analytics.domain.model.queries.GetCompanySummaryReportQue
 import pe.upc.simutalk.analytics.domain.model.queries.GetFunnelReportQuery;
 import pe.upc.simutalk.analytics.infrastructure.persistence.jpa.repositories.CarbonSavingRepository;
 import pe.upc.simutalk.analytics.infrastructure.persistence.jpa.repositories.CarbonSavingTotals;
-import pe.upc.simutalk.shared.domain.exceptions.ResourceNotFoundException;
+import pe.upc.simutalk.exceptions.ResourceNotFoundException;
 
 import java.math.BigDecimal;
 import java.util.List;

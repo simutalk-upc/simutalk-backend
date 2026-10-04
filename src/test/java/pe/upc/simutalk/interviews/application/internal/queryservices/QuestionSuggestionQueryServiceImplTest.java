@@ -9,8 +9,8 @@ import pe.upc.simutalk.interviews.domain.model.valueobjects.QuestionOrigin;
 import pe.upc.simutalk.interviews.domain.model.valueobjects.QuestionSuggestion;
 import pe.upc.simutalk.interviews.domain.services.QuestionSuggestionService;
 import pe.upc.simutalk.interviews.infrastructure.persistence.jpa.repositories.QuestionRepository;
-import pe.upc.simutalk.shared.domain.exceptions.BusinessRuleViolationException;
-import pe.upc.simutalk.shared.domain.exceptions.ResourceNotFoundException;
+import pe.upc.simutalk.exceptions.BusinessRuleViolationException;
+import pe.upc.simutalk.exceptions.ResourceNotFoundException;
 import pe.upc.simutalk.shared.interfaces.acl.CriterionView;
 import pe.upc.simutalk.shared.interfaces.acl.RecruitmentContextFacade;
 

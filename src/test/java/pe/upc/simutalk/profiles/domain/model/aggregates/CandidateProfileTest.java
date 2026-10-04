@@ -6,8 +6,8 @@ import pe.upc.simutalk.profiles.domain.model.commands.CreateCandidateProfileComm
 import pe.upc.simutalk.profiles.domain.model.entities.Certification;
 import pe.upc.simutalk.profiles.domain.model.valueobjects.PersonName;
 import pe.upc.simutalk.profiles.domain.model.valueobjects.VerificationStatus;
-import pe.upc.simutalk.shared.domain.exceptions.BusinessRuleViolationException;
-import pe.upc.simutalk.shared.domain.exceptions.ResourceNotFoundException;
+import pe.upc.simutalk.exceptions.BusinessRuleViolationException;
+import pe.upc.simutalk.exceptions.ResourceNotFoundException;
 
 import java.time.Instant;
 import java.time.LocalDate;

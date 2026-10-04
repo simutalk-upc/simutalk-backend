@@ -28,7 +28,7 @@ import pe.upc.simutalk.profiles.domain.services.CompanyProfileCommandService;
 import pe.upc.simutalk.profiles.domain.services.CompanyProfileQueryService;
 import pe.upc.simutalk.profiles.interfaces.rest.authorization.ProfileAccessPolicy;
 import pe.upc.simutalk.shared.interfaces.acl.IamContextFacade;
-import pe.upc.simutalk.shared.interfaces.rest.GlobalExceptionHandler;
+import pe.upc.simutalk.exceptions.GlobalExceptionHandler;
 
 import java.time.LocalDate;
 import java.util.List;

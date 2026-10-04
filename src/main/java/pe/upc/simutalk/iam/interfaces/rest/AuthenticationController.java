@@ -23,7 +23,7 @@ import pe.upc.simutalk.iam.interfaces.rest.transform.AuthenticatedUserResourceFr
 import pe.upc.simutalk.iam.interfaces.rest.transform.SignInCommandFromResourceAssembler;
 import pe.upc.simutalk.iam.interfaces.rest.transform.SignUpCommandFromResourceAssembler;
 import pe.upc.simutalk.iam.interfaces.rest.transform.UserResourceFromEntityAssembler;
-import pe.upc.simutalk.shared.domain.exceptions.InvalidCredentialsException;
+import pe.upc.simutalk.exceptions.InvalidCredentialsException;
 
 @RestController
 @RequestMapping(value = "/api/v1/authentication", produces = MediaType.APPLICATION_JSON_VALUE)

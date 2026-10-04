@@ -7,7 +7,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import pe.upc.simutalk.iam.domain.model.entities.Role;
-import pe.upc.simutalk.shared.domain.exceptions.BusinessRuleViolationException;
+import pe.upc.simutalk.exceptions.BusinessRuleViolationException;
 import pe.upc.simutalk.shared.domain.model.aggregates.AuditableAbstractAggregateRoot;
 
 import java.util.Collections;

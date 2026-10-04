@@ -19,7 +19,7 @@ import pe.upc.simutalk.assessment.domain.services.AnswerScoringService.Criterion
 import pe.upc.simutalk.assessment.domain.services.AssessmentCommandService;
 import pe.upc.simutalk.assessment.domain.services.CertificationScoringPolicy;
 import pe.upc.simutalk.assessment.infrastructure.persistence.jpa.repositories.AssessmentRepository;
-import pe.upc.simutalk.shared.domain.exceptions.BusinessRuleViolationException;
+import pe.upc.simutalk.exceptions.BusinessRuleViolationException;
 import pe.upc.simutalk.shared.interfaces.acl.CandidatePersonalData;
 import pe.upc.simutalk.shared.interfaces.acl.CriterionView;
 import pe.upc.simutalk.shared.interfaces.acl.InterviewAnswerView;

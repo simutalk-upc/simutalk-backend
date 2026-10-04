@@ -26,7 +26,7 @@ import pe.upc.simutalk.interviews.interfaces.rest.transform.AnswerResourceFromEn
 import pe.upc.simutalk.interviews.interfaces.rest.transform.CreateInterviewSessionCommandFromResourceAssembler;
 import pe.upc.simutalk.interviews.interfaces.rest.transform.InterviewSessionResourceFromEntityAssembler;
 import pe.upc.simutalk.interviews.interfaces.rest.transform.RecordAnswerCommandFromResourceAssembler;
-import pe.upc.simutalk.shared.domain.exceptions.ResourceNotFoundException;
+import pe.upc.simutalk.exceptions.ResourceNotFoundException;
 
 import java.util.List;
 

@@ -22,7 +22,7 @@ public interface CandidateProfileQueryService {
     Optional<CandidateProfile> handle(GetCandidateProfileByUserIdQuery query);
 
     /**
-     * @throws pe.upc.simutalk.shared.domain.exceptions.ResourceNotFoundException if the candidate does not exist
+     * @throws pe.upc.simutalk.exceptions.ResourceNotFoundException if the candidate does not exist
      */
     List<Certification> handle(GetCertificationsByCandidateIdQuery query);
 

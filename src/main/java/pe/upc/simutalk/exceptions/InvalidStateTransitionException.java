@@ -1,4 +1,4 @@
-package pe.upc.simutalk.shared.domain.exceptions;
+package pe.upc.simutalk.exceptions;
 
 /**
  * Thrown by an aggregate when a requested state transition is not allowed.

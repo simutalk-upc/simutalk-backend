@@ -6,8 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import pe.upc.simutalk.interviews.domain.model.entities.Answer;
 import pe.upc.simutalk.interviews.domain.model.valueobjects.InterviewSessionStatus;
-import pe.upc.simutalk.shared.domain.exceptions.BusinessRuleViolationException;
-import pe.upc.simutalk.shared.domain.exceptions.InvalidStateTransitionException;
+import pe.upc.simutalk.exceptions.BusinessRuleViolationException;
+import pe.upc.simutalk.exceptions.InvalidStateTransitionException;
 import pe.upc.simutalk.shared.domain.model.aggregates.AuditableAbstractAggregateRoot;
 
 import java.time.Instant;

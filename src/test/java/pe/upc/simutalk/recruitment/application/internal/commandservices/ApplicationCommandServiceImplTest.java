@@ -15,8 +15,8 @@ import pe.upc.simutalk.recruitment.domain.model.valueobjects.CriterionType;
 import pe.upc.simutalk.recruitment.domain.model.valueobjects.Weight;
 import pe.upc.simutalk.recruitment.infrastructure.persistence.jpa.repositories.ApplicationRepository;
 import pe.upc.simutalk.recruitment.infrastructure.persistence.jpa.repositories.JobPostingRepository;
-import pe.upc.simutalk.shared.domain.exceptions.BusinessRuleViolationException;
-import pe.upc.simutalk.shared.domain.exceptions.ResourceNotFoundException;
+import pe.upc.simutalk.exceptions.BusinessRuleViolationException;
+import pe.upc.simutalk.exceptions.ResourceNotFoundException;
 
 import java.time.Instant;
 import java.util.Optional;

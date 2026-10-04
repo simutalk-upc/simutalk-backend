@@ -6,7 +6,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import pe.upc.simutalk.interviews.domain.model.entities.Answer;
 import pe.upc.simutalk.interviews.domain.model.valueobjects.InterviewSessionStatus;
 import pe.upc.simutalk.interviews.domain.model.valueobjects.QuestionOrigin;
-import pe.upc.simutalk.shared.domain.exceptions.BusinessRuleViolationException;
+import pe.upc.simutalk.exceptions.BusinessRuleViolationException;
 
 import java.time.Instant;
 import java.time.LocalDate;

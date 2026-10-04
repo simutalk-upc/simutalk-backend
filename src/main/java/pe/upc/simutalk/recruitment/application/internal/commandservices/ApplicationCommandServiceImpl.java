@@ -11,7 +11,7 @@ import pe.upc.simutalk.recruitment.domain.model.events.ApplicationStatusChangedE
 import pe.upc.simutalk.recruitment.domain.services.ApplicationCommandService;
 import pe.upc.simutalk.recruitment.infrastructure.persistence.jpa.repositories.ApplicationRepository;
 import pe.upc.simutalk.recruitment.infrastructure.persistence.jpa.repositories.JobPostingRepository;
-import pe.upc.simutalk.shared.domain.exceptions.ResourceNotFoundException;
+import pe.upc.simutalk.exceptions.ResourceNotFoundException;
 
 import java.time.Instant;
 

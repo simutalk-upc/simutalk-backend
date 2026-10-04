@@ -13,7 +13,7 @@ import pe.upc.simutalk.assessment.domain.services.AnswerScoringService;
 import pe.upc.simutalk.assessment.domain.services.AnswerScoringService.CriterionFeedback;
 import pe.upc.simutalk.assessment.domain.services.AnswerScoringService.ScoringResult;
 import pe.upc.simutalk.assessment.infrastructure.persistence.jpa.repositories.AssessmentRepository;
-import pe.upc.simutalk.shared.domain.exceptions.BusinessRuleViolationException;
+import pe.upc.simutalk.exceptions.BusinessRuleViolationException;
 import pe.upc.simutalk.shared.interfaces.acl.CandidatePersonalData;
 import pe.upc.simutalk.shared.interfaces.acl.CriterionView;
 import pe.upc.simutalk.shared.interfaces.acl.InterviewAnswerView;

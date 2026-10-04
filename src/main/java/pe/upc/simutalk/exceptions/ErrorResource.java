@@ -1,4 +1,4 @@
-package pe.upc.simutalk.shared.interfaces.rest.resources;
+package pe.upc.simutalk.exceptions;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 

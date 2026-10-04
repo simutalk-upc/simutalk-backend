@@ -14,7 +14,7 @@ import pe.upc.simutalk.analytics.domain.model.valueobjects.CriterionAveragesRepo
 import pe.upc.simutalk.analytics.domain.model.valueobjects.FunnelReport;
 import pe.upc.simutalk.analytics.domain.services.ReportQueryService;
 import pe.upc.simutalk.analytics.infrastructure.persistence.jpa.repositories.CarbonSavingRepository;
-import pe.upc.simutalk.shared.domain.exceptions.ResourceNotFoundException;
+import pe.upc.simutalk.exceptions.ResourceNotFoundException;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
