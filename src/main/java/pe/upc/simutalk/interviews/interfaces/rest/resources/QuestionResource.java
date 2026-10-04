@@ -1,6 +1,6 @@
 package pe.upc.simutalk.interviews.interfaces.rest.resources;
 
-import pe.upc.simutalk.interviews.domain.model.valueobjects.QuestionOrigin;
+import pe.upc.simutalk.enums.QuestionOrigin;
 
 import java.time.Instant;
 

@@ -1,5 +1,7 @@
 package pe.upc.simutalk.shared.interfaces.acl;
 
+import pe.upc.simutalk.enums.ApplicationStatus;
+
 import java.util.List;
 
 /**

@@ -1,6 +1,6 @@
 package pe.upc.simutalk.profiles.interfaces.rest.resources;
 
-import pe.upc.simutalk.profiles.domain.model.valueobjects.CompanySize;
+import pe.upc.simutalk.enums.CompanySize;
 
 import java.time.Instant;
 

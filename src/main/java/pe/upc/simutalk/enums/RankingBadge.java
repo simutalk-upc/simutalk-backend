@@ -1,4 +1,4 @@
-package pe.upc.simutalk.assessment.domain.model.valueobjects;
+package pe.upc.simutalk.enums;
 
 /**
  * Explainable badges shown next to a candidate in the ranking.

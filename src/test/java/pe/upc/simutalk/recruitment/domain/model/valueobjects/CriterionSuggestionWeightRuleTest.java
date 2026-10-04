@@ -1,5 +1,9 @@
 package pe.upc.simutalk.recruitment.domain.model.valueobjects;
 
+import pe.upc.simutalk.entities.Weight;
+import pe.upc.simutalk.enums.CriterionOrigin;
+import pe.upc.simutalk.enums.CriterionType;
+
 import org.junit.jupiter.api.Test;
 import pe.upc.simutalk.recruitment.domain.model.aggregates.JobPosting;
 import pe.upc.simutalk.recruitment.domain.model.commands.CreateJobPostingCommand;

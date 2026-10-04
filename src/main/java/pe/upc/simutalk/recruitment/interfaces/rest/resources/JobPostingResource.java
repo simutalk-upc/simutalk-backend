@@ -1,6 +1,6 @@
 package pe.upc.simutalk.recruitment.interfaces.rest.resources;
 
-import pe.upc.simutalk.recruitment.domain.model.valueobjects.JobPostingStatus;
+import pe.upc.simutalk.enums.JobPostingStatus;
 
 import java.time.Instant;
 import java.time.LocalDate;

@@ -2,7 +2,7 @@ package pe.upc.simutalk.recruitment.interfaces.rest.resources;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
-import pe.upc.simutalk.recruitment.domain.model.valueobjects.ApplicationStatus;
+import pe.upc.simutalk.enums.ApplicationStatus;
 
 public record UpdateApplicationStatusResource(
         @Schema(example = "INTERVIEWING",

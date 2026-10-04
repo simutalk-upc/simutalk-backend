@@ -1,6 +1,6 @@
 package pe.upc.simutalk.profiles.domain.model.commands;
 
-import pe.upc.simutalk.profiles.domain.model.valueobjects.CompanySize;
+import pe.upc.simutalk.enums.CompanySize;
 
 public record CreateCompanyProfileCommand(
         Long userId,

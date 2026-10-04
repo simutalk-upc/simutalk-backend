@@ -8,7 +8,7 @@ import pe.upc.simutalk.profiles.domain.model.aggregates.CandidateProfile;
 import pe.upc.simutalk.profiles.domain.model.commands.CreateCandidateProfileCommand;
 import pe.upc.simutalk.profiles.domain.model.commands.VerifyCertificationCommand;
 import pe.upc.simutalk.profiles.domain.model.entities.Certification;
-import pe.upc.simutalk.profiles.domain.model.valueobjects.VerificationStatus;
+import pe.upc.simutalk.enums.VerificationStatus;
 import pe.upc.simutalk.profiles.domain.services.CredentialVerificationService;
 import pe.upc.simutalk.profiles.domain.services.CredentialVerificationService.VerificationResult;
 import pe.upc.simutalk.profiles.infrastructure.persistence.jpa.repositories.CandidateProfileRepository;

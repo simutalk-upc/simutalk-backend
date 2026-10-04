@@ -1,5 +1,7 @@
 package pe.upc.simutalk.recruitment.domain.model.valueobjects;
 
+import pe.upc.simutalk.enums.NotificationType;
+
 /**
  * One e-mail to a candidate about their application. Contains personal data (name and e-mail): it goes
  * to the mail provider only, never to the AI provider.

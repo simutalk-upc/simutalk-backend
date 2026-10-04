@@ -1,5 +1,7 @@
 package pe.upc.simutalk.iam.interfaces.rest;
 
+import pe.upc.simutalk.enums.Roles;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;

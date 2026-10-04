@@ -4,7 +4,7 @@ import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import pe.upc.simutalk.interviews.domain.model.aggregates.InterviewSession;
-import pe.upc.simutalk.interviews.domain.model.valueobjects.InterviewSessionStatus;
+import pe.upc.simutalk.enums.InterviewSessionStatus;
 
 import java.util.Optional;
 

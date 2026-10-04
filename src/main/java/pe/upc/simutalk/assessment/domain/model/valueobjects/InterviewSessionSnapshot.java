@@ -1,5 +1,7 @@
 package pe.upc.simutalk.assessment.domain.model.valueobjects;
 
+import pe.upc.simutalk.enums.InterviewSessionStatus;
+
 /**
  * What assessment knows about the interview session it scores (taken from interviews' ACL).
  *

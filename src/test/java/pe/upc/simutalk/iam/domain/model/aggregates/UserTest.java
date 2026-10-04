@@ -2,7 +2,7 @@ package pe.upc.simutalk.iam.domain.model.aggregates;
 
 import org.junit.jupiter.api.Test;
 import pe.upc.simutalk.iam.domain.model.entities.Role;
-import pe.upc.simutalk.iam.domain.model.valueobjects.Roles;
+import pe.upc.simutalk.enums.Roles;
 import pe.upc.simutalk.exceptions.BusinessRuleViolationException;
 
 import java.util.List;

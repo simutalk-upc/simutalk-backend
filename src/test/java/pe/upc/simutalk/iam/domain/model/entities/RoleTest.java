@@ -1,7 +1,7 @@
 package pe.upc.simutalk.iam.domain.model.entities;
 
 import org.junit.jupiter.api.Test;
-import pe.upc.simutalk.iam.domain.model.valueobjects.Roles;
+import pe.upc.simutalk.enums.Roles;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;

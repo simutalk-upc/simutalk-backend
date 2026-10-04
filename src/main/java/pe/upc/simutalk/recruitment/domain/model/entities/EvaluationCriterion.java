@@ -5,9 +5,9 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import pe.upc.simutalk.recruitment.domain.model.aggregates.JobPosting;
-import pe.upc.simutalk.recruitment.domain.model.valueobjects.CriterionOrigin;
-import pe.upc.simutalk.recruitment.domain.model.valueobjects.CriterionType;
-import pe.upc.simutalk.recruitment.domain.model.valueobjects.Weight;
+import pe.upc.simutalk.enums.CriterionOrigin;
+import pe.upc.simutalk.enums.CriterionType;
+import pe.upc.simutalk.entities.Weight;
 import pe.upc.simutalk.shared.domain.model.entities.AuditableModel;
 
 /**

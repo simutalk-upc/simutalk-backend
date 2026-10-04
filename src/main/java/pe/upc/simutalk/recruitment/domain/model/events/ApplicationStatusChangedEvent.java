@@ -1,6 +1,6 @@
 package pe.upc.simutalk.recruitment.domain.model.events;
 
-import pe.upc.simutalk.recruitment.domain.model.valueobjects.ApplicationStatus;
+import pe.upc.simutalk.enums.ApplicationStatus;
 
 /**
  * An application moved to a new stage. Published by recruitment after the change and handled after the

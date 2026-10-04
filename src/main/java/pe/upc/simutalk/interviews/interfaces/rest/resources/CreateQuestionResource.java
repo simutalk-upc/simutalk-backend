@@ -2,7 +2,7 @@ package pe.upc.simutalk.interviews.interfaces.rest.resources;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
-import pe.upc.simutalk.interviews.domain.model.valueobjects.QuestionOrigin;
+import pe.upc.simutalk.enums.QuestionOrigin;
 
 public record CreateQuestionResource(
         @Schema(example = "1", description = "Criterio COMPETENCY de la misma vacante") @NotNull @Positive Long criterionId,

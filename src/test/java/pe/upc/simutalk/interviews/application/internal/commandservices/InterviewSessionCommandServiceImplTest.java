@@ -10,8 +10,8 @@ import pe.upc.simutalk.interviews.domain.model.commands.CompleteInterviewSession
 import pe.upc.simutalk.interviews.domain.model.commands.CreateInterviewSessionCommand;
 import pe.upc.simutalk.interviews.domain.model.commands.RecordAnswerCommand;
 import pe.upc.simutalk.interviews.domain.model.commands.StartInterviewSessionCommand;
-import pe.upc.simutalk.interviews.domain.model.valueobjects.InterviewSessionStatus;
-import pe.upc.simutalk.interviews.domain.model.valueobjects.QuestionOrigin;
+import pe.upc.simutalk.enums.InterviewSessionStatus;
+import pe.upc.simutalk.enums.QuestionOrigin;
 import pe.upc.simutalk.interviews.infrastructure.persistence.jpa.repositories.InterviewSessionRepository;
 import pe.upc.simutalk.interviews.infrastructure.persistence.jpa.repositories.QuestionRepository;
 import pe.upc.simutalk.exceptions.BusinessRuleViolationException;

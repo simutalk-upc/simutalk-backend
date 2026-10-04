@@ -1,4 +1,4 @@
-package pe.upc.simutalk.interviews.domain.model.valueobjects;
+package pe.upc.simutalk.enums;
 
 /**
  * PENDING -> IN_PROGRESS -> COMPLETED; PENDING or IN_PROGRESS -> EXPIRED once past due.

@@ -4,8 +4,8 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import pe.upc.simutalk.assessment.domain.model.valueobjects.FlagSeverity;
-import pe.upc.simutalk.assessment.domain.model.valueobjects.IntegrityFlagType;
+import pe.upc.simutalk.enums.FlagSeverity;
+import pe.upc.simutalk.enums.IntegrityFlagType;
 import pe.upc.simutalk.shared.domain.model.entities.AuditableModel;
 
 import java.time.Instant;

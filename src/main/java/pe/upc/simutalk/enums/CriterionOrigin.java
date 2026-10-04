@@ -1,4 +1,4 @@
-package pe.upc.simutalk.recruitment.domain.model.valueobjects;
+package pe.upc.simutalk.enums;
 
 /**
  * Who proposed an evaluation criterion. {@code AI_SUGGESTED} marks a criterion the recruiter accepted

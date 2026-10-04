@@ -4,8 +4,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 import pe.upc.simutalk.interviews.domain.model.entities.Answer;
-import pe.upc.simutalk.interviews.domain.model.valueobjects.InterviewSessionStatus;
-import pe.upc.simutalk.interviews.domain.model.valueobjects.QuestionOrigin;
+import pe.upc.simutalk.enums.InterviewSessionStatus;
+import pe.upc.simutalk.enums.QuestionOrigin;
 import pe.upc.simutalk.exceptions.BusinessRuleViolationException;
 
 import java.time.Instant;
@@ -13,7 +13,7 @@ import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static pe.upc.simutalk.interviews.domain.model.valueobjects.InterviewSessionStatus.*;
+import static pe.upc.simutalk.enums.InterviewSessionStatus.*;
 
 class InterviewSessionTest {
 

@@ -11,7 +11,7 @@ import pe.upc.simutalk.profiles.domain.model.commands.AddCertificationCommand;
 import pe.upc.simutalk.profiles.domain.model.commands.CreateCandidateProfileCommand;
 import pe.upc.simutalk.profiles.domain.model.commands.CreateCompanyProfileCommand;
 import pe.upc.simutalk.profiles.domain.model.commands.VerifyCertificationCommand;
-import pe.upc.simutalk.profiles.domain.model.valueobjects.CompanySize;
+import pe.upc.simutalk.enums.CompanySize;
 import pe.upc.simutalk.profiles.domain.services.CandidateProfileCommandService;
 import pe.upc.simutalk.profiles.domain.services.CompanyProfileCommandService;
 import pe.upc.simutalk.profiles.infrastructure.persistence.jpa.repositories.CandidateProfileRepository;

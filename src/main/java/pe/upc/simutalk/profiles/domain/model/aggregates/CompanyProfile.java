@@ -5,9 +5,9 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import pe.upc.simutalk.profiles.domain.model.commands.CreateCompanyProfileCommand;
-import pe.upc.simutalk.profiles.domain.model.valueobjects.EmailAddress;
-import pe.upc.simutalk.profiles.domain.model.valueobjects.CompanySize;
-import pe.upc.simutalk.profiles.domain.model.valueobjects.Ruc;
+import pe.upc.simutalk.entities.EmailAddress;
+import pe.upc.simutalk.enums.CompanySize;
+import pe.upc.simutalk.entities.Ruc;
 import pe.upc.simutalk.shared.domain.model.aggregates.AuditableAbstractAggregateRoot;
 
 /**

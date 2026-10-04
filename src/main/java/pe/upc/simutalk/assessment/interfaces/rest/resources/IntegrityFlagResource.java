@@ -1,7 +1,7 @@
 package pe.upc.simutalk.assessment.interfaces.rest.resources;
 
-import pe.upc.simutalk.assessment.domain.model.valueobjects.FlagSeverity;
-import pe.upc.simutalk.assessment.domain.model.valueobjects.IntegrityFlagType;
+import pe.upc.simutalk.enums.FlagSeverity;
+import pe.upc.simutalk.enums.IntegrityFlagType;
 
 import java.time.Instant;
 

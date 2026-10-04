@@ -1,7 +1,7 @@
 package pe.upc.simutalk.profiles.domain.model.entities;
 
 import org.junit.jupiter.api.Test;
-import pe.upc.simutalk.profiles.domain.model.valueobjects.VerificationStatus;
+import pe.upc.simutalk.enums.VerificationStatus;
 
 import java.time.Instant;
 import java.time.LocalDate;

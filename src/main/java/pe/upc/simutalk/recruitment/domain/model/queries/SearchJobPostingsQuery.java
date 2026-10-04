@@ -1,6 +1,6 @@
 package pe.upc.simutalk.recruitment.domain.model.queries;
 
-import pe.upc.simutalk.recruitment.domain.model.valueobjects.JobPostingStatus;
+import pe.upc.simutalk.enums.JobPostingStatus;
 import pe.upc.simutalk.recruitment.domain.model.valueobjects.JobPostingViewer;
 
 /**

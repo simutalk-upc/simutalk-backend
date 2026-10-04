@@ -4,8 +4,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 import pe.upc.simutalk.profiles.domain.model.commands.CreateCandidateProfileCommand;
 import pe.upc.simutalk.profiles.domain.model.entities.Certification;
-import pe.upc.simutalk.profiles.domain.model.valueobjects.PersonName;
-import pe.upc.simutalk.profiles.domain.model.valueobjects.VerificationStatus;
+import pe.upc.simutalk.entities.PersonName;
+import pe.upc.simutalk.enums.VerificationStatus;
 import pe.upc.simutalk.exceptions.BusinessRuleViolationException;
 import pe.upc.simutalk.exceptions.ResourceNotFoundException;
 

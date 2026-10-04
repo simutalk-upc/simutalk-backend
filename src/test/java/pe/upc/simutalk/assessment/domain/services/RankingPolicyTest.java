@@ -1,5 +1,10 @@
 package pe.upc.simutalk.assessment.domain.services;
 
+import pe.upc.simutalk.enums.CriterionKind;
+import pe.upc.simutalk.enums.FlagSeverity;
+import pe.upc.simutalk.enums.IntegrityFlagType;
+import pe.upc.simutalk.enums.RankingBadge;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;

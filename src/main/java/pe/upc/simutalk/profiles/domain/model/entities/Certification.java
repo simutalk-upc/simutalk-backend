@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import pe.upc.simutalk.profiles.domain.model.valueobjects.VerificationStatus;
+import pe.upc.simutalk.enums.VerificationStatus;
 import pe.upc.simutalk.shared.domain.model.entities.AuditableModel;
 
 import java.time.Instant;

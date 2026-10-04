@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import pe.upc.simutalk.recruitment.domain.model.valueobjects.ApplicationStatus;
+import pe.upc.simutalk.enums.ApplicationStatus;
 import pe.upc.simutalk.exceptions.BusinessRuleViolationException;
 import pe.upc.simutalk.exceptions.InvalidStateTransitionException;
 import pe.upc.simutalk.shared.domain.model.aggregates.AuditableAbstractAggregateRoot;

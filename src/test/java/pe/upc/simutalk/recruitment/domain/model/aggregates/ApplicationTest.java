@@ -6,16 +6,16 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.test.util.ReflectionTestUtils;
 import pe.upc.simutalk.recruitment.domain.model.commands.CreateJobPostingCommand;
-import pe.upc.simutalk.recruitment.domain.model.valueobjects.ApplicationStatus;
-import pe.upc.simutalk.recruitment.domain.model.valueobjects.CriterionType;
-import pe.upc.simutalk.recruitment.domain.model.valueobjects.Weight;
+import pe.upc.simutalk.enums.ApplicationStatus;
+import pe.upc.simutalk.enums.CriterionType;
+import pe.upc.simutalk.entities.Weight;
 import pe.upc.simutalk.exceptions.BusinessRuleViolationException;
 
 import java.time.Instant;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static pe.upc.simutalk.recruitment.domain.model.valueobjects.ApplicationStatus.*;
+import static pe.upc.simutalk.enums.ApplicationStatus.*;
 
 class ApplicationTest {
 

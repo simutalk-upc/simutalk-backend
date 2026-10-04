@@ -1,7 +1,7 @@
 package pe.upc.simutalk.interviews.interfaces.rest.transform;
 
 import pe.upc.simutalk.interviews.domain.model.commands.CreateQuestionCommand;
-import pe.upc.simutalk.interviews.domain.model.valueobjects.QuestionOrigin;
+import pe.upc.simutalk.enums.QuestionOrigin;
 import pe.upc.simutalk.interviews.interfaces.rest.resources.CreateQuestionResource;
 
 public class CreateQuestionCommandFromResourceAssembler {

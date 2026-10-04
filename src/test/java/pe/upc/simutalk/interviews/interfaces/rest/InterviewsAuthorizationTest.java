@@ -19,7 +19,7 @@ import pe.upc.simutalk.interviews.domain.model.aggregates.Question;
 import pe.upc.simutalk.interviews.domain.model.commands.*;
 import pe.upc.simutalk.interviews.domain.model.entities.Answer;
 import pe.upc.simutalk.interviews.domain.model.queries.*;
-import pe.upc.simutalk.interviews.domain.model.valueobjects.QuestionOrigin;
+import pe.upc.simutalk.enums.QuestionOrigin;
 import pe.upc.simutalk.interviews.domain.model.valueobjects.QuestionSuggestion;
 import pe.upc.simutalk.interviews.domain.services.InterviewSessionCommandService;
 import pe.upc.simutalk.interviews.domain.services.InterviewSessionQueryService;

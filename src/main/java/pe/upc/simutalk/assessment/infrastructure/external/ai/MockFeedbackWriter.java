@@ -1,6 +1,6 @@
 package pe.upc.simutalk.assessment.infrastructure.external.ai;
 
-import pe.upc.simutalk.assessment.domain.model.valueobjects.CriterionKind;
+import pe.upc.simutalk.enums.CriterionKind;
 import pe.upc.simutalk.assessment.domain.services.AnswerScoringService.CriterionFeedback;
 
 import java.math.BigDecimal;

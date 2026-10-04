@@ -1,6 +1,6 @@
 package pe.upc.simutalk.profiles.domain.model.commands;
 
-import pe.upc.simutalk.profiles.domain.model.valueobjects.CompanySize;
+import pe.upc.simutalk.enums.CompanySize;
 
 /** The RUC is not part of the update: it cannot change. */
 public record UpdateCompanyProfileCommand(

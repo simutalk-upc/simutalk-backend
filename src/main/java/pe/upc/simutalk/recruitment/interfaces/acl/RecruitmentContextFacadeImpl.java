@@ -13,8 +13,8 @@ import pe.upc.simutalk.recruitment.domain.model.queries.GetAverageTimeToShortlis
 import pe.upc.simutalk.recruitment.domain.model.queries.GetJobPostingIdsByCompanyIdQuery;
 import pe.upc.simutalk.recruitment.domain.model.queries.GetPublishedJobPostingCountByCompanyIdQuery;
 import pe.upc.simutalk.recruitment.domain.model.queries.GetJobPostingByIdQuery;
-import pe.upc.simutalk.recruitment.domain.model.valueobjects.ApplicationStatus;
-import pe.upc.simutalk.recruitment.domain.model.valueobjects.CriterionType;
+import pe.upc.simutalk.enums.ApplicationStatus;
+import pe.upc.simutalk.enums.CriterionType;
 import pe.upc.simutalk.recruitment.domain.model.valueobjects.JobPostingViewer;
 import pe.upc.simutalk.recruitment.domain.services.ApplicationCommandService;
 import pe.upc.simutalk.recruitment.domain.services.ApplicationQueryService;

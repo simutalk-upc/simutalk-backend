@@ -1,4 +1,4 @@
-package pe.upc.simutalk.recruitment.domain.model.valueobjects;
+package pe.upc.simutalk.entities;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;

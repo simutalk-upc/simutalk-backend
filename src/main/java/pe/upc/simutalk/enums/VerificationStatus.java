@@ -1,4 +1,4 @@
-package pe.upc.simutalk.profiles.domain.model.valueobjects;
+package pe.upc.simutalk.enums;
 
 /**
  * UNVERIFIED: not checked yet, or the issuer could not be reached.

@@ -6,7 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import pe.upc.simutalk.recruitment.domain.model.aggregates.Application;
 import pe.upc.simutalk.recruitment.domain.model.queries.GetApplicationCountByStatusQuery;
 import pe.upc.simutalk.recruitment.domain.model.queries.GetAverageTimeToShortlistQuery;
-import pe.upc.simutalk.recruitment.domain.model.valueobjects.ApplicationStatus;
+import pe.upc.simutalk.enums.ApplicationStatus;
 import pe.upc.simutalk.recruitment.domain.model.queries.GetApplicationByIdQuery;
 import pe.upc.simutalk.recruitment.domain.model.queries.GetApplicationsByCandidateIdQuery;
 import pe.upc.simutalk.recruitment.domain.model.queries.GetApplicationsByJobPostingIdQuery;

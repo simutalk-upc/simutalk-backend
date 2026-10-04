@@ -1,4 +1,4 @@
-package pe.upc.simutalk.profiles.domain.model.valueobjects;
+package pe.upc.simutalk.enums;
 
 public enum CompanySize {
     MICRO,

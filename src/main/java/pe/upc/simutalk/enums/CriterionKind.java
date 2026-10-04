@@ -1,4 +1,4 @@
-package pe.upc.simutalk.assessment.domain.model.valueobjects;
+package pe.upc.simutalk.enums;
 
 /**
  * How a criterion is scored: COMPETENCY from interview answers (needs evidence), CERTIFICATION

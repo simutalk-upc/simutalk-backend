@@ -1,7 +1,7 @@
 package pe.upc.simutalk.assessment.domain.model.entities;
 
 import org.junit.jupiter.api.Test;
-import pe.upc.simutalk.assessment.domain.model.valueobjects.CriterionKind;
+import pe.upc.simutalk.enums.CriterionKind;
 import pe.upc.simutalk.exceptions.BusinessRuleViolationException;
 
 import java.math.BigDecimal;

@@ -1,6 +1,6 @@
 package pe.upc.simutalk.interviews.interfaces.rest.resources;
 
-import pe.upc.simutalk.interviews.domain.model.valueobjects.InterviewSessionStatus;
+import pe.upc.simutalk.enums.InterviewSessionStatus;
 
 import java.time.Instant;
 import java.time.LocalDate;

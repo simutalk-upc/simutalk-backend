@@ -6,7 +6,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
-import pe.upc.simutalk.profiles.domain.model.valueobjects.CompanySize;
+import pe.upc.simutalk.enums.CompanySize;
 
 public record CreateCompanyProfileResource(
         @Schema(example = "1") @NotNull @Positive Long userId,

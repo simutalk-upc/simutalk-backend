@@ -15,7 +15,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import pe.upc.simutalk.recruitment.domain.model.commands.SubmitApplicationCommand;
 import pe.upc.simutalk.recruitment.domain.model.queries.GetApplicationsByJobPostingIdQuery;
-import pe.upc.simutalk.recruitment.domain.model.valueobjects.ApplicationStatus;
+import pe.upc.simutalk.enums.ApplicationStatus;
 import pe.upc.simutalk.recruitment.domain.services.ApplicationCommandService;
 import pe.upc.simutalk.recruitment.domain.services.ApplicationQueryService;
 import pe.upc.simutalk.recruitment.interfaces.rest.authorization.RecruitmentAccessPolicy;

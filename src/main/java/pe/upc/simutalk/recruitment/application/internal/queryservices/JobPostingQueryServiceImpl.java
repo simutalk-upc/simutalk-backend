@@ -7,9 +7,9 @@ import pe.upc.simutalk.recruitment.domain.model.aggregates.JobPosting;
 import pe.upc.simutalk.recruitment.domain.model.queries.GetJobPostingByIdQuery;
 import pe.upc.simutalk.recruitment.domain.model.queries.GetJobPostingIdsByCompanyIdQuery;
 import pe.upc.simutalk.recruitment.domain.model.queries.GetPublishedJobPostingCountByCompanyIdQuery;
-import pe.upc.simutalk.recruitment.domain.model.valueobjects.JobPostingStatus;
+import pe.upc.simutalk.enums.JobPostingStatus;
 import pe.upc.simutalk.recruitment.domain.model.queries.SearchJobPostingsQuery;
-import pe.upc.simutalk.recruitment.domain.model.valueobjects.CompanyId;
+import pe.upc.simutalk.entities.CompanyId;
 import pe.upc.simutalk.recruitment.domain.services.JobPostingQueryService;
 import pe.upc.simutalk.recruitment.infrastructure.persistence.jpa.repositories.JobPostingRepository;
 

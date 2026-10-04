@@ -1,6 +1,6 @@
 package pe.upc.simutalk.profiles.interfaces.rest.resources;
 
-import pe.upc.simutalk.profiles.domain.model.valueobjects.VerificationStatus;
+import pe.upc.simutalk.enums.VerificationStatus;
 
 import java.time.Instant;
 import java.time.LocalDate;

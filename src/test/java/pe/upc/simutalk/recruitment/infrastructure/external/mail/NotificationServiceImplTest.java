@@ -4,7 +4,7 @@ import com.sun.net.httpserver.HttpServer;
 import org.junit.jupiter.api.Test;
 import org.springframework.web.client.RestClient;
 import pe.upc.simutalk.recruitment.domain.model.valueobjects.CandidateNotification;
-import pe.upc.simutalk.recruitment.domain.model.valueobjects.NotificationType;
+import pe.upc.simutalk.enums.NotificationType;
 
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;

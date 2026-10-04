@@ -5,7 +5,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.BatchSize;
-import pe.upc.simutalk.assessment.domain.model.valueobjects.CriterionKind;
+import pe.upc.simutalk.enums.CriterionKind;
 import pe.upc.simutalk.exceptions.BusinessRuleViolationException;
 import pe.upc.simutalk.shared.domain.model.entities.AuditableModel;
 

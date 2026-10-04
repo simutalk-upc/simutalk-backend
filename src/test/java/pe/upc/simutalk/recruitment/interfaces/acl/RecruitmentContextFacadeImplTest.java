@@ -9,9 +9,9 @@ import pe.upc.simutalk.recruitment.domain.model.commands.ChangeApplicationStatus
 import pe.upc.simutalk.recruitment.domain.model.commands.CreateJobPostingCommand;
 import pe.upc.simutalk.recruitment.domain.model.queries.GetApplicationByIdQuery;
 import pe.upc.simutalk.recruitment.domain.model.queries.GetJobPostingByIdQuery;
-import pe.upc.simutalk.recruitment.domain.model.valueobjects.ApplicationStatus;
-import pe.upc.simutalk.recruitment.domain.model.valueobjects.CriterionType;
-import pe.upc.simutalk.recruitment.domain.model.valueobjects.Weight;
+import pe.upc.simutalk.enums.ApplicationStatus;
+import pe.upc.simutalk.enums.CriterionType;
+import pe.upc.simutalk.entities.Weight;
 import pe.upc.simutalk.recruitment.domain.services.ApplicationCommandService;
 import pe.upc.simutalk.recruitment.domain.services.ApplicationQueryService;
 import pe.upc.simutalk.recruitment.domain.services.JobPostingQueryService;

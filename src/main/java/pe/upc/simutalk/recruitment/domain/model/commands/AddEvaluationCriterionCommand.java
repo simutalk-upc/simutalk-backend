@@ -1,7 +1,7 @@
 package pe.upc.simutalk.recruitment.domain.model.commands;
 
-import pe.upc.simutalk.recruitment.domain.model.valueobjects.CriterionOrigin;
-import pe.upc.simutalk.recruitment.domain.model.valueobjects.CriterionType;
+import pe.upc.simutalk.enums.CriterionOrigin;
+import pe.upc.simutalk.enums.CriterionType;
 
 public record AddEvaluationCriterionCommand(
         Long jobPostingId,

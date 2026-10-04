@@ -1,5 +1,7 @@
 package pe.upc.simutalk.recruitment.domain.model.valueobjects;
 
+import pe.upc.simutalk.entities.Weight;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;

@@ -1,4 +1,4 @@
-package pe.upc.simutalk.recruitment.domain.model.valueobjects;
+package pe.upc.simutalk.enums;
 
 /**
  * Kind of evaluation criterion.

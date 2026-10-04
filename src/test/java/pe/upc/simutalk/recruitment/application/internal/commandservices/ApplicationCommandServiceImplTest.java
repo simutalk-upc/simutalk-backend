@@ -10,9 +10,9 @@ import pe.upc.simutalk.recruitment.domain.model.commands.ChangeApplicationStatus
 import pe.upc.simutalk.recruitment.domain.model.commands.CreateJobPostingCommand;
 import pe.upc.simutalk.recruitment.domain.model.commands.SubmitApplicationCommand;
 import pe.upc.simutalk.recruitment.domain.model.events.ApplicationStatusChangedEvent;
-import pe.upc.simutalk.recruitment.domain.model.valueobjects.ApplicationStatus;
-import pe.upc.simutalk.recruitment.domain.model.valueobjects.CriterionType;
-import pe.upc.simutalk.recruitment.domain.model.valueobjects.Weight;
+import pe.upc.simutalk.enums.ApplicationStatus;
+import pe.upc.simutalk.enums.CriterionType;
+import pe.upc.simutalk.entities.Weight;
 import pe.upc.simutalk.recruitment.infrastructure.persistence.jpa.repositories.ApplicationRepository;
 import pe.upc.simutalk.recruitment.infrastructure.persistence.jpa.repositories.JobPostingRepository;
 import pe.upc.simutalk.exceptions.BusinessRuleViolationException;

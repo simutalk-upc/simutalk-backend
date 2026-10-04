@@ -2,7 +2,7 @@ package pe.upc.simutalk.recruitment.interfaces.rest.resources;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
-import pe.upc.simutalk.recruitment.domain.model.valueobjects.CriterionType;
+import pe.upc.simutalk.enums.CriterionType;
 
 public record UpdateEvaluationCriterionResource(
         @Schema(example = "Comunicación efectiva")

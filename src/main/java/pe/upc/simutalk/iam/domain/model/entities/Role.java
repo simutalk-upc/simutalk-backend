@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import pe.upc.simutalk.iam.domain.model.valueobjects.Roles;
+import pe.upc.simutalk.enums.Roles;
 
 import java.util.Arrays;
 import java.util.Objects;

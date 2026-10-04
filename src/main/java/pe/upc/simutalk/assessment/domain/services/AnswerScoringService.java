@@ -1,6 +1,6 @@
 package pe.upc.simutalk.assessment.domain.services;
 
-import pe.upc.simutalk.assessment.domain.model.valueobjects.CriterionKind;
+import pe.upc.simutalk.enums.CriterionKind;
 
 import java.math.BigDecimal;
 import java.util.List;

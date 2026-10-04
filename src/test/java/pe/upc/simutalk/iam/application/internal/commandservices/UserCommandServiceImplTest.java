@@ -7,7 +7,7 @@ import pe.upc.simutalk.iam.domain.model.aggregates.User;
 import pe.upc.simutalk.iam.domain.model.commands.SignInCommand;
 import pe.upc.simutalk.iam.domain.model.commands.SignUpCommand;
 import pe.upc.simutalk.iam.domain.model.entities.Role;
-import pe.upc.simutalk.iam.domain.model.valueobjects.Roles;
+import pe.upc.simutalk.enums.Roles;
 import pe.upc.simutalk.iam.infrastructure.hashing.bcrypt.BCryptHashingServiceImpl;
 import pe.upc.simutalk.iam.infrastructure.persistence.jpa.repositories.RoleRepository;
 import pe.upc.simutalk.iam.infrastructure.persistence.jpa.repositories.UserRepository;

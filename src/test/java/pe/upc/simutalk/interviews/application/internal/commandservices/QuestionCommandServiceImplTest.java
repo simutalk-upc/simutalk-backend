@@ -9,7 +9,7 @@ import pe.upc.simutalk.interviews.domain.model.commands.CreateQuestionCommand;
 import pe.upc.simutalk.interviews.domain.model.commands.DeleteQuestionCommand;
 import pe.upc.simutalk.interviews.domain.model.commands.ReorderQuestionsCommand;
 import pe.upc.simutalk.interviews.domain.model.commands.UpdateQuestionCommand;
-import pe.upc.simutalk.interviews.domain.model.valueobjects.QuestionOrigin;
+import pe.upc.simutalk.enums.QuestionOrigin;
 import pe.upc.simutalk.interviews.infrastructure.persistence.jpa.repositories.QuestionRepository;
 import pe.upc.simutalk.exceptions.BusinessRuleViolationException;
 import pe.upc.simutalk.exceptions.ResourceNotFoundException;

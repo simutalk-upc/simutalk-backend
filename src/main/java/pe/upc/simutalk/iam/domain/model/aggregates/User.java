@@ -1,5 +1,7 @@
 package pe.upc.simutalk.iam.domain.model.aggregates;
 
+import pe.upc.simutalk.enums.Roles;
+
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;

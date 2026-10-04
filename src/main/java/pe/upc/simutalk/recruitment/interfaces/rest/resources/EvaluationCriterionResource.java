@@ -1,7 +1,7 @@
 package pe.upc.simutalk.recruitment.interfaces.rest.resources;
 
-import pe.upc.simutalk.recruitment.domain.model.valueobjects.CriterionOrigin;
-import pe.upc.simutalk.recruitment.domain.model.valueobjects.CriterionType;
+import pe.upc.simutalk.enums.CriterionOrigin;
+import pe.upc.simutalk.enums.CriterionType;
 
 import java.time.Instant;
 

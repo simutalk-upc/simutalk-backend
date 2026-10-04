@@ -1,6 +1,6 @@
 package pe.upc.simutalk.recruitment.infrastructure.persistence.jpa.repositories;
 
-import pe.upc.simutalk.recruitment.domain.model.valueobjects.ApplicationStatus;
+import pe.upc.simutalk.enums.ApplicationStatus;
 
 /** JPQL projection: number of applications in one pipeline stage. */
 public interface ApplicationStatusCount {

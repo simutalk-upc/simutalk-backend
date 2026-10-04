@@ -7,7 +7,7 @@ import pe.upc.simutalk.profiles.domain.model.aggregates.CompanyProfile;
 import pe.upc.simutalk.profiles.domain.model.commands.CreateCandidateProfileCommand;
 import pe.upc.simutalk.profiles.domain.model.commands.CreateCompanyProfileCommand;
 import pe.upc.simutalk.profiles.domain.model.queries.*;
-import pe.upc.simutalk.profiles.domain.model.valueobjects.CompanySize;
+import pe.upc.simutalk.enums.CompanySize;
 import pe.upc.simutalk.profiles.domain.services.CandidateProfileQueryService;
 import pe.upc.simutalk.profiles.domain.services.CompanyProfileQueryService;
 import pe.upc.simutalk.shared.interfaces.acl.CandidateContact;

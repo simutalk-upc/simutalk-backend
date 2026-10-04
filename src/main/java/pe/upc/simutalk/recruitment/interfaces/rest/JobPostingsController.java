@@ -17,7 +17,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import pe.upc.simutalk.recruitment.domain.model.commands.DeleteJobPostingCommand;
 import pe.upc.simutalk.recruitment.domain.model.queries.GetJobPostingByIdQuery;
 import pe.upc.simutalk.recruitment.domain.model.queries.SearchJobPostingsQuery;
-import pe.upc.simutalk.recruitment.domain.model.valueobjects.JobPostingStatus;
+import pe.upc.simutalk.enums.JobPostingStatus;
 import pe.upc.simutalk.recruitment.domain.services.JobPostingCommandService;
 import pe.upc.simutalk.recruitment.domain.services.JobPostingQueryService;
 import pe.upc.simutalk.recruitment.interfaces.rest.resources.CreateJobPostingResource;

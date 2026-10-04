@@ -1,6 +1,6 @@
 package pe.upc.simutalk.recruitment.domain.model.commands;
 
-import pe.upc.simutalk.recruitment.domain.model.valueobjects.CriterionType;
+import pe.upc.simutalk.enums.CriterionType;
 
 public record UpdateEvaluationCriterionCommand(
         Long jobPostingId,

@@ -1,6 +1,6 @@
 package pe.upc.simutalk.recruitment.domain.model.queries;
 
-import pe.upc.simutalk.recruitment.domain.model.valueobjects.ApplicationStatus;
+import pe.upc.simutalk.enums.ApplicationStatus;
 
 /**
  * @param status optional pipeline stage filter; {@code null} returns every stage

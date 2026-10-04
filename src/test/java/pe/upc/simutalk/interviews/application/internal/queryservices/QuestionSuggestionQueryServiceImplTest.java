@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 import pe.upc.simutalk.interviews.application.internal.outboundservices.acl.ExternalRecruitmentService;
 import pe.upc.simutalk.interviews.domain.model.aggregates.Question;
 import pe.upc.simutalk.interviews.domain.model.queries.GetQuestionSuggestionsQuery;
-import pe.upc.simutalk.interviews.domain.model.valueobjects.QuestionOrigin;
+import pe.upc.simutalk.enums.QuestionOrigin;
 import pe.upc.simutalk.interviews.domain.model.valueobjects.QuestionSuggestion;
 import pe.upc.simutalk.interviews.domain.services.QuestionSuggestionService;
 import pe.upc.simutalk.interviews.infrastructure.persistence.jpa.repositories.QuestionRepository;

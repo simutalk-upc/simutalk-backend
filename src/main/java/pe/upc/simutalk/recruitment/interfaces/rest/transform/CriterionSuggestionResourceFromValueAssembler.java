@@ -1,8 +1,8 @@
 package pe.upc.simutalk.recruitment.interfaces.rest.transform;
 
-import pe.upc.simutalk.recruitment.domain.model.valueobjects.CriterionOrigin;
+import pe.upc.simutalk.enums.CriterionOrigin;
 import pe.upc.simutalk.recruitment.domain.model.valueobjects.CriterionSuggestion;
-import pe.upc.simutalk.recruitment.domain.model.valueobjects.CriterionType;
+import pe.upc.simutalk.enums.CriterionType;
 import pe.upc.simutalk.recruitment.interfaces.rest.resources.CriterionSuggestionResource;
 
 public class CriterionSuggestionResourceFromValueAssembler {

@@ -1,5 +1,7 @@
 package pe.upc.simutalk.profiles.domain.model.valueobjects;
 
+import pe.upc.simutalk.entities.EmailAddress;
+
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;

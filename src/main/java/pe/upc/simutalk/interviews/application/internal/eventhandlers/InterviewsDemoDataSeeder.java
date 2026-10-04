@@ -11,7 +11,7 @@ import pe.upc.simutalk.interviews.domain.model.aggregates.Question;
 import pe.upc.simutalk.interviews.domain.model.commands.*;
 import pe.upc.simutalk.interviews.domain.model.queries.GetInterviewSessionByApplicationIdQuery;
 import pe.upc.simutalk.interviews.domain.model.queries.GetQuestionsByJobPostingIdQuery;
-import pe.upc.simutalk.interviews.domain.model.valueobjects.QuestionOrigin;
+import pe.upc.simutalk.enums.QuestionOrigin;
 import pe.upc.simutalk.interviews.domain.services.InterviewSessionCommandService;
 import pe.upc.simutalk.interviews.domain.services.InterviewSessionQueryService;
 import pe.upc.simutalk.interviews.domain.services.QuestionCommandService;
