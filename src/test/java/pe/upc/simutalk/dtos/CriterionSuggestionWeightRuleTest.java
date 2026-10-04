@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 import pe.upc.simutalk.entities.JobPosting;
 import pe.upc.simutalk.dtos.CreateJobPostingCommand;
 import pe.upc.simutalk.dtos.CriterionSuggestionResource;
-import pe.upc.simutalk.recruitment.interfaces.rest.transform.CriterionSuggestionResourceFromValueAssembler;
+import pe.upc.simutalk.mappers.CriterionSuggestionResourceFromValueAssembler;
 import tools.jackson.databind.ObjectMapper;
 
 import java.lang.reflect.RecordComponent;
