@@ -1,4 +1,4 @@
-package pe.upc.simutalk.analytics.infrastructure.configuration;
+package pe.upc.simutalk.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 

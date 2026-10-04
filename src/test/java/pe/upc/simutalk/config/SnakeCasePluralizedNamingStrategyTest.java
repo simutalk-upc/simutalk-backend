@@ -1,4 +1,4 @@
-package pe.upc.simutalk.shared.infrastructure.persistence.jpa.configuration.strategy;
+package pe.upc.simutalk.config;
 
 import org.hibernate.boot.model.naming.Identifier;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -6,10 +6,10 @@ import org.junit.jupiter.params.provider.CsvSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class SnakeCaseWithPluralizedTablePhysicalNamingStrategyTest {
+class SnakeCasePluralizedNamingStrategyTest {
 
-    private final SnakeCaseWithPluralizedTablePhysicalNamingStrategy strategy =
-            new SnakeCaseWithPluralizedTablePhysicalNamingStrategy();
+    private final SnakeCasePluralizedNamingStrategy strategy =
+            new SnakeCasePluralizedNamingStrategy();
 
     @ParameterizedTest
     @CsvSource({

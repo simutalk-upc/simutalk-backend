@@ -1,4 +1,4 @@
-package pe.upc.simutalk.shared.infrastructure.documentation.openapi.configuration;
+package pe.upc.simutalk.config;
 
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;

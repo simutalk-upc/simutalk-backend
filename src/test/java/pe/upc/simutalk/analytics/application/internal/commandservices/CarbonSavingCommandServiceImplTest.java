@@ -4,7 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import pe.upc.simutalk.analytics.application.internal.outboundservices.acl.ExternalContextsService;
 import pe.upc.simutalk.analytics.domain.model.commands.RecordCarbonSavingCommand;
-import pe.upc.simutalk.analytics.infrastructure.configuration.SustainabilityProperties;
+import pe.upc.simutalk.config.SustainabilityProperties;
 import pe.upc.simutalk.analytics.infrastructure.persistence.jpa.repositories.CarbonSavingRepository;
 
 import java.math.BigDecimal;

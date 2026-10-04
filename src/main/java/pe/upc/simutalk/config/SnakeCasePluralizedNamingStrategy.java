@@ -1,4 +1,4 @@
-package pe.upc.simutalk.shared.infrastructure.persistence.jpa.configuration.strategy;
+package pe.upc.simutalk.config;
 
 import org.hibernate.boot.model.naming.Identifier;
 import org.hibernate.boot.model.naming.PhysicalNamingStrategy;
@@ -16,7 +16,7 @@ import java.util.Set;
  * that are already plural ({@code job_postings}, {@code evaluation_criteria},
  * {@code user_roles}) are left untouched.
  */
-public class SnakeCaseWithPluralizedTablePhysicalNamingStrategy implements PhysicalNamingStrategy {
+public class SnakeCasePluralizedNamingStrategy implements PhysicalNamingStrategy {
 
     private static final Map<String, String> IRREGULAR_PLURALS = Map.of(
             "criterion", "criteria",
