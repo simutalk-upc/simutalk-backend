@@ -1,4 +1,4 @@
-package pe.upc.simutalk.profiles.interfaces.rest.authorization;
+package pe.upc.simutalk.securities;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;

@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import pe.upc.simutalk.recruitment.domain.model.queries.GetApplicationsByCandidateIdQuery;
 import pe.upc.simutalk.services.ApplicationCommandService;
 import pe.upc.simutalk.services.ApplicationQueryService;
-import pe.upc.simutalk.recruitment.interfaces.rest.authorization.RecruitmentAccessPolicy;
+import pe.upc.simutalk.securities.RecruitmentAccessPolicy;
 import pe.upc.simutalk.recruitment.interfaces.rest.resources.ApplicationResource;
 import pe.upc.simutalk.recruitment.interfaces.rest.resources.UpdateApplicationStatusResource;
 import pe.upc.simutalk.recruitment.interfaces.rest.transform.ApplicationResourceFromEntityAssembler;

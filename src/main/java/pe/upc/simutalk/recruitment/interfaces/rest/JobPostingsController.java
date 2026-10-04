@@ -27,7 +27,7 @@ import pe.upc.simutalk.recruitment.interfaces.rest.resources.UpdateJobPostingSta
 import pe.upc.simutalk.recruitment.interfaces.rest.transform.ChangeJobPostingStatusCommandFromResourceAssembler;
 import pe.upc.simutalk.recruitment.interfaces.rest.transform.CreateJobPostingCommandFromResourceAssembler;
 import pe.upc.simutalk.recruitment.interfaces.rest.transform.JobPostingResourceFromEntityAssembler;
-import pe.upc.simutalk.recruitment.interfaces.rest.authorization.RecruitmentAccessPolicy;
+import pe.upc.simutalk.securities.RecruitmentAccessPolicy;
 import pe.upc.simutalk.recruitment.interfaces.rest.transform.UpdateJobPostingCommandFromResourceAssembler;
 import pe.upc.simutalk.exceptions.BusinessRuleViolationException;
 import pe.upc.simutalk.exceptions.ResourceNotFoundException;

@@ -22,7 +22,7 @@ import pe.upc.simutalk.profiles.domain.model.queries.GetCandidateProfileByIdQuer
 import pe.upc.simutalk.profiles.domain.model.queries.GetCandidateProfileByUserIdQuery;
 import pe.upc.simutalk.services.CandidateProfileCommandService;
 import pe.upc.simutalk.services.CandidateProfileQueryService;
-import pe.upc.simutalk.profiles.interfaces.rest.authorization.ProfileAccessPolicy;
+import pe.upc.simutalk.securities.ProfileAccessPolicy;
 import pe.upc.simutalk.profiles.interfaces.rest.resources.CandidateProfileResource;
 import pe.upc.simutalk.profiles.interfaces.rest.resources.CreateCandidateProfileResource;
 import pe.upc.simutalk.profiles.interfaces.rest.resources.UpdateCandidateProfileResource;

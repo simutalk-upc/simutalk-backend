@@ -37,7 +37,7 @@ import pe.upc.simutalk.services.InterviewSessionQueryService;
 import pe.upc.simutalk.services.QuestionCommandService;
 import pe.upc.simutalk.services.QuestionQueryService;
 import pe.upc.simutalk.services.QuestionSuggestionQueryService;
-import pe.upc.simutalk.interviews.interfaces.rest.authorization.InterviewsAccessPolicy;
+import pe.upc.simutalk.securities.InterviewsAccessPolicy;
 import pe.upc.simutalk.interviews.interfaces.rest.resources.CreateInterviewSessionResource;
 import pe.upc.simutalk.interviews.interfaces.rest.resources.CreateQuestionResource;
 import pe.upc.simutalk.interviews.interfaces.rest.resources.RecordAnswerResource;

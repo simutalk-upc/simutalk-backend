@@ -22,7 +22,7 @@ import pe.upc.simutalk.enums.IntegrityFlagType;
 import pe.upc.simutalk.assessment.domain.model.valueobjects.InterviewSessionSnapshot;
 import pe.upc.simutalk.services.AssessmentCommandService;
 import pe.upc.simutalk.services.AssessmentQueryService;
-import pe.upc.simutalk.assessment.interfaces.rest.authorization.AssessmentAccessPolicy;
+import pe.upc.simutalk.securities.AssessmentAccessPolicy;
 import pe.upc.simutalk.assessment.interfaces.rest.resources.AssessmentResource;
 import pe.upc.simutalk.assessment.interfaces.rest.resources.CandidateAssessmentResource;
 import pe.upc.simutalk.services.IamContextFacade;

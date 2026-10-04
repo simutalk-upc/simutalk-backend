@@ -1,4 +1,4 @@
-package pe.upc.simutalk.iam.infrastructure.authorization.sfs.pipeline;
+package pe.upc.simutalk.securities;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -11,7 +11,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.web.filter.OncePerRequestFilter;
-import pe.upc.simutalk.iam.application.internal.outboundservices.tokens.TokenService;
+import pe.upc.simutalk.securities.TokenService;
 
 import java.io.IOException;
 

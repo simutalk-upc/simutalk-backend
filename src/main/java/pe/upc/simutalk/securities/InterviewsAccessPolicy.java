@@ -1,7 +1,7 @@
-package pe.upc.simutalk.interviews.interfaces.rest.authorization;
+package pe.upc.simutalk.securities;
 
-import pe.upc.simutalk.profiles.interfaces.rest.authorization.ProfileAccessPolicy;
-import pe.upc.simutalk.recruitment.interfaces.rest.authorization.RecruitmentAccessPolicy;
+import pe.upc.simutalk.securities.ProfileAccessPolicy;
+import pe.upc.simutalk.securities.RecruitmentAccessPolicy;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;

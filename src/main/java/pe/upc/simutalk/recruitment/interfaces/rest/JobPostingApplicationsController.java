@@ -18,7 +18,7 @@ import pe.upc.simutalk.recruitment.domain.model.queries.GetApplicationsByJobPost
 import pe.upc.simutalk.enums.ApplicationStatus;
 import pe.upc.simutalk.services.ApplicationCommandService;
 import pe.upc.simutalk.services.ApplicationQueryService;
-import pe.upc.simutalk.recruitment.interfaces.rest.authorization.RecruitmentAccessPolicy;
+import pe.upc.simutalk.securities.RecruitmentAccessPolicy;
 import pe.upc.simutalk.recruitment.interfaces.rest.resources.ApplicationResource;
 import pe.upc.simutalk.recruitment.interfaces.rest.transform.ApplicationResourceFromEntityAssembler;
 import pe.upc.simutalk.exceptions.BusinessRuleViolationException;

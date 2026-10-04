@@ -1,4 +1,4 @@
-package pe.upc.simutalk.iam.application.internal.outboundservices.tokens;
+package pe.upc.simutalk.securities;
 
 import jakarta.servlet.http.HttpServletRequest;
 

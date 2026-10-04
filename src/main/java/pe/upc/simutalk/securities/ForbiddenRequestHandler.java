@@ -1,4 +1,4 @@
-package pe.upc.simutalk.iam.infrastructure.authorization.sfs.pipeline;
+package pe.upc.simutalk.securities;
 
 import tools.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;

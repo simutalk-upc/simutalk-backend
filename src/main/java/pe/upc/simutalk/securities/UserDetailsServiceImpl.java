@@ -1,4 +1,4 @@
-package pe.upc.simutalk.iam.infrastructure.authorization.sfs.services;
+package pe.upc.simutalk.securities;
 
 import pe.upc.simutalk.entities.User;
 
@@ -8,7 +8,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import pe.upc.simutalk.iam.infrastructure.authorization.sfs.model.UserDetailsImpl;
+import pe.upc.simutalk.securities.UserDetailsImpl;
 import pe.upc.simutalk.repositories.UserRepository;
 
 @Service("defaultUserDetailsService")

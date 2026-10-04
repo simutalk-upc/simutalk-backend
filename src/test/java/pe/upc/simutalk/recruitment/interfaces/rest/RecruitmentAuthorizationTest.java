@@ -41,7 +41,7 @@ import pe.upc.simutalk.recruitment.domain.model.valueobjects.CriterionSuggestion
 import pe.upc.simutalk.services.CriterionSuggestionQueryService;
 import pe.upc.simutalk.services.JobPostingCommandService;
 import pe.upc.simutalk.services.JobPostingQueryService;
-import pe.upc.simutalk.recruitment.interfaces.rest.authorization.RecruitmentAccessPolicy;
+import pe.upc.simutalk.securities.RecruitmentAccessPolicy;
 import pe.upc.simutalk.recruitment.interfaces.rest.resources.*;
 import pe.upc.simutalk.exceptions.BusinessRuleViolationException;
 import pe.upc.simutalk.services.IamContextFacade;

@@ -1,4 +1,4 @@
-package pe.upc.simutalk.iam.infrastructure.authorization.sfs.model;
+package pe.upc.simutalk.securities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;

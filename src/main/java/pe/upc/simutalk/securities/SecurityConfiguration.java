@@ -1,4 +1,4 @@
-package pe.upc.simutalk.iam.infrastructure.authorization.sfs.configuration;
+package pe.upc.simutalk.securities;
 
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
@@ -16,19 +16,19 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import pe.upc.simutalk.iam.application.internal.outboundservices.tokens.TokenService;
-import pe.upc.simutalk.iam.infrastructure.authorization.sfs.pipeline.BearerAuthorizationRequestFilter;
-import pe.upc.simutalk.iam.infrastructure.authorization.sfs.pipeline.ForbiddenRequestHandler;
-import pe.upc.simutalk.iam.infrastructure.authorization.sfs.pipeline.UnauthorizedRequestHandlerEntryPoint;
-import pe.upc.simutalk.iam.infrastructure.hashing.bcrypt.BCryptHashingServiceImpl;
-import pe.upc.simutalk.iam.infrastructure.hashing.bcrypt.services.HashingService;
+import pe.upc.simutalk.securities.TokenService;
+import pe.upc.simutalk.securities.BearerAuthorizationRequestFilter;
+import pe.upc.simutalk.securities.ForbiddenRequestHandler;
+import pe.upc.simutalk.securities.UnauthorizedRequestHandlerEntryPoint;
+import pe.upc.simutalk.securities.BCryptHashingServiceImpl;
+import pe.upc.simutalk.securities.HashingService;
 
 import java.util.List;
 
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
-public class WebSecurityConfiguration {
+public class SecurityConfiguration {
 
     private static final String[] PUBLIC_ROUTES = {
             "/api/v1/authentication/**",
@@ -45,7 +45,7 @@ public class WebSecurityConfiguration {
     private final UnauthorizedRequestHandlerEntryPoint unauthorizedRequestHandler;
     private final ForbiddenRequestHandler forbiddenRequestHandler;
 
-    public WebSecurityConfiguration(UserDetailsService userDetailsService, TokenService tokenService,
+    public SecurityConfiguration(UserDetailsService userDetailsService, TokenService tokenService,
                                     UnauthorizedRequestHandlerEntryPoint unauthorizedRequestHandler,
                                     ForbiddenRequestHandler forbiddenRequestHandler) {
         this.userDetailsService = userDetailsService;

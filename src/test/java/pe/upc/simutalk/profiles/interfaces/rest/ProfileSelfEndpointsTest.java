@@ -32,7 +32,7 @@ import pe.upc.simutalk.services.CandidateProfileCommandService;
 import pe.upc.simutalk.services.CandidateProfileQueryService;
 import pe.upc.simutalk.services.CompanyProfileCommandService;
 import pe.upc.simutalk.services.CompanyProfileQueryService;
-import pe.upc.simutalk.profiles.interfaces.rest.authorization.ProfileAccessPolicy;
+import pe.upc.simutalk.securities.ProfileAccessPolicy;
 import pe.upc.simutalk.services.IamContextFacade;
 import pe.upc.simutalk.exceptions.GlobalExceptionHandler;
 

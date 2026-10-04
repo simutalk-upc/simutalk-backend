@@ -2,13 +2,13 @@ package pe.upc.simutalk.serviceimpl;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import pe.upc.simutalk.iam.application.internal.outboundservices.tokens.TokenService;
+import pe.upc.simutalk.securities.TokenService;
 import pe.upc.simutalk.entities.User;
 import pe.upc.simutalk.iam.domain.model.commands.SignInCommand;
 import pe.upc.simutalk.iam.domain.model.commands.SignUpCommand;
 import pe.upc.simutalk.entities.Role;
 import pe.upc.simutalk.enums.Roles;
-import pe.upc.simutalk.iam.infrastructure.hashing.bcrypt.BCryptHashingServiceImpl;
+import pe.upc.simutalk.securities.BCryptHashingServiceImpl;
 import pe.upc.simutalk.repositories.RoleRepository;
 import pe.upc.simutalk.repositories.UserRepository;
 import pe.upc.simutalk.exceptions.BusinessRuleViolationException;

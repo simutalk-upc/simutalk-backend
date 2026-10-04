@@ -1,4 +1,4 @@
-package pe.upc.simutalk.iam.infrastructure.tokens.jwt.services;
+package pe.upc.simutalk.securities;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
@@ -9,7 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
-import pe.upc.simutalk.iam.application.internal.outboundservices.tokens.TokenService;
+import pe.upc.simutalk.securities.TokenService;
 
 import javax.crypto.SecretKey;
 import java.time.Duration;

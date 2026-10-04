@@ -22,7 +22,7 @@ import pe.upc.simutalk.profiles.domain.model.queries.GetCompanyProfileByIdQuery;
 import pe.upc.simutalk.profiles.domain.model.queries.GetCompanyProfileByUserIdQuery;
 import pe.upc.simutalk.services.CompanyProfileCommandService;
 import pe.upc.simutalk.services.CompanyProfileQueryService;
-import pe.upc.simutalk.profiles.interfaces.rest.authorization.ProfileAccessPolicy;
+import pe.upc.simutalk.securities.ProfileAccessPolicy;
 import pe.upc.simutalk.profiles.interfaces.rest.resources.CompanyProfileResource;
 import pe.upc.simutalk.profiles.interfaces.rest.resources.CreateCompanyProfileResource;
 import pe.upc.simutalk.profiles.interfaces.rest.resources.UpdateCompanyProfileResource;

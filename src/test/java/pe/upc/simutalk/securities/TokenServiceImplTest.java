@@ -1,4 +1,4 @@
-package pe.upc.simutalk.iam.infrastructure.tokens.jwt.services;
+package pe.upc.simutalk.securities;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
