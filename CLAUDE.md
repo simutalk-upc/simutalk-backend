@@ -21,7 +21,7 @@ Guía para cualquier agente (o persona) que trabaje en este repositorio. Léela 
 | Lenguaje | Java 21 |
 | Framework | Spring Boot 4.1.x (webmvc, data-jpa, security, validation); llamadas HTTP salientes con `RestClient` (`spring-boot-starter-restclient`) |
 | Persistencia | Spring Data JPA + Hibernate, PostgreSQL 16 (`simutalk_db`) |
-| Seguridad | Spring Security + JWT HS256 (jjwt 0.12.6), BCrypt — contexto `iam` |
+| Seguridad | Spring Security + JWT HS256 (jjwt 0.12.6), BCrypt — paquete `securities` |
 | Documentación | OpenAPI 3.1 con springdoc 3.1.1 (Swagger UI en `/swagger-ui.html`) |
 | JSON | Jackson 3 (`tools.jackson`; las anotaciones siguen en `com.fasterxml.jackson.annotation`), con `spring.jackson.use-jackson2-defaults=true` |
 | Utilidades | Lombok |
@@ -34,35 +34,51 @@ Comandos:
 ./mvnw spring-boot:run      # levanta la API (requiere PostgreSQL, DB_USERNAME, DB_PASSWORD y JWT_SECRET)
 ```
 
-## Arquitectura: DDD con bounded contexts
+## Arquitectura: capas horizontales
 
-Paquete raíz `pe.upc.simutalk`. Cada bounded context es un paquete de primer nivel con **cuatro capas**:
+Paquete raíz `pe.upc.simutalk`. **No hay bounded contexts**: el proyecto se organiza en trece paquetes de
+primer nivel, uno por responsabilidad técnica, según el estándar de capas del curso 1ASI0705.
 
-| Capa | Paquete | Contenido |
+| Paquete | Contenido |
+|---|---|
+| `controllers` | Controladores REST. Reciben y devuelven solo DTOs de `dtos`. |
+| `dtos` | Objetos de transferencia: `*Resource` de entrada y salida, proyecciones de consulta, reportes y `PageResource`. |
+| `entities` | Entidades JPA, las dos clases base auditables y los value objects `@Embeddable` (`Weight`, `CompanyId`, `Ruc`, `DocumentNumber`, `EmailAddress`, `PersonName`). **Las reglas de negocio viven aquí.** |
+| `enums` | Enumerados de estado y de tipo. |
+| `events` | Eventos de integración (`ApplicationStatusChangedEvent`, `InterviewSessionCompletedEvent`). |
+| `exceptions` | Excepciones propias, `ErrorResource` y el `GlobalExceptionHandler`. |
+| `listeners` | Oyentes de eventos y los sembradores de datos demo ordenados con `@Order`. |
+| `mappers` | Conversión entidad ↔ DTO. Un mapper por entidad. |
+| `repositories` | Interfaces Spring Data JPA y las proyecciones de agregación. |
+| `securities` | Configuración de Spring Security, filtro bearer, JWT, hashing, `UserDetails` y las políticas de acceso `@PreAuthorize`. |
+| `services` | Contratos de servicio (interfaces) y las políticas de dominio. |
+| `serviceimpl` | Implementaciones de los contratos y los adaptadores a servicios externos. |
+| `config` | OpenAPI, estrategia de nombres de tablas, propiedades de configuración y beans de `RestClient`. |
+
+Flujo de una escritura: `Controller` → DTO de entrada → `Service` (interfaz) → `ServiceImpl` → entidad
+(regla de negocio) → `Repository` → `Mapper` → DTO de salida.
+
+Las interfaces `*ContextFacade` que quedan en `services` son **transitorias**: vienen de la estructura
+anterior y se mantienen para que la migración no cambiara comportamiento. Un commit posterior las colapsa
+en los servicios que ya exponen esos datos. No agregar métodos nuevos a ellas: usar el servicio directo.
+
+### Áreas del dominio
+
+El dominio sigue siendo el mismo; lo que cambió es dónde viven las clases. Estas áreas ya no son paquetes:
+son agrupaciones conceptuales que determinan **quién es dueño de qué archivo** y qué historias de usuario
+cubre cada integrante.
+
+| Área | Responsabilidad | Historias |
 |---|---|---|
-| **Domain** | `domain/model/{aggregates,entities,commands,queries,valueobjects}`, `domain/services` | Agregados, entidades, value objects, commands, queries e interfaces de servicios. Aquí viven las reglas de negocio. Sin dependencias de web. |
-| **Application** | `application/internal/{commandservices,queryservices,outboundservices,eventhandlers}` | Implementaciones de los servicios de dominio: cargan el agregado, delegan en él y persisten. `outboundservices` son puertos/ACL hacia sistemas externos (interfaces implementadas en infrastructure). `eventhandlers` reaccionan a eventos de la aplicación. |
-| **Infrastructure** | `infrastructure/persistence/jpa/repositories` (+ adaptadores técnicos, p. ej. `iam/infrastructure/{hashing,tokens,authorization}`) | Repositorios Spring Data JPA e implementaciones de los puertos de salida. |
-| **Interfaces** | `interfaces/rest/{resources,transform}`, `interfaces/acl` | Controladores REST, DTOs (`resources`) y ensambladores DTO ↔ command/entidad (`transform`). `acl` implementa los contratos que el contexto publica en `shared/interfaces/acl`. |
+| Cuentas y perfiles | `User`, `Role`, `CompanyProfile`, `CandidateProfile`, `Certification` y su verificación con el emisor. | US-15, 16, 25, 26, 27 |
+| Seguridad | Configuración de Spring Security, filtro bearer, catálogo de roles y políticas de acceso. | US-28 |
+| Vacantes | `JobPosting`, `EvaluationCriterion` con sus pesos, ciclo DRAFT → PUBLISHED → CLOSED, guion de preguntas (`Question`). | US-01 a US-05 |
+| Postulaciones | `Application` y su pipeline, notificaciones al candidato. | US-06, 17, 18, 23, 24 |
+| Entrevistas | `InterviewSession` y `Answer`: qué se preguntó y qué se respondió. Nada de puntuación. | US-07 a US-10 |
+| Evaluación | `Assessment`, `CriterionScore`, `Evidence`, `IntegrityFlag`, anonimización y ranking explicable. | US-11 a US-14 |
+| Reportes | Embudo, promedios por criterio, emisiones evitadas (`CarbonSaving`), resumen de empresa y retroalimentación al candidato. | US-19 a US-22 |
 
-Flujo de una escritura: `Controller` → `*CommandFromResourceAssembler` → `Command` → `CommandService` →
-agregado (regla de negocio) → repositorio → `*ResourceFromEntityAssembler` → DTO.
-
-### Contextos
-
-| Contexto | Responsabilidad | Estado |
-|---|---|---|
-| `shared` | `AuditableAbstractAggregateRoot`, `AuditableModel`, estrategia de nombres snake_case con tablas en plural, OpenAPI, excepciones de dominio base, manejador global de errores (`ErrorResource`), `PageResource`, contratos ACL entre contextos (`IamContextFacade`, `ProfilesContextFacade`, `RecruitmentContextFacade`, `InterviewsContextFacade`, `AssessmentContextFacade`), eventos de integración (`shared/interfaces/events`, p. ej. `InterviewSessionCompletedEvent`) y el cliente del proveedor de IA (`shared/infrastructure/external/ai/GenerativeAiClient`, solo transporte, sin dominio). | Implementado |
-| `recruitment` | Vacantes (`JobPosting`) y sus criterios ponderados (`EvaluationCriterion`, `Weight`), ciclo DRAFT → PUBLISHED → CLOSED; postulaciones (`Application`) y su pipeline. | Implementado |
-| `iam` | Usuarios (`User`), roles (`Role`, `Roles`), registro, sign-in con JWT, autorización y `IamContextFacadeImpl`. | Implementado |
-| `profiles` | Perfiles de empresa (`CompanyProfile`) y de postulante (`CandidateProfile`, incluye PII), certificaciones (`Certification`) y su verificación con el emisor. `ProfilesContextFacadeImpl`. | Implementado |
-| `interviews` | Guion de preguntas por vacante (`Question`), sesión de entrevista asincrónica (`InterviewSession`) y respuestas (`Answer`). Solo registra qué se preguntó y qué se respondió; nada de puntuación. La única IA es la sugerencia de preguntas para el guion (`QuestionSuggestionService`), que no ve datos de candidatos. `InterviewsContextFacadeImpl`. | Implementado |
-| `analytics` | Reportes (embudo, promedios por criterio, emisiones evitadas, resumen de empresa) y `CarbonSaving`. Solo agregaciones en base de datos. | Implementado |
-| `assessment` | Evaluación por criterio (`Assessment`, `CriterionScore`, `Evidence`, `IntegrityFlag`) con evidencia textual anclada, anonimización previa (`TranscriptAnonymizer`), puerto de IA (`AnswerScoringService`, adaptador mock/Gemini) y ranking explicable. | Implementado |
-
-Los nombres de los contextos planificados son una propuesta; ajustar esta tabla cuando se creen.
-
-### Modelo actual de `recruitment`
+### Modelo: vacantes y postulaciones
 
 - `JobPosting` (agregado raíz, tabla `job_postings`): `title`, `description`, `companyId` (VO `CompanyId`),
   `status` (`DRAFT|PUBLISHED|CLOSED`), `closingDate`, `anonymizedScreening`, `criteria`.
@@ -91,22 +107,19 @@ Los nombres de los contextos planificados son una propuesta; ajustar esta tabla 
   SHORTLISTED → HIRED, y REJECTED desde cualquier etapa no final; REJECTED y HIRED son finales. Un salto inválido
   lanza `InvalidStateTransitionException` (una `IllegalStateException`, 422 en la API).
 - Con `app.seed-demo-data=true`, los datos demo se siembran en una sola secuencia de listeners de
-  `ApplicationReadyEvent` ordenados con `@Order`, cada paso en su contexto y en su propia transacción: 100 `profiles`
-  (empresa y 6 candidatos) → 200 `recruitment` (vacante en DRAFT con criterios) → 300 `interviews` (guion) → 400
-  `recruitment` (publica y hace postular a los 6) → 500 `interviews` (sesiones: 2 COMPLETED, 2 IN_PROGRESS) → 600
-  `assessment` (evalúa las completadas, solo con el motor mock). Cada paso encuentra lo que dejó el anterior por las
-  fachadas de `shared` y revisa su propia precondición, así que es idempotente (una sesión solo se crea sobre una
+  `ApplicationReadyEvent` ordenados con `@Order`, cada paso en su propia transacción: 100 perfiles
+  (empresa y 6 candidatos) → 200 vacante en DRAFT con criterios → 300 guion de preguntas → 400 publica y hace postular a los 6) → 500 sesiones (: 2 COMPLETED, 2 IN_PROGRESS) → 600 evalúa las completadas, solo con el motor mock). Cada paso encuentra lo que dejó el anterior por los servicios de consulta y revisa su propia precondición, así que es idempotente (una sesión solo se crea sobre una
   postulación en RECEIVED). Un fallo de cualquier paso se registra como WARN y nunca impide que la app arranque.
-  No hay eventos de demo en `shared`.
-- `RecruitmentContextFacadeImpl` expone vacantes, criterios y postulaciones a otros contextos, y mueve postulaciones
+  No hay eventos de demo.
+- `RecruitmentContextFacadeImpl` expone vacantes, criterios y postulaciones a los demás servicios, y mueve postulaciones
   a INTERVIEWING / ASSESSED siempre a través del agregado `Application`.
 - Notificaciones al candidato (US-24): cada cambio de etapa publica `ApplicationStatusChangedEvent`
-  (`domain/model/events`); `CandidateNotificationEventHandler` lo atiende después del commit y envía, por el puerto
+  (`events`); `CandidateNotificationListener` lo atiende después del commit y envía, por el puerto
   `NotificationService`, la invitación a entrevista (INTERVIEWING), el aviso de terna final (SHORTLISTED) o el descarte
   (REJECTED). El destinatario sale de `ProfilesContextFacade.fetchCandidateContact`; sin correo, no se envía. Un fallo
   del envío se registra como WARN y nunca interrumpe la operación que lo originó.
 
-### Modelo actual de `iam`
+### Modelo: usuarios y roles
 
 - `User` (agregado raíz, tabla `users`): `username` único, `password` (siempre hash BCrypt), `roles`
   (`@ManyToMany` EAGER vía `user_roles`). Sin setters; roles inmutables hacia afuera.
@@ -116,7 +129,7 @@ Los nombres de los contextos planificados son una propuesta; ajustar esta tabla 
   sin roles se asigna `ROLE_CANDIDATE`.
 - Sign-in fallido responde siempre 401 "Invalid username or password", exista o no el usuario.
 
-### Modelo actual de `profiles`
+### Modelo: perfiles y certificaciones
 
 - `CompanyProfile` (tabla `companies`): `userId` (solo el id, sin relación con `iam`), `legalName`, `tradeName`,
   `industry`, `ruc` (VO `Ruc`: 11 dígitos, empieza en 10 o 20; no cambia), `companySize`
@@ -130,13 +143,13 @@ Los nombres de los contextos planificados son una propuesta; ajustar esta tabla 
 - `Certification` (tabla `certifications`, entidad del agregado candidato): `title`, `issuer`, `credentialCode`
   (opcional), `issuedAt`, `expiresAt` (opcional), `verificationStatus` (`VERIFIED|UNVERIFIED|REJECTED`), `verifiedAt`.
   Nace UNVERIFIED y **nunca queda VERIFIED sin código de credencial**. `countsForScoring()` = VERIFIED y no expirada.
-- Un usuario tiene como máximo un perfil (de empresa o de candidato) y debe existir en `iam` (vía `IamContextFacade`).
+- Un usuario tiene como máximo un perfil (de empresa o de candidato) y debe existir como usuario (vía `IamContextFacade`).
 - Verificación: coincide → VERIFIED; no coincide → REJECTED; emisor no disponible → sigue UNVERIFIED. Solo desde
   UNVERIFIED. Sin código responde 422 y no se consulta al emisor.
-- Nada de puntuación aquí: cuánto vale una certificación lo decide `assessment` (vía `ProfilesContextFacade`).
+- Nada de puntuación aquí: cuánto vale una certificación lo decide la evaluación (vía `ProfilesContextFacade`).
 - `app.seed-demo-data=true` siembra datos demo (1 empresa, 6 candidatos) si las tablas de perfiles están vacías.
 
-### Modelo actual de `interviews`
+### Modelo: entrevistas
 
 - `Question` (agregado raíz, tabla `questions`): `jobPostingId` y `criterionId` (solo ids), `statement` (1 a 500
   caracteres), `maxDurationSeconds` (30 a 600), `position` (≥ 1, consecutivas dentro del guion), `origin`
@@ -151,7 +164,7 @@ Los nombres de los contextos planificados son una propuesta; ajustar esta tabla 
     vez vencida. COMPLETED y EXPIRED son finales. Los saltos inválidos lanzan `InvalidStateTransitionException`.
 - `Answer` (entidad de la sesión, tabla `answers`): `questionId`, `parentAnswerId` (solo en repreguntas),
   `transcript` (no vacío), `audioUrl`, `durationSeconds`, `answeredAt`, `isFollowUp`.
-- Reglas que cruzan contextos (en los servicios de aplicación, vía `RecruitmentContextFacade`): el guion solo cambia
+- Reglas que cruzan áreas (en los `ServiceImpl`, vía `RecruitmentContextFacade`): el guion solo cambia
   con la vacante en DRAFT (publicada queda congelado, como los pesos); una pregunta apunta a un criterio COMPETENCY de
   la misma vacante (uno de CERTIFICATION responde 422 con mensaje explícito); crear la sesión exige una postulación en
   RECEIVED y la mueve a INTERVIEWING; completarla la mueve a ASSESSED.
@@ -167,7 +180,7 @@ Los nombres de los contextos planificados son una propuesta; ajustar esta tabla 
 - Aún no hay un proceso que marque como EXPIRED las sesiones vencidas: `expire()` existe en el agregado, pero nada lo
   invoca todavía.
 
-### Modelo actual de `assessment`
+### Modelo: evaluación y ranking
 
 - `Assessment` (agregado raíz, tabla `assessments`): `interviewSessionId` (único), copias inmutables de
   `applicationId`, `jobPostingId` y `candidateId`, `weightedScore` (0.0 a 10.0), `engineVersion`, `computedAt`,
@@ -194,7 +207,7 @@ Los nombres de los contextos planificados son una propuesta; ajustar esta tabla 
   estables `CANDIDATO-X-9999` (HMAC con `app.anonymization.secret`). Si la vacante tiene `anonymizedScreening`, la
   anonimización es forzada y además se redactan los datos personales dentro de los excerpts.
 
-### Modelo actual de `analytics`
+### Modelo: reportes
 
 - `CarbonSaving` (agregado raíz, tabla `carbon_savings`): `applicationId` (único), copias de `jobPostingId` y
   `companyId`, `distanceKm` (ida y vuelta), `emissionFactor` (kg CO2e/km), `kgCo2eAvoided = distanceKm ×
@@ -204,7 +217,7 @@ Los nombres de los contextos planificados son una propuesta; ajustar esta tabla 
   de la empresa × `road-factor` × 2. Factor, road-factor, distancia por defecto y centroides en `sustainability.*`;
   el factor de emisión y los centroides son valores de referencia que el equipo debe validar antes de reportar.
 - Reportes: todo sale de agregaciones en base de datos (JPQL `COUNT`, `AVG`, `SUM` con `GROUP BY`). Las que tocan
-  datos de otro contexto se calculan en ese contexto y se exponen por su fachada; `analytics` no lee sus tablas.
+  datos de otra área se calculan en el servicio de esa área y se exponen por su contrato; los reportes no leen tablas ajenas.
   "Tiempo medio hasta la terna" = promedio de días entre la postulación y SHORTLISTED.
 
 ## Seguridad
@@ -218,8 +231,8 @@ Los nombres de los contextos planificados son una propuesta; ajustar esta tabla 
 - El único camino para crear un administrador es el bootstrap al arrancar con `ADMIN_USERNAME` y `ADMIN_PASSWORD`
   (idempotente: si existe, no lo toca).
 - CORS abierto en desarrollo; en producción se restringe al dominio del frontend Angular (TODO en
-  `WebSecurityConfiguration`).
-- Para saber quién es un usuario desde otro contexto se usa `shared.interfaces.acl.IamContextFacade`, nunca
+  `SecurityConfiguration`).
+- Para saber quién es un usuario se usa `services.IamContextFacade`, nunca
   `UserRepository` ni clases de `iam`. Así lo hace `ProfileAccessPolicy` (`@profileAccess` en `@PreAuthorize`).
 - `recruitment`: toda escritura (vacantes, criterios, estado) exige `ROLE_RECRUITER` dueño de la vacante o
   `ROLE_ADMIN`; pedir sugerencias de criterios es solo del recruiter dueño. El dueño se resuelve en `RecruitmentAccessPolicy` (`@recruitmentAccess`): username →
@@ -247,33 +260,43 @@ Los nombres de los contextos planificados son una propuesta; ajustar esta tabla 
 
 ## Reglas que no se rompen
 
-1. **Las reglas de negocio viven en el agregado**, nunca en el controlador ni en el command service.
-2. **Los controladores solo reciben y devuelven DTOs** (`resources`), nunca entidades.
-3. **Un agregado referencia a otro solo por id** (p. ej. `CompanyId`), nunca con una relación JPA entre agregados.
-4. **Commands, queries y value objects son `record`** (los enums de estado/tipo también van en `valueobjects`).
+1. **Las reglas de negocio viven en la entidad**, nunca en el controlador ni en el `ServiceImpl`. Un
+   `ServiceImpl` carga la entidad, delega en ella y persiste.
+2. **Los controladores solo reciben y devuelven DTOs** de `dtos`, nunca entidades.
+3. **Una entidad referencia a otra de distinta área solo por id** (p. ej. `JobPosting.companyId`), nunca con
+   una relación JPA entre áreas. Dentro de una misma área (`JobPosting` → `EvaluationCriterion`) la relación
+   JPA sí es correcta.
+4. **Los DTOs y las proyecciones son `record`**; los enumerados van en `enums`.
 5. **Toda ruta empieza con `/api/v1/` y usa sustantivos en plural en inglés** (`/api/v1/job-postings`).
-6. **Ningún contexto importa clases de otro contexto, salvo `shared`.** La integración entre contextos se hace
-   con contratos (fachadas ACL) definidos en `shared/interfaces/acl` e implementados en
-   `<contexto>/interfaces/acl`, o con eventos de integración.
-7. Los errores salen siempre con el cuerpo `ErrorResource` del `GlobalExceptionHandler`:
+6. **Cada paquete depende solo hacia abajo:** `controllers` → `mappers`/`services`/`dtos`;
+   `serviceimpl` → `services`/`repositories`/`entities`; `entities` no depende de ningún otro paquete del
+   proyecto salvo `enums` y `exceptions`. Un `import` en sentido contrario (una entidad importando un
+   servicio, un servicio importando un controlador) es un error de diseño.
+7. **Un contrato por interfaz:** todo servicio se declara como interfaz en `services` y se implementa en
+   `serviceimpl`. Así cada integrante programa contra el contrato sin esperar la implementación ajena.
+8. Los errores salen siempre con el cuerpo `ErrorResource` del `GlobalExceptionHandler`:
    validación / argumento inválido → 400, `InvalidCredentialsException` o sin token → 401, sin permiso → 403,
    `ResourceNotFoundException` → 404, conflicto de unicidad → 409, `BusinessRuleViolationException` e
    `InvalidStateTransitionException` → 422.
-8. `open-in-view` está desactivado: los repositorios cargan el agregado completo (`@EntityGraph`).
-   En command services no se llama a `save()` sobre agregados ya cargados; se usa `flush()`.
-9. Ningún secreto en el repositorio: credenciales, `JWT_SECRET` y llaves de API solo por variables de entorno o
-   `.env` (ignorado por git). Nada de valores reales en `application.properties`.
-10. Todo cambio de dominio viene con su prueba unitaria del agregado.
-11. Entidades JPA: constructor protegido sin argumentos, `@Getter` donde haga falta, nunca `@Data` ni setters
+9. `open-in-view` está desactivado: los repositorios cargan la entidad completa (`@EntityGraph`).
+   En los `ServiceImpl` no se llama a `save()` sobre entidades ya cargadas; se usa `flush()`.
+10. Todo cambio de dominio viene con su prueba unitaria de la entidad. El árbol de `src/test` espeja el de
+    `src/main`: la prueba de una clase vive en el mismo paquete que la clase.
+11. Ningún secreto en el repositorio: credenciales, `JWT_SECRET` y llaves de API solo por variables de
+    entorno, `.env` (ignorado por git) o `application-local.properties` (ignorado por git). Nada de valores
+    reales en `application.properties`.
+12. Entidades JPA: constructor protegido sin argumentos, `@Getter` donde haga falta, nunca `@Data` ni setters
     públicos. Siempre `jakarta.persistence`, nunca `javax.persistence`.
+13. **Las rutas no cambian.** Los 52 endpoints documentados en Swagger son el contrato público del API: una
+    refactorización que cambie una ruta o un permiso está mal hecha.
 
 ## Servicios externos y sus límites
 
 | Servicio | Uso | Límites y reglas |
 |---|---|---|
-| **Proveedor de IA / NLP**: Google Gemini (`generateContent`) | Puntuar respuestas contra criterios y extraer el fragmento que sustenta cada puntaje; sugerir criterios a partir de la descripción del puesto; sugerir preguntas de entrevista para un criterio. | Un solo cliente de transporte, `shared/infrastructure/external/ai/GenerativeAiClient` (vía `RestClient`): recibe un prompt y devuelve texto; concentra `external.ai.mode` = `mock` (por defecto, sin red) o `live` (requiere `GEMINI_API_KEY`; modelo en `GEMINI_MODEL`), timeout, reintentos acotados con backoff ante 429/503 y caché LRU por SHA-256 del modelo y el prompt. Cada contexto conserva su puerto y su adaptador en `<contexto>/infrastructure/external/ai`, que arma su prompt, valida la respuesta contra su esquema y en mock responde con su propia lógica: `assessment` (`AnswerScoringService`), `recruitment` (`CriterionSuggestionService`) e `interviews` (`QuestionSuggestionService`, que solo envía texto de la vacante, del criterio y del guion: ningún dato de candidatos). La anonimización ocurre en el adaptador, antes del cliente, nunca dentro de él. Tamaño de prompt y de respuesta acotados. La respuesta se valida: todo puntaje debe traer un fragmento que exista literalmente en la respuesta del postulante; si no, se descarta. Nunca se envía PII (ver abajo). Clave en variable de entorno. |
-| **Verificación de credenciales** (Coursera, Credly, CertiProf) | Confirmar que una certificación declarada existe. | `profiles/infrastructure/external/credentials`. `external.credentials.mode` = `mock` (por defecto, sin red: código ≥ 8 caracteres coincide) o `live` (`RestClient`; emisores aún sin conectar, TODO por emisor, nunca inventar endpoints). Timeout, reintento con backoff exponencial ante 429 y respuesta de reserva que deja la certificación en UNVERIFIED. Al emisor solo viajan emisor, código, título y nombre del titular (necesario para el cotejo); nada de eso va al proveedor de IA. |
-| **Correo transaccional**: Brevo | Invitación a entrevista, aviso de terna final y descarte al candidato. | Puerto `recruitment/domain/services/NotificationService`, adaptador `recruitment/infrastructure/external/mail` vía `RestClient` (`POST {mail.brevo.base-url}/v3/smtp/email`, cabecera `api-key`). `mail.mode` = `mock` (por defecto: solo registra en el log lo que habría enviado, con la dirección enmascarada) o `live` (requiere `BREVO_API_KEY` y `MAIL_SENDER_EMAIL`). Timeout de 5 s; un fallo se registra como WARN y nunca lanza. Al proveedor solo viajan el correo, el nombre de pila, el asunto y el texto. |
+| **Proveedor de IA / NLP**: Google Gemini (`generateContent`) | Puntuar respuestas contra criterios y extraer el fragmento que sustenta cada puntaje; sugerir criterios a partir de la descripción del puesto; sugerir preguntas de entrevista para un criterio. | Un solo cliente de transporte, `serviceimpl/GenerativeAiClient` (vía `RestClient`): recibe un prompt y devuelve texto; concentra `external.ai.mode` = `mock` (por defecto, sin red) o `live` (requiere `GEMINI_API_KEY`; modelo en `GEMINI_MODEL`), timeout, reintentos acotados con backoff ante 429/503 y caché LRU por SHA-256 del modelo y el prompt. Cada área conserva su puerto en `services` y su adaptador en `serviceimpl`, que arma su prompt, valida la respuesta contra su esquema y en mock responde con su propia lógica: evaluación (`AnswerScoringService`), vacantes (`CriterionSuggestionService`) y guion (`QuestionSuggestionService`, que solo envía texto de la vacante, del criterio y del guion: ningún dato de candidatos). La anonimización ocurre en el adaptador, antes del cliente, nunca dentro de él. Tamaño de prompt y de respuesta acotados. La respuesta se valida: todo puntaje debe traer un fragmento que exista literalmente en la respuesta del postulante; si no, se descarta. Nunca se envía PII (ver abajo). Clave en variable de entorno. |
+| **Verificación de credenciales** (Coursera, Credly, CertiProf) | Confirmar que una certificación declarada existe. | `serviceimpl/CredentialVerificationServiceImpl`. `external.credentials.mode` = `mock` (por defecto, sin red: código ≥ 8 caracteres coincide) o `live` (`RestClient`; emisores aún sin conectar, TODO por emisor, nunca inventar endpoints). Timeout, reintento con backoff exponencial ante 429 y respuesta de reserva que deja la certificación en UNVERIFIED. Al emisor solo viajan emisor, código, título y nombre del titular (necesario para el cotejo); nada de eso va al proveedor de IA. |
+| **Correo transaccional**: Brevo | Invitación a entrevista, aviso de terna final y descarte al candidato. | Puerto `services/NotificationService`, adaptador `serviceimpl/NotificationServiceImpl` vía `RestClient` (`POST {mail.brevo.base-url}/v3/smtp/email`, cabecera `api-key`). `mail.mode` = `mock` (por defecto: solo registra en el log lo que habría enviado, con la dirección enmascarada) o `live` (requiere `BREVO_API_KEY` y `MAIL_SENDER_EMAIL`). Timeout de 5 s; un fallo se registra como WARN y nunca lanza. Al proveedor solo viajan el correo, el nombre de pila, el asunto y el texto. |
 | **PostgreSQL 16** | Persistencia (`simutalk_db`). | Credenciales por `DB_USERNAME` / `DB_PASSWORD`. `ddl-auto: update` solo para desarrollo. |
 
 Pendiente: documentar las cuotas y costos del plan de Gemini que use el equipo.
@@ -287,7 +310,7 @@ Antes de enviar **cualquier** texto al proveedor de IA:
   fecha de nacimiento, fotos, enlaces a perfiles y cualquier dato que lo identifique.
 - Al proveedor solo viajan: el texto de la respuesta ya anonimizado, la pregunta y los criterios de la vacante.
   Nunca ids internos del postulante, ni su nombre, ni metadatos de la sesión.
-- La anonimización ocurre en el contexto `assessment`, dentro del ACL de salida (`TranscriptAnonymizer`), y tiene
+- La anonimización ocurre en `serviceimpl`, antes de llamar al cliente de IA (`serviceimpl/TranscriptAnonymizer`), y tiene
   pruebas unitarias propias; `AnswerScoringPrivacyTest` verifica el payload construido y el cuerpo HTTP enviado.
 - Los offsets de evidencia se calculan sobre el texto original para poder mostrar el fragmento real, pero el
   proveedor solo ve el texto anonimizado.
@@ -300,18 +323,20 @@ Ramas:
 
 - `main`: versión estable/entregable. Solo recibe merges desde `develop` (o `hotfix/*`).
 - `develop`: integración. Base de todo trabajo nuevo.
-- `feature/<contexto>-<descripcion-corta>` (p. ej. `feature/interviews-async-session`), desde `develop`.
+- `feature/<area>-<descripcion-corta>` (p. ej. `feature/interviews-async-session`), desde `develop`.
 - `fix/<descripcion>` para correcciones, `hotfix/<descripcion>` desde `main`, `release/<version>` para entregas.
 - Todo entra por pull request con revisión; no se hace push directo a `main`.
 
-Commits: [Conventional Commits](https://www.conventionalcommits.org/), en inglés, en imperativo, con el contexto
-como scope:
+Commits: [Conventional Commits](https://www.conventionalcommits.org/), en inglés, en imperativo, con el área
+del dominio o la capa como scope (`auth`, `profiles`, `certifications`, `security`, `job-postings`, `criteria`,
+`questions`, `applications`, `notifications`, `interviews`, `assessment`, `reports`, `feedback`, `structure`,
+`config`). **Una historia de usuario, un commit.**
 
 ```
-feat(recruitment): add weighted evaluation criteria to job postings
-fix(shared): return 404 body for unknown routes
+feat(criteria): add weighted evaluation criteria to job postings
+fix(exceptions): return 404 body for unknown routes
 docs: describe anonymization requirement
-test(recruitment): cover publish weight rule
+test(job-postings): cover publish weight rule
 chore: add maven wrapper
 ```
 
