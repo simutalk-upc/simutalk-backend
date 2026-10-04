@@ -14,8 +14,8 @@ import pe.upc.simutalk.entities.DocumentNumber;
 import pe.upc.simutalk.entities.PersonName;
 import pe.upc.simutalk.profiles.domain.services.CandidateProfileCommandService;
 import pe.upc.simutalk.profiles.domain.services.CredentialVerificationService;
-import pe.upc.simutalk.profiles.infrastructure.persistence.jpa.repositories.CandidateProfileRepository;
-import pe.upc.simutalk.profiles.infrastructure.persistence.jpa.repositories.CompanyProfileRepository;
+import pe.upc.simutalk.repositories.CandidateProfileRepository;
+import pe.upc.simutalk.repositories.CompanyProfileRepository;
 import pe.upc.simutalk.exceptions.BusinessRuleViolationException;
 import pe.upc.simutalk.exceptions.ResourceNotFoundException;
 

@@ -10,7 +10,7 @@ import pe.upc.simutalk.recruitment.domain.model.queries.SearchJobPostingsQuery;
 import pe.upc.simutalk.enums.CriterionType;
 import pe.upc.simutalk.recruitment.domain.model.valueobjects.JobPostingViewer;
 import pe.upc.simutalk.entities.Weight;
-import pe.upc.simutalk.recruitment.infrastructure.persistence.jpa.repositories.JobPostingRepository;
+import pe.upc.simutalk.repositories.JobPostingRepository;
 
 import java.util.List;
 import java.util.Optional;

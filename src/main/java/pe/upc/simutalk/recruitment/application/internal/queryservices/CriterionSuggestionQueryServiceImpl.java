@@ -6,7 +6,7 @@ import pe.upc.simutalk.recruitment.domain.model.queries.GetCriterionSuggestionsQ
 import pe.upc.simutalk.recruitment.domain.model.valueobjects.CriterionSuggestion;
 import pe.upc.simutalk.recruitment.domain.services.CriterionSuggestionQueryService;
 import pe.upc.simutalk.recruitment.domain.services.CriterionSuggestionService;
-import pe.upc.simutalk.recruitment.infrastructure.persistence.jpa.repositories.JobPostingRepository;
+import pe.upc.simutalk.repositories.JobPostingRepository;
 import pe.upc.simutalk.exceptions.ResourceNotFoundException;
 
 import java.util.List;

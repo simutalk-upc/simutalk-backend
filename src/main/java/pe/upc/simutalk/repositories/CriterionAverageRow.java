@@ -1,4 +1,4 @@
-package pe.upc.simutalk.assessment.infrastructure.persistence.jpa.repositories;
+package pe.upc.simutalk.repositories;
 
 /** JPQL projection: average score of one criterion. */
 public interface CriterionAverageRow {

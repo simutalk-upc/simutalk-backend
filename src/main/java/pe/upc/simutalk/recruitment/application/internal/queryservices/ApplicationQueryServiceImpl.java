@@ -11,7 +11,7 @@ import pe.upc.simutalk.recruitment.domain.model.queries.GetApplicationByIdQuery;
 import pe.upc.simutalk.recruitment.domain.model.queries.GetApplicationsByCandidateIdQuery;
 import pe.upc.simutalk.recruitment.domain.model.queries.GetApplicationsByJobPostingIdQuery;
 import pe.upc.simutalk.recruitment.domain.services.ApplicationQueryService;
-import pe.upc.simutalk.recruitment.infrastructure.persistence.jpa.repositories.ApplicationRepository;
+import pe.upc.simutalk.repositories.ApplicationRepository;
 
 import java.time.Duration;
 import java.util.EnumMap;

@@ -13,8 +13,8 @@ import pe.upc.simutalk.recruitment.domain.model.events.ApplicationStatusChangedE
 import pe.upc.simutalk.enums.ApplicationStatus;
 import pe.upc.simutalk.enums.CriterionType;
 import pe.upc.simutalk.entities.Weight;
-import pe.upc.simutalk.recruitment.infrastructure.persistence.jpa.repositories.ApplicationRepository;
-import pe.upc.simutalk.recruitment.infrastructure.persistence.jpa.repositories.JobPostingRepository;
+import pe.upc.simutalk.repositories.ApplicationRepository;
+import pe.upc.simutalk.repositories.JobPostingRepository;
 import pe.upc.simutalk.exceptions.BusinessRuleViolationException;
 import pe.upc.simutalk.exceptions.ResourceNotFoundException;
 

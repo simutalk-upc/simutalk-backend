@@ -14,8 +14,8 @@ import pe.upc.simutalk.profiles.domain.model.commands.VerifyCertificationCommand
 import pe.upc.simutalk.enums.CompanySize;
 import pe.upc.simutalk.profiles.domain.services.CandidateProfileCommandService;
 import pe.upc.simutalk.profiles.domain.services.CompanyProfileCommandService;
-import pe.upc.simutalk.profiles.infrastructure.persistence.jpa.repositories.CandidateProfileRepository;
-import pe.upc.simutalk.profiles.infrastructure.persistence.jpa.repositories.CompanyProfileRepository;
+import pe.upc.simutalk.repositories.CandidateProfileRepository;
+import pe.upc.simutalk.repositories.CompanyProfileRepository;
 import pe.upc.simutalk.shared.interfaces.acl.IamContextFacade;
 
 import java.time.LocalDate;

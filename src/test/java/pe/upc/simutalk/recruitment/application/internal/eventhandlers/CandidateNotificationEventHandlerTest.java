@@ -10,7 +10,7 @@ import pe.upc.simutalk.enums.ApplicationStatus;
 import pe.upc.simutalk.recruitment.domain.model.valueobjects.CandidateNotification;
 import pe.upc.simutalk.enums.NotificationType;
 import pe.upc.simutalk.recruitment.domain.services.NotificationService;
-import pe.upc.simutalk.recruitment.infrastructure.persistence.jpa.repositories.JobPostingRepository;
+import pe.upc.simutalk.repositories.JobPostingRepository;
 import pe.upc.simutalk.shared.interfaces.acl.CandidateContact;
 import pe.upc.simutalk.shared.interfaces.acl.ProfilesContextFacade;
 

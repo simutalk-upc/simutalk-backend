@@ -8,7 +8,7 @@ import pe.upc.simutalk.interviews.domain.model.queries.GetQuestionSuggestionsQue
 import pe.upc.simutalk.interviews.domain.model.valueobjects.QuestionSuggestion;
 import pe.upc.simutalk.interviews.domain.services.QuestionSuggestionQueryService;
 import pe.upc.simutalk.interviews.domain.services.QuestionSuggestionService;
-import pe.upc.simutalk.interviews.infrastructure.persistence.jpa.repositories.QuestionRepository;
+import pe.upc.simutalk.repositories.QuestionRepository;
 
 import java.util.List;
 

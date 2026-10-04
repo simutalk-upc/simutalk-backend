@@ -1,4 +1,4 @@
-package pe.upc.simutalk.analytics.infrastructure.persistence.jpa.repositories;
+package pe.upc.simutalk.repositories;
 
 import java.math.BigDecimal;
 

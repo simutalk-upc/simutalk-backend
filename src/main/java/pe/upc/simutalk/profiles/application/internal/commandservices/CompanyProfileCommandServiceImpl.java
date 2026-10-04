@@ -11,8 +11,8 @@ import pe.upc.simutalk.profiles.domain.model.commands.CreateCompanyProfileComman
 import pe.upc.simutalk.profiles.domain.model.commands.UpdateCompanyProfileCommand;
 import pe.upc.simutalk.entities.Ruc;
 import pe.upc.simutalk.profiles.domain.services.CompanyProfileCommandService;
-import pe.upc.simutalk.profiles.infrastructure.persistence.jpa.repositories.CandidateProfileRepository;
-import pe.upc.simutalk.profiles.infrastructure.persistence.jpa.repositories.CompanyProfileRepository;
+import pe.upc.simutalk.repositories.CandidateProfileRepository;
+import pe.upc.simutalk.repositories.CompanyProfileRepository;
 import pe.upc.simutalk.exceptions.BusinessRuleViolationException;
 import pe.upc.simutalk.exceptions.ResourceNotFoundException;
 

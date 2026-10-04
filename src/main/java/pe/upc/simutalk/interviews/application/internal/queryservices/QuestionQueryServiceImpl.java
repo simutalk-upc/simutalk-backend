@@ -8,7 +8,7 @@ import pe.upc.simutalk.interviews.domain.model.queries.CountQuestionsByCriterion
 import pe.upc.simutalk.interviews.domain.model.queries.GetQuestionByIdQuery;
 import pe.upc.simutalk.interviews.domain.model.queries.GetQuestionsByJobPostingIdQuery;
 import pe.upc.simutalk.interviews.domain.services.QuestionQueryService;
-import pe.upc.simutalk.interviews.infrastructure.persistence.jpa.repositories.QuestionRepository;
+import pe.upc.simutalk.repositories.QuestionRepository;
 
 import java.util.List;
 import java.util.Optional;

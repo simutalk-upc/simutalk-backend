@@ -1,4 +1,4 @@
-package pe.upc.simutalk.recruitment.infrastructure.persistence.jpa.repositories;
+package pe.upc.simutalk.repositories;
 
 import pe.upc.simutalk.enums.ApplicationStatus;
 

@@ -11,7 +11,7 @@ import pe.upc.simutalk.profiles.domain.model.queries.GetAllCompanyProfilesQuery;
 import pe.upc.simutalk.profiles.domain.model.queries.GetCompanyProfileByIdQuery;
 import pe.upc.simutalk.profiles.domain.model.queries.GetCompanyProfileByUserIdQuery;
 import pe.upc.simutalk.profiles.domain.services.CompanyProfileQueryService;
-import pe.upc.simutalk.profiles.infrastructure.persistence.jpa.repositories.CompanyProfileRepository;
+import pe.upc.simutalk.repositories.CompanyProfileRepository;
 
 import java.util.Optional;
 

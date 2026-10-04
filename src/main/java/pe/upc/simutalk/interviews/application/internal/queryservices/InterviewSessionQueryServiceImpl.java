@@ -11,7 +11,7 @@ import pe.upc.simutalk.interviews.domain.model.queries.GetInterviewSessionByIdQu
 import pe.upc.simutalk.interviews.domain.model.queries.HasInterviewSessionInProgressQuery;
 import pe.upc.simutalk.enums.InterviewSessionStatus;
 import pe.upc.simutalk.interviews.domain.services.InterviewSessionQueryService;
-import pe.upc.simutalk.interviews.infrastructure.persistence.jpa.repositories.InterviewSessionRepository;
+import pe.upc.simutalk.repositories.InterviewSessionRepository;
 import pe.upc.simutalk.exceptions.ResourceNotFoundException;
 
 import java.util.List;

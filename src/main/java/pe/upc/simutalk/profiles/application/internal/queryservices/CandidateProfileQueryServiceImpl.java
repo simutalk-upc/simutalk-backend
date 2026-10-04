@@ -14,7 +14,7 @@ import pe.upc.simutalk.profiles.domain.model.queries.GetCandidateProfileByUserId
 import pe.upc.simutalk.profiles.domain.model.queries.GetCertificationsByCandidateIdQuery;
 import pe.upc.simutalk.profiles.domain.model.queries.GetVerifiedCertificationCountQuery;
 import pe.upc.simutalk.profiles.domain.services.CandidateProfileQueryService;
-import pe.upc.simutalk.profiles.infrastructure.persistence.jpa.repositories.CandidateProfileRepository;
+import pe.upc.simutalk.repositories.CandidateProfileRepository;
 import pe.upc.simutalk.exceptions.ResourceNotFoundException;
 
 import java.time.LocalDate;

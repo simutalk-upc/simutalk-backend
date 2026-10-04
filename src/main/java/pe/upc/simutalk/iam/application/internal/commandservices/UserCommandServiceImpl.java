@@ -13,8 +13,8 @@ import pe.upc.simutalk.entities.Role;
 import pe.upc.simutalk.iam.domain.model.valueobjects.AuthenticatedUser;
 import pe.upc.simutalk.enums.Roles;
 import pe.upc.simutalk.iam.domain.services.UserCommandService;
-import pe.upc.simutalk.iam.infrastructure.persistence.jpa.repositories.RoleRepository;
-import pe.upc.simutalk.iam.infrastructure.persistence.jpa.repositories.UserRepository;
+import pe.upc.simutalk.repositories.RoleRepository;
+import pe.upc.simutalk.repositories.UserRepository;
 import pe.upc.simutalk.exceptions.BusinessRuleViolationException;
 import pe.upc.simutalk.exceptions.InvalidCredentialsException;
 

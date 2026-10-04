@@ -8,7 +8,7 @@ import pe.upc.simutalk.iam.domain.model.queries.GetAllUsersQuery;
 import pe.upc.simutalk.iam.domain.model.queries.GetUserByIdQuery;
 import pe.upc.simutalk.iam.domain.model.queries.GetUserByUsernameQuery;
 import pe.upc.simutalk.iam.domain.services.UserQueryService;
-import pe.upc.simutalk.iam.infrastructure.persistence.jpa.repositories.UserRepository;
+import pe.upc.simutalk.repositories.UserRepository;
 
 import java.util.List;
 import java.util.Optional;

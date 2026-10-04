@@ -7,7 +7,7 @@ import pe.upc.simutalk.iam.domain.model.commands.SeedRolesCommand;
 import pe.upc.simutalk.entities.Role;
 import pe.upc.simutalk.enums.Roles;
 import pe.upc.simutalk.iam.domain.services.RoleCommandService;
-import pe.upc.simutalk.iam.infrastructure.persistence.jpa.repositories.RoleRepository;
+import pe.upc.simutalk.repositories.RoleRepository;
 
 import java.util.Arrays;
 

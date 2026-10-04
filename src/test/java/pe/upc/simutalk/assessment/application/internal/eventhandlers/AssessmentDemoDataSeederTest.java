@@ -3,7 +3,7 @@ package pe.upc.simutalk.assessment.application.internal.eventhandlers;
 import org.junit.jupiter.api.Test;
 import pe.upc.simutalk.assessment.domain.services.AnswerScoringService;
 import pe.upc.simutalk.assessment.domain.services.AssessmentCommandService;
-import pe.upc.simutalk.assessment.infrastructure.persistence.jpa.repositories.AssessmentRepository;
+import pe.upc.simutalk.repositories.AssessmentRepository;
 import pe.upc.simutalk.shared.interfaces.acl.IamContextFacade;
 import pe.upc.simutalk.shared.interfaces.acl.InterviewsContextFacade;
 import pe.upc.simutalk.shared.interfaces.acl.ProfilesContextFacade;

@@ -9,7 +9,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pe.upc.simutalk.iam.infrastructure.authorization.sfs.model.UserDetailsImpl;
-import pe.upc.simutalk.iam.infrastructure.persistence.jpa.repositories.UserRepository;
+import pe.upc.simutalk.repositories.UserRepository;
 
 @Service("defaultUserDetailsService")
 @RequiredArgsConstructor

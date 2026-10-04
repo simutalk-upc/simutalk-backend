@@ -9,7 +9,7 @@ import pe.upc.simutalk.recruitment.domain.model.commands.*;
 import pe.upc.simutalk.entities.EvaluationCriterion;
 import pe.upc.simutalk.entities.Weight;
 import pe.upc.simutalk.recruitment.domain.services.JobPostingCommandService;
-import pe.upc.simutalk.recruitment.infrastructure.persistence.jpa.repositories.JobPostingRepository;
+import pe.upc.simutalk.repositories.JobPostingRepository;
 import pe.upc.simutalk.exceptions.ResourceNotFoundException;
 
 /**

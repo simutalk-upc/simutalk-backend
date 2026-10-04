@@ -11,7 +11,7 @@ import pe.upc.simutalk.analytics.domain.model.valueobjects.GeoPoint;
 import pe.upc.simutalk.analytics.domain.services.CarbonSavingCommandService;
 import pe.upc.simutalk.analytics.domain.services.CommuteDistancePolicy;
 import pe.upc.simutalk.config.SustainabilityProperties;
-import pe.upc.simutalk.analytics.infrastructure.persistence.jpa.repositories.CarbonSavingRepository;
+import pe.upc.simutalk.repositories.CarbonSavingRepository;
 
 import java.math.BigDecimal;
 import java.time.Instant;
