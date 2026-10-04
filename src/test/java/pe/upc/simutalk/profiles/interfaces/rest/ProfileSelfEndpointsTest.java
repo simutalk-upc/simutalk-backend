@@ -1,5 +1,11 @@
 package pe.upc.simutalk.profiles.interfaces.rest;
 
+import pe.upc.simutalk.profiles.domain.model.queries.GetAllCandidateProfilesQuery;
+import pe.upc.simutalk.profiles.domain.model.queries.GetAllCompanyProfilesQuery;
+import pe.upc.simutalk.profiles.domain.model.queries.GetCandidateProfileByIdQuery;
+import pe.upc.simutalk.profiles.domain.model.queries.GetCandidateProfileByUserIdQuery;
+import pe.upc.simutalk.profiles.domain.model.queries.GetCompanyProfileByUserIdQuery;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,12 +28,12 @@ import pe.upc.simutalk.profiles.domain.model.commands.CreateCandidateProfileComm
 import pe.upc.simutalk.profiles.domain.model.commands.CreateCompanyProfileCommand;
 import pe.upc.simutalk.profiles.domain.model.queries.*;
 import pe.upc.simutalk.enums.CompanySize;
-import pe.upc.simutalk.profiles.domain.services.CandidateProfileCommandService;
-import pe.upc.simutalk.profiles.domain.services.CandidateProfileQueryService;
-import pe.upc.simutalk.profiles.domain.services.CompanyProfileCommandService;
-import pe.upc.simutalk.profiles.domain.services.CompanyProfileQueryService;
+import pe.upc.simutalk.services.CandidateProfileCommandService;
+import pe.upc.simutalk.services.CandidateProfileQueryService;
+import pe.upc.simutalk.services.CompanyProfileCommandService;
+import pe.upc.simutalk.services.CompanyProfileQueryService;
 import pe.upc.simutalk.profiles.interfaces.rest.authorization.ProfileAccessPolicy;
-import pe.upc.simutalk.shared.interfaces.acl.IamContextFacade;
+import pe.upc.simutalk.services.IamContextFacade;
 import pe.upc.simutalk.exceptions.GlobalExceptionHandler;
 
 import java.time.LocalDate;

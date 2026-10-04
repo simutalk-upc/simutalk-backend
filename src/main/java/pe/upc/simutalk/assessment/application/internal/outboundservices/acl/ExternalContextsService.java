@@ -1,5 +1,12 @@
 package pe.upc.simutalk.assessment.application.internal.outboundservices.acl;
 
+import pe.upc.simutalk.services.InterviewsContextFacade;
+import pe.upc.simutalk.services.ProfilesContextFacade;
+import pe.upc.simutalk.services.RecruitmentContextFacade;
+import pe.upc.simutalk.shared.interfaces.acl.CandidatePersonalData;
+import pe.upc.simutalk.shared.interfaces.acl.CriterionView;
+import pe.upc.simutalk.shared.interfaces.acl.InterviewAnswerView;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import pe.upc.simutalk.assessment.domain.model.valueobjects.InterviewSessionSnapshot;

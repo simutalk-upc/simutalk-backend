@@ -6,7 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import pe.upc.simutalk.entities.Role;
 import pe.upc.simutalk.iam.domain.model.queries.GetAllRolesQuery;
 import pe.upc.simutalk.iam.domain.model.queries.GetRoleByNameQuery;
-import pe.upc.simutalk.iam.domain.services.RoleQueryService;
+import pe.upc.simutalk.services.RoleQueryService;
 import pe.upc.simutalk.repositories.RoleRepository;
 
 import java.util.List;

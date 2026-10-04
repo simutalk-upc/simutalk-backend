@@ -18,8 +18,8 @@ import pe.upc.simutalk.recruitment.domain.model.commands.DeleteJobPostingCommand
 import pe.upc.simutalk.recruitment.domain.model.queries.GetJobPostingByIdQuery;
 import pe.upc.simutalk.recruitment.domain.model.queries.SearchJobPostingsQuery;
 import pe.upc.simutalk.enums.JobPostingStatus;
-import pe.upc.simutalk.recruitment.domain.services.JobPostingCommandService;
-import pe.upc.simutalk.recruitment.domain.services.JobPostingQueryService;
+import pe.upc.simutalk.services.JobPostingCommandService;
+import pe.upc.simutalk.services.JobPostingQueryService;
 import pe.upc.simutalk.recruitment.interfaces.rest.resources.CreateJobPostingResource;
 import pe.upc.simutalk.recruitment.interfaces.rest.resources.JobPostingResource;
 import pe.upc.simutalk.recruitment.interfaces.rest.resources.UpdateJobPostingResource;

@@ -5,9 +5,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 import pe.upc.simutalk.profiles.domain.model.queries.GetCandidateProfileByIdQuery;
 import pe.upc.simutalk.profiles.domain.model.queries.GetCompanyProfileByIdQuery;
-import pe.upc.simutalk.profiles.domain.services.CandidateProfileQueryService;
-import pe.upc.simutalk.profiles.domain.services.CompanyProfileQueryService;
-import pe.upc.simutalk.shared.interfaces.acl.IamContextFacade;
+import pe.upc.simutalk.services.CandidateProfileQueryService;
+import pe.upc.simutalk.services.CompanyProfileQueryService;
+import pe.upc.simutalk.services.IamContextFacade;
 
 import java.util.Optional;
 

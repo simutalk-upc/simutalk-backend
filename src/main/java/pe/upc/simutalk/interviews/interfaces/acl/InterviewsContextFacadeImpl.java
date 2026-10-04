@@ -8,10 +8,10 @@ import pe.upc.simutalk.interviews.domain.model.queries.CountQuestionsByCriterion
 import pe.upc.simutalk.interviews.domain.model.queries.GetInterviewSessionByApplicationIdQuery;
 import pe.upc.simutalk.interviews.domain.model.queries.GetInterviewSessionByIdQuery;
 import pe.upc.simutalk.interviews.domain.model.queries.GetQuestionsByJobPostingIdQuery;
-import pe.upc.simutalk.interviews.domain.services.InterviewSessionQueryService;
-import pe.upc.simutalk.interviews.domain.services.QuestionQueryService;
+import pe.upc.simutalk.services.InterviewSessionQueryService;
+import pe.upc.simutalk.services.QuestionQueryService;
 import pe.upc.simutalk.shared.interfaces.acl.InterviewAnswerView;
-import pe.upc.simutalk.shared.interfaces.acl.InterviewsContextFacade;
+import pe.upc.simutalk.services.InterviewsContextFacade;
 
 import java.util.List;
 import java.util.Map;

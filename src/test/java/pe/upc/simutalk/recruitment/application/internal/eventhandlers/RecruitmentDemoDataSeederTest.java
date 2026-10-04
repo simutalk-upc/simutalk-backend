@@ -5,11 +5,11 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
 import pe.upc.simutalk.recruitment.domain.model.commands.CreateJobPostingCommand;
 import pe.upc.simutalk.recruitment.domain.model.queries.GetJobPostingIdsByCompanyIdQuery;
-import pe.upc.simutalk.recruitment.domain.services.ApplicationCommandService;
-import pe.upc.simutalk.recruitment.domain.services.JobPostingCommandService;
-import pe.upc.simutalk.recruitment.domain.services.JobPostingQueryService;
-import pe.upc.simutalk.shared.interfaces.acl.IamContextFacade;
-import pe.upc.simutalk.shared.interfaces.acl.ProfilesContextFacade;
+import pe.upc.simutalk.services.ApplicationCommandService;
+import pe.upc.simutalk.services.JobPostingCommandService;
+import pe.upc.simutalk.services.JobPostingQueryService;
+import pe.upc.simutalk.services.IamContextFacade;
+import pe.upc.simutalk.services.ProfilesContextFacade;
 
 import java.util.List;
 

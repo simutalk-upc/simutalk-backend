@@ -4,7 +4,7 @@ import com.sun.net.httpserver.HttpServer;
 import org.junit.jupiter.api.Test;
 import org.springframework.web.client.RestClient;
 import pe.upc.simutalk.entities.Question;
-import pe.upc.simutalk.interviews.domain.services.QuestionSuggestionService;
+import pe.upc.simutalk.services.QuestionSuggestionService;
 import pe.upc.simutalk.shared.infrastructure.external.ai.GenerativeAiClient;
 import tools.jackson.databind.ObjectMapper;
 

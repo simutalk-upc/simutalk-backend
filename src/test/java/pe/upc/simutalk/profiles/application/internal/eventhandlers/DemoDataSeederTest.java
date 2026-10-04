@@ -3,11 +3,11 @@ package pe.upc.simutalk.profiles.application.internal.eventhandlers;
 import org.junit.jupiter.api.Test;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
-import pe.upc.simutalk.profiles.domain.services.CandidateProfileCommandService;
-import pe.upc.simutalk.profiles.domain.services.CompanyProfileCommandService;
+import pe.upc.simutalk.services.CandidateProfileCommandService;
+import pe.upc.simutalk.services.CompanyProfileCommandService;
 import pe.upc.simutalk.repositories.CandidateProfileRepository;
 import pe.upc.simutalk.repositories.CompanyProfileRepository;
-import pe.upc.simutalk.shared.interfaces.acl.IamContextFacade;
+import pe.upc.simutalk.services.IamContextFacade;
 
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.mockito.ArgumentMatchers.any;

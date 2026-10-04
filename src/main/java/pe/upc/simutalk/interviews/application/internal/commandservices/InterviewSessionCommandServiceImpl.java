@@ -13,7 +13,7 @@ import pe.upc.simutalk.interviews.domain.model.commands.CreateInterviewSessionCo
 import pe.upc.simutalk.interviews.domain.model.commands.RecordAnswerCommand;
 import pe.upc.simutalk.interviews.domain.model.commands.StartInterviewSessionCommand;
 import pe.upc.simutalk.entities.Answer;
-import pe.upc.simutalk.interviews.domain.services.InterviewSessionCommandService;
+import pe.upc.simutalk.services.InterviewSessionCommandService;
 import pe.upc.simutalk.repositories.InterviewSessionRepository;
 import pe.upc.simutalk.repositories.QuestionRepository;
 import pe.upc.simutalk.exceptions.BusinessRuleViolationException;

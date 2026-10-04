@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import pe.upc.simutalk.entities.EvaluationCriterion;
 import pe.upc.simutalk.recruitment.domain.model.valueobjects.CriterionSuggestion;
-import pe.upc.simutalk.recruitment.domain.services.CriterionSuggestionService;
+import pe.upc.simutalk.services.CriterionSuggestionService;
 import pe.upc.simutalk.shared.infrastructure.external.ai.GenerativeAiClient;
 import tools.jackson.databind.ObjectMapper;
 

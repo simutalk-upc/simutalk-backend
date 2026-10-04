@@ -5,8 +5,8 @@ import org.springframework.stereotype.Service;
 import pe.upc.simutalk.assessment.domain.model.queries.CountAssessmentsByJobPostingIdsQuery;
 import pe.upc.simutalk.assessment.domain.model.queries.CountEvidencesByJobPostingIdsQuery;
 import pe.upc.simutalk.assessment.domain.model.queries.GetCriterionAveragesQuery;
-import pe.upc.simutalk.assessment.domain.services.AssessmentQueryService;
-import pe.upc.simutalk.shared.interfaces.acl.AssessmentContextFacade;
+import pe.upc.simutalk.services.AssessmentQueryService;
+import pe.upc.simutalk.services.AssessmentContextFacade;
 import pe.upc.simutalk.shared.interfaces.acl.CriterionAverageView;
 
 import java.util.List;

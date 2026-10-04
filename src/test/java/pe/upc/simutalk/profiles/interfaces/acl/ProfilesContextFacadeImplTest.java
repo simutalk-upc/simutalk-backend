@@ -1,5 +1,11 @@
 package pe.upc.simutalk.profiles.interfaces.acl;
 
+import pe.upc.simutalk.profiles.domain.model.queries.GetCandidateProfileByIdQuery;
+import pe.upc.simutalk.profiles.domain.model.queries.GetCandidateProfileByUserIdQuery;
+import pe.upc.simutalk.profiles.domain.model.queries.GetCompanyProfileByIdQuery;
+import pe.upc.simutalk.profiles.domain.model.queries.GetCompanyProfileByUserIdQuery;
+import pe.upc.simutalk.profiles.domain.model.queries.GetVerifiedCertificationCountQuery;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 import pe.upc.simutalk.entities.CandidateProfile;
@@ -8,8 +14,8 @@ import pe.upc.simutalk.profiles.domain.model.commands.CreateCandidateProfileComm
 import pe.upc.simutalk.profiles.domain.model.commands.CreateCompanyProfileCommand;
 import pe.upc.simutalk.profiles.domain.model.queries.*;
 import pe.upc.simutalk.enums.CompanySize;
-import pe.upc.simutalk.profiles.domain.services.CandidateProfileQueryService;
-import pe.upc.simutalk.profiles.domain.services.CompanyProfileQueryService;
+import pe.upc.simutalk.services.CandidateProfileQueryService;
+import pe.upc.simutalk.services.CompanyProfileQueryService;
 import pe.upc.simutalk.shared.interfaces.acl.CandidateContact;
 
 import java.time.LocalDate;

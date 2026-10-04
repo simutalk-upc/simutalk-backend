@@ -12,9 +12,9 @@ import pe.upc.simutalk.recruitment.domain.model.queries.GetJobPostingByIdQuery;
 import pe.upc.simutalk.enums.ApplicationStatus;
 import pe.upc.simutalk.enums.CriterionType;
 import pe.upc.simutalk.entities.Weight;
-import pe.upc.simutalk.recruitment.domain.services.ApplicationCommandService;
-import pe.upc.simutalk.recruitment.domain.services.ApplicationQueryService;
-import pe.upc.simutalk.recruitment.domain.services.JobPostingQueryService;
+import pe.upc.simutalk.services.ApplicationCommandService;
+import pe.upc.simutalk.services.ApplicationQueryService;
+import pe.upc.simutalk.services.JobPostingQueryService;
 
 import java.time.Instant;
 import java.util.Optional;

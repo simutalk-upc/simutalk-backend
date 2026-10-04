@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import pe.upc.simutalk.entities.Question;
 import pe.upc.simutalk.interviews.domain.model.valueobjects.QuestionSuggestion;
-import pe.upc.simutalk.interviews.domain.services.QuestionSuggestionService;
+import pe.upc.simutalk.services.QuestionSuggestionService;
 import pe.upc.simutalk.shared.infrastructure.external.ai.GenerativeAiClient;
 import tools.jackson.databind.ObjectMapper;
 

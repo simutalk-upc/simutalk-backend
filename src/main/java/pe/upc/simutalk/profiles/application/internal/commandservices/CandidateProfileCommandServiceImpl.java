@@ -1,5 +1,11 @@
 package pe.upc.simutalk.profiles.application.internal.commandservices;
 
+import pe.upc.simutalk.profiles.domain.model.commands.AddCertificationCommand;
+import pe.upc.simutalk.profiles.domain.model.commands.CreateCandidateProfileCommand;
+import pe.upc.simutalk.profiles.domain.model.commands.DeleteCertificationCommand;
+import pe.upc.simutalk.profiles.domain.model.commands.UpdateCandidateProfileCommand;
+import pe.upc.simutalk.profiles.domain.model.commands.VerifyCertificationCommand;
+
 import pe.upc.simutalk.entities.User;
 
 import lombok.RequiredArgsConstructor;
@@ -12,8 +18,8 @@ import pe.upc.simutalk.entities.Certification;
 import pe.upc.simutalk.profiles.domain.model.valueobjects.CertificationVerification;
 import pe.upc.simutalk.entities.DocumentNumber;
 import pe.upc.simutalk.entities.PersonName;
-import pe.upc.simutalk.profiles.domain.services.CandidateProfileCommandService;
-import pe.upc.simutalk.profiles.domain.services.CredentialVerificationService;
+import pe.upc.simutalk.services.CandidateProfileCommandService;
+import pe.upc.simutalk.services.CredentialVerificationService;
 import pe.upc.simutalk.repositories.CandidateProfileRepository;
 import pe.upc.simutalk.repositories.CompanyProfileRepository;
 import pe.upc.simutalk.exceptions.BusinessRuleViolationException;

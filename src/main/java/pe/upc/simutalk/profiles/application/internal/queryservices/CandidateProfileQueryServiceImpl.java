@@ -13,7 +13,7 @@ import pe.upc.simutalk.profiles.domain.model.queries.GetCandidateProfileByIdQuer
 import pe.upc.simutalk.profiles.domain.model.queries.GetCandidateProfileByUserIdQuery;
 import pe.upc.simutalk.profiles.domain.model.queries.GetCertificationsByCandidateIdQuery;
 import pe.upc.simutalk.profiles.domain.model.queries.GetVerifiedCertificationCountQuery;
-import pe.upc.simutalk.profiles.domain.services.CandidateProfileQueryService;
+import pe.upc.simutalk.services.CandidateProfileQueryService;
 import pe.upc.simutalk.repositories.CandidateProfileRepository;
 import pe.upc.simutalk.exceptions.ResourceNotFoundException;
 

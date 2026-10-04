@@ -8,8 +8,8 @@ import pe.upc.simutalk.analytics.application.internal.outboundservices.acl.Exter
 import pe.upc.simutalk.entities.CarbonSaving;
 import pe.upc.simutalk.analytics.domain.model.commands.RecordCarbonSavingCommand;
 import pe.upc.simutalk.analytics.domain.model.valueobjects.GeoPoint;
-import pe.upc.simutalk.analytics.domain.services.CarbonSavingCommandService;
-import pe.upc.simutalk.analytics.domain.services.CommuteDistancePolicy;
+import pe.upc.simutalk.services.CarbonSavingCommandService;
+import pe.upc.simutalk.services.CommuteDistancePolicy;
 import pe.upc.simutalk.config.SustainabilityProperties;
 import pe.upc.simutalk.repositories.CarbonSavingRepository;
 

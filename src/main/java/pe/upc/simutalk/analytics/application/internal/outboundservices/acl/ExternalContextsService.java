@@ -2,10 +2,10 @@ package pe.upc.simutalk.analytics.application.internal.outboundservices.acl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import pe.upc.simutalk.shared.interfaces.acl.AssessmentContextFacade;
+import pe.upc.simutalk.services.AssessmentContextFacade;
 import pe.upc.simutalk.shared.interfaces.acl.CriterionAverageView;
-import pe.upc.simutalk.shared.interfaces.acl.ProfilesContextFacade;
-import pe.upc.simutalk.shared.interfaces.acl.RecruitmentContextFacade;
+import pe.upc.simutalk.services.ProfilesContextFacade;
+import pe.upc.simutalk.services.RecruitmentContextFacade;
 
 import java.util.List;
 import java.util.Map;

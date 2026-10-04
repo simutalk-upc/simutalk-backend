@@ -16,11 +16,11 @@ import pe.upc.simutalk.recruitment.domain.model.queries.GetJobPostingByIdQuery;
 import pe.upc.simutalk.enums.ApplicationStatus;
 import pe.upc.simutalk.enums.CriterionType;
 import pe.upc.simutalk.recruitment.domain.model.valueobjects.JobPostingViewer;
-import pe.upc.simutalk.recruitment.domain.services.ApplicationCommandService;
-import pe.upc.simutalk.recruitment.domain.services.ApplicationQueryService;
-import pe.upc.simutalk.recruitment.domain.services.JobPostingQueryService;
+import pe.upc.simutalk.services.ApplicationCommandService;
+import pe.upc.simutalk.services.ApplicationQueryService;
+import pe.upc.simutalk.services.JobPostingQueryService;
 import pe.upc.simutalk.shared.interfaces.acl.CriterionView;
-import pe.upc.simutalk.shared.interfaces.acl.RecruitmentContextFacade;
+import pe.upc.simutalk.services.RecruitmentContextFacade;
 
 import java.time.Duration;
 import java.util.LinkedHashMap;

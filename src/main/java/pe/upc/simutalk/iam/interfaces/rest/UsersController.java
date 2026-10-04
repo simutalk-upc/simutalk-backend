@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import pe.upc.simutalk.iam.domain.model.queries.GetAllUsersQuery;
 import pe.upc.simutalk.iam.domain.model.queries.GetUserByIdQuery;
-import pe.upc.simutalk.iam.domain.services.UserQueryService;
+import pe.upc.simutalk.services.UserQueryService;
 import pe.upc.simutalk.iam.interfaces.rest.resources.UserResource;
 import pe.upc.simutalk.iam.interfaces.rest.transform.UserResourceFromEntityAssembler;
 import pe.upc.simutalk.exceptions.ResourceNotFoundException;

@@ -4,8 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import pe.upc.simutalk.recruitment.domain.model.queries.GetCriterionSuggestionsQuery;
 import pe.upc.simutalk.recruitment.domain.model.valueobjects.CriterionSuggestion;
-import pe.upc.simutalk.recruitment.domain.services.CriterionSuggestionQueryService;
-import pe.upc.simutalk.recruitment.domain.services.CriterionSuggestionService;
+import pe.upc.simutalk.services.CriterionSuggestionQueryService;
+import pe.upc.simutalk.services.CriterionSuggestionService;
 import pe.upc.simutalk.repositories.JobPostingRepository;
 import pe.upc.simutalk.exceptions.ResourceNotFoundException;
 

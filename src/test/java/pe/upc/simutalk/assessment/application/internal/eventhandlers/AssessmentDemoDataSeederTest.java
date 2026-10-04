@@ -1,13 +1,13 @@
 package pe.upc.simutalk.assessment.application.internal.eventhandlers;
 
 import org.junit.jupiter.api.Test;
-import pe.upc.simutalk.assessment.domain.services.AnswerScoringService;
-import pe.upc.simutalk.assessment.domain.services.AssessmentCommandService;
+import pe.upc.simutalk.services.AnswerScoringService;
+import pe.upc.simutalk.services.AssessmentCommandService;
 import pe.upc.simutalk.repositories.AssessmentRepository;
-import pe.upc.simutalk.shared.interfaces.acl.IamContextFacade;
-import pe.upc.simutalk.shared.interfaces.acl.InterviewsContextFacade;
-import pe.upc.simutalk.shared.interfaces.acl.ProfilesContextFacade;
-import pe.upc.simutalk.shared.interfaces.acl.RecruitmentContextFacade;
+import pe.upc.simutalk.services.IamContextFacade;
+import pe.upc.simutalk.services.InterviewsContextFacade;
+import pe.upc.simutalk.services.ProfilesContextFacade;
+import pe.upc.simutalk.services.RecruitmentContextFacade;
 
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.mockito.ArgumentMatchers.any;

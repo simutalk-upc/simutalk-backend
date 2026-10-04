@@ -18,8 +18,8 @@ import pe.upc.simutalk.interviews.domain.model.commands.CompleteInterviewSession
 import pe.upc.simutalk.interviews.domain.model.commands.StartInterviewSessionCommand;
 import pe.upc.simutalk.interviews.domain.model.queries.GetAnswersByInterviewSessionIdQuery;
 import pe.upc.simutalk.interviews.domain.model.queries.GetInterviewSessionByApplicationIdQuery;
-import pe.upc.simutalk.interviews.domain.services.InterviewSessionCommandService;
-import pe.upc.simutalk.interviews.domain.services.InterviewSessionQueryService;
+import pe.upc.simutalk.services.InterviewSessionCommandService;
+import pe.upc.simutalk.services.InterviewSessionQueryService;
 import pe.upc.simutalk.interviews.interfaces.rest.resources.AnswerResource;
 import pe.upc.simutalk.interviews.interfaces.rest.resources.CreateInterviewSessionResource;
 import pe.upc.simutalk.interviews.interfaces.rest.resources.InterviewSessionResource;

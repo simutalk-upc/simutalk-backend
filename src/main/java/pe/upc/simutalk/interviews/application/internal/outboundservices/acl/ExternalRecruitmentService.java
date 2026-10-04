@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import pe.upc.simutalk.exceptions.BusinessRuleViolationException;
 import pe.upc.simutalk.exceptions.ResourceNotFoundException;
-import pe.upc.simutalk.shared.interfaces.acl.RecruitmentContextFacade;
+import pe.upc.simutalk.services.RecruitmentContextFacade;
 
 import java.util.List;
 

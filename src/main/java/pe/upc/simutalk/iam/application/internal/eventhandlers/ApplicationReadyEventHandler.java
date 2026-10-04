@@ -11,8 +11,8 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 import pe.upc.simutalk.iam.domain.model.commands.SeedAdminUserCommand;
 import pe.upc.simutalk.iam.domain.model.commands.SeedRolesCommand;
-import pe.upc.simutalk.iam.domain.services.RoleCommandService;
-import pe.upc.simutalk.iam.domain.services.UserCommandService;
+import pe.upc.simutalk.services.RoleCommandService;
+import pe.upc.simutalk.services.UserCommandService;
 
 /**
  * Seeds the role catalog on startup and, when ADMIN_USERNAME and ADMIN_PASSWORD are

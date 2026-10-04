@@ -9,13 +9,13 @@ import org.springframework.context.event.EventListener;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 import pe.upc.simutalk.assessment.domain.model.commands.ComputeAssessmentCommand;
-import pe.upc.simutalk.assessment.domain.services.AnswerScoringService;
-import pe.upc.simutalk.assessment.domain.services.AssessmentCommandService;
+import pe.upc.simutalk.services.AnswerScoringService;
+import pe.upc.simutalk.services.AssessmentCommandService;
 import pe.upc.simutalk.repositories.AssessmentRepository;
-import pe.upc.simutalk.shared.interfaces.acl.IamContextFacade;
-import pe.upc.simutalk.shared.interfaces.acl.InterviewsContextFacade;
-import pe.upc.simutalk.shared.interfaces.acl.ProfilesContextFacade;
-import pe.upc.simutalk.shared.interfaces.acl.RecruitmentContextFacade;
+import pe.upc.simutalk.services.IamContextFacade;
+import pe.upc.simutalk.services.InterviewsContextFacade;
+import pe.upc.simutalk.services.ProfilesContextFacade;
+import pe.upc.simutalk.services.RecruitmentContextFacade;
 
 import java.util.List;
 

@@ -5,7 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestClient;
-import pe.upc.simutalk.profiles.domain.services.CredentialVerificationService.VerificationResult;
+import pe.upc.simutalk.services.CredentialVerificationService.VerificationResult;
 
 import java.net.SocketTimeoutException;
 import java.time.Duration;

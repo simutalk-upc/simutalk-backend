@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import pe.upc.simutalk.iam.domain.model.queries.GetAllRolesQuery;
-import pe.upc.simutalk.iam.domain.services.RoleQueryService;
+import pe.upc.simutalk.services.RoleQueryService;
 import pe.upc.simutalk.iam.interfaces.rest.resources.RoleResource;
 import pe.upc.simutalk.iam.interfaces.rest.transform.RoleResourceFromEntityAssembler;
 

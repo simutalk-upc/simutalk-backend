@@ -13,7 +13,7 @@ import pe.upc.simutalk.enums.QuestionOrigin;
 import pe.upc.simutalk.repositories.QuestionRepository;
 import pe.upc.simutalk.exceptions.BusinessRuleViolationException;
 import pe.upc.simutalk.exceptions.ResourceNotFoundException;
-import pe.upc.simutalk.shared.interfaces.acl.RecruitmentContextFacade;
+import pe.upc.simutalk.services.RecruitmentContextFacade;
 
 import java.util.ArrayList;
 import java.util.List;

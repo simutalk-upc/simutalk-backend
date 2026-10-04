@@ -2,7 +2,7 @@ package pe.upc.simutalk.assessment.infrastructure.external.ai;
 
 import pe.upc.simutalk.shared.infrastructure.external.ai.GenerativeAiClient;
 
-import pe.upc.simutalk.assessment.domain.services.AnswerScoringService.CriterionFeedback;
+import pe.upc.simutalk.services.AnswerScoringService.CriterionFeedback;
 
 import java.util.List;
 import java.util.Map;

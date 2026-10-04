@@ -1,5 +1,7 @@
 package pe.upc.simutalk.shared.interfaces.acl;
 
+import pe.upc.simutalk.services.RecruitmentContextFacade;
+
 /**
  * Read-only view of a job posting's evaluation criterion, shared through {@link RecruitmentContextFacade}.
  *

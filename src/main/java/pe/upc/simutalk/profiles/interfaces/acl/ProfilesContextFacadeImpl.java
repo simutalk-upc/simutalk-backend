@@ -9,11 +9,11 @@ import pe.upc.simutalk.profiles.domain.model.queries.GetCandidateProfileByUserId
 import pe.upc.simutalk.profiles.domain.model.queries.GetCompanyProfileByIdQuery;
 import pe.upc.simutalk.profiles.domain.model.queries.GetCompanyProfileByUserIdQuery;
 import pe.upc.simutalk.profiles.domain.model.queries.GetVerifiedCertificationCountQuery;
-import pe.upc.simutalk.profiles.domain.services.CandidateProfileQueryService;
-import pe.upc.simutalk.profiles.domain.services.CompanyProfileQueryService;
+import pe.upc.simutalk.services.CandidateProfileQueryService;
+import pe.upc.simutalk.services.CompanyProfileQueryService;
 import pe.upc.simutalk.shared.interfaces.acl.CandidateContact;
 import pe.upc.simutalk.shared.interfaces.acl.CandidatePersonalData;
-import pe.upc.simutalk.shared.interfaces.acl.ProfilesContextFacade;
+import pe.upc.simutalk.services.ProfilesContextFacade;
 
 /**
  * profiles' implementation of the {@link ProfilesContextFacade} contract published in shared.

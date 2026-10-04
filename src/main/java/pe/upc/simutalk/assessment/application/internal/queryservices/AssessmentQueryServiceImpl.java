@@ -18,8 +18,8 @@ import pe.upc.simutalk.assessment.domain.model.queries.GetRankingByJobPostingIdQ
 import pe.upc.simutalk.assessment.domain.model.valueobjects.CandidateCode;
 import pe.upc.simutalk.assessment.domain.model.valueobjects.Ranking;
 import pe.upc.simutalk.assessment.domain.model.valueobjects.RankingEntry;
-import pe.upc.simutalk.assessment.domain.services.AssessmentQueryService;
-import pe.upc.simutalk.assessment.domain.services.RankingPolicy;
+import pe.upc.simutalk.services.AssessmentQueryService;
+import pe.upc.simutalk.services.RankingPolicy;
 import pe.upc.simutalk.repositories.AssessmentRepository;
 import pe.upc.simutalk.exceptions.ResourceNotFoundException;
 import pe.upc.simutalk.shared.interfaces.acl.CandidatePersonalData;

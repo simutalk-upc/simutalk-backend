@@ -1,5 +1,10 @@
 package pe.upc.simutalk.recruitment.application.internal.eventhandlers;
 
+import pe.upc.simutalk.recruitment.domain.model.commands.AddEvaluationCriterionCommand;
+import pe.upc.simutalk.recruitment.domain.model.commands.ChangeJobPostingStatusCommand;
+import pe.upc.simutalk.recruitment.domain.model.commands.CreateJobPostingCommand;
+import pe.upc.simutalk.recruitment.domain.model.commands.SubmitApplicationCommand;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
@@ -13,11 +18,11 @@ import pe.upc.simutalk.recruitment.domain.model.queries.GetJobPostingIdsByCompan
 import pe.upc.simutalk.enums.CriterionType;
 import pe.upc.simutalk.enums.JobPostingStatus;
 import pe.upc.simutalk.recruitment.domain.model.valueobjects.JobPostingViewer;
-import pe.upc.simutalk.recruitment.domain.services.ApplicationCommandService;
-import pe.upc.simutalk.recruitment.domain.services.JobPostingCommandService;
-import pe.upc.simutalk.recruitment.domain.services.JobPostingQueryService;
-import pe.upc.simutalk.shared.interfaces.acl.IamContextFacade;
-import pe.upc.simutalk.shared.interfaces.acl.ProfilesContextFacade;
+import pe.upc.simutalk.services.ApplicationCommandService;
+import pe.upc.simutalk.services.JobPostingCommandService;
+import pe.upc.simutalk.services.JobPostingQueryService;
+import pe.upc.simutalk.services.IamContextFacade;
+import pe.upc.simutalk.services.ProfilesContextFacade;
 
 import java.time.LocalDate;
 import java.util.List;

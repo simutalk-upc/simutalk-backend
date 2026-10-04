@@ -9,9 +9,9 @@ import pe.upc.simutalk.assessment.domain.model.commands.ComputeAssessmentCommand
 import pe.upc.simutalk.enums.CriterionKind;
 import pe.upc.simutalk.enums.IntegrityFlagType;
 import pe.upc.simutalk.assessment.domain.model.valueobjects.InterviewSessionSnapshot;
-import pe.upc.simutalk.assessment.domain.services.AnswerScoringService;
-import pe.upc.simutalk.assessment.domain.services.AnswerScoringService.CriterionFeedback;
-import pe.upc.simutalk.assessment.domain.services.AnswerScoringService.ScoringResult;
+import pe.upc.simutalk.services.AnswerScoringService;
+import pe.upc.simutalk.services.AnswerScoringService.CriterionFeedback;
+import pe.upc.simutalk.services.AnswerScoringService.ScoringResult;
 import pe.upc.simutalk.repositories.AssessmentRepository;
 import pe.upc.simutalk.exceptions.BusinessRuleViolationException;
 import pe.upc.simutalk.shared.interfaces.acl.CandidatePersonalData;

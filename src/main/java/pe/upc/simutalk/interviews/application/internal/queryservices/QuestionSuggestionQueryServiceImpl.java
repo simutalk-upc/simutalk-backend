@@ -6,8 +6,8 @@ import pe.upc.simutalk.interviews.application.internal.outboundservices.acl.Exte
 import pe.upc.simutalk.entities.Question;
 import pe.upc.simutalk.interviews.domain.model.queries.GetQuestionSuggestionsQuery;
 import pe.upc.simutalk.interviews.domain.model.valueobjects.QuestionSuggestion;
-import pe.upc.simutalk.interviews.domain.services.QuestionSuggestionQueryService;
-import pe.upc.simutalk.interviews.domain.services.QuestionSuggestionService;
+import pe.upc.simutalk.services.QuestionSuggestionQueryService;
+import pe.upc.simutalk.services.QuestionSuggestionService;
 import pe.upc.simutalk.repositories.QuestionRepository;
 
 import java.util.List;

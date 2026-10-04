@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import pe.upc.simutalk.iam.domain.services.UserCommandService;
+import pe.upc.simutalk.services.UserCommandService;
 import pe.upc.simutalk.iam.interfaces.rest.resources.AuthenticatedUserResource;
 import pe.upc.simutalk.iam.interfaces.rest.resources.SignInResource;
 import pe.upc.simutalk.iam.interfaces.rest.resources.SignUpResource;

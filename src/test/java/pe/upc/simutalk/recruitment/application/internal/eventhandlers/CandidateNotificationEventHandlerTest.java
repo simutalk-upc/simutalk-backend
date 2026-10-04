@@ -9,10 +9,10 @@ import pe.upc.simutalk.recruitment.domain.model.events.ApplicationStatusChangedE
 import pe.upc.simutalk.enums.ApplicationStatus;
 import pe.upc.simutalk.recruitment.domain.model.valueobjects.CandidateNotification;
 import pe.upc.simutalk.enums.NotificationType;
-import pe.upc.simutalk.recruitment.domain.services.NotificationService;
+import pe.upc.simutalk.services.NotificationService;
 import pe.upc.simutalk.repositories.JobPostingRepository;
 import pe.upc.simutalk.shared.interfaces.acl.CandidateContact;
-import pe.upc.simutalk.shared.interfaces.acl.ProfilesContextFacade;
+import pe.upc.simutalk.services.ProfilesContextFacade;
 
 import java.time.LocalDate;
 import java.util.Optional;

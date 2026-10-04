@@ -7,7 +7,7 @@ import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 import pe.upc.simutalk.recruitment.domain.model.valueobjects.CandidateNotification;
-import pe.upc.simutalk.recruitment.domain.services.NotificationService;
+import pe.upc.simutalk.services.NotificationService;
 
 import java.time.Duration;
 import java.util.List;

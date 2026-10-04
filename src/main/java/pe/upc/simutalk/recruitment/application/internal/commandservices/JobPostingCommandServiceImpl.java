@@ -1,5 +1,13 @@
 package pe.upc.simutalk.recruitment.application.internal.commandservices;
 
+import pe.upc.simutalk.recruitment.domain.model.commands.AddEvaluationCriterionCommand;
+import pe.upc.simutalk.recruitment.domain.model.commands.ChangeJobPostingStatusCommand;
+import pe.upc.simutalk.recruitment.domain.model.commands.CreateJobPostingCommand;
+import pe.upc.simutalk.recruitment.domain.model.commands.DeleteJobPostingCommand;
+import pe.upc.simutalk.recruitment.domain.model.commands.RemoveEvaluationCriterionCommand;
+import pe.upc.simutalk.recruitment.domain.model.commands.UpdateEvaluationCriterionCommand;
+import pe.upc.simutalk.recruitment.domain.model.commands.UpdateJobPostingCommand;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -8,7 +16,7 @@ import pe.upc.simutalk.entities.JobPosting;
 import pe.upc.simutalk.recruitment.domain.model.commands.*;
 import pe.upc.simutalk.entities.EvaluationCriterion;
 import pe.upc.simutalk.entities.Weight;
-import pe.upc.simutalk.recruitment.domain.services.JobPostingCommandService;
+import pe.upc.simutalk.services.JobPostingCommandService;
 import pe.upc.simutalk.repositories.JobPostingRepository;
 import pe.upc.simutalk.exceptions.ResourceNotFoundException;
 

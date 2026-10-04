@@ -3,7 +3,7 @@ package pe.upc.simutalk.assessment.infrastructure.external.ai;
 import org.junit.jupiter.api.Test;
 import org.springframework.web.client.RestClient;
 import pe.upc.simutalk.enums.CriterionKind;
-import pe.upc.simutalk.assessment.domain.services.AnswerScoringService.CriterionFeedback;
+import pe.upc.simutalk.services.AnswerScoringService.CriterionFeedback;
 import tools.jackson.databind.ObjectMapper;
 
 import java.math.BigDecimal;

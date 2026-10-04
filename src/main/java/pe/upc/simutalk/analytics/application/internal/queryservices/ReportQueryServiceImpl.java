@@ -12,7 +12,7 @@ import pe.upc.simutalk.analytics.domain.model.valueobjects.CarbonSavingsReport;
 import pe.upc.simutalk.analytics.domain.model.valueobjects.CompanySummaryReport;
 import pe.upc.simutalk.analytics.domain.model.valueobjects.CriterionAveragesReport;
 import pe.upc.simutalk.analytics.domain.model.valueobjects.FunnelReport;
-import pe.upc.simutalk.analytics.domain.services.ReportQueryService;
+import pe.upc.simutalk.services.ReportQueryService;
 import pe.upc.simutalk.repositories.CarbonSavingRepository;
 import pe.upc.simutalk.exceptions.ResourceNotFoundException;
 

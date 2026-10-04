@@ -5,11 +5,11 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 import pe.upc.simutalk.assessment.domain.model.queries.GetAssessmentByIdQuery;
-import pe.upc.simutalk.assessment.domain.services.AssessmentQueryService;
-import pe.upc.simutalk.shared.interfaces.acl.IamContextFacade;
-import pe.upc.simutalk.shared.interfaces.acl.InterviewsContextFacade;
-import pe.upc.simutalk.shared.interfaces.acl.ProfilesContextFacade;
-import pe.upc.simutalk.shared.interfaces.acl.RecruitmentContextFacade;
+import pe.upc.simutalk.services.AssessmentQueryService;
+import pe.upc.simutalk.services.IamContextFacade;
+import pe.upc.simutalk.services.InterviewsContextFacade;
+import pe.upc.simutalk.services.ProfilesContextFacade;
+import pe.upc.simutalk.services.RecruitmentContextFacade;
 
 import java.util.Optional;
 

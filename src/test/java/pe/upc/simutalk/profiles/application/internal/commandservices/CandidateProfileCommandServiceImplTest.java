@@ -9,8 +9,8 @@ import pe.upc.simutalk.profiles.domain.model.commands.CreateCandidateProfileComm
 import pe.upc.simutalk.profiles.domain.model.commands.VerifyCertificationCommand;
 import pe.upc.simutalk.entities.Certification;
 import pe.upc.simutalk.enums.VerificationStatus;
-import pe.upc.simutalk.profiles.domain.services.CredentialVerificationService;
-import pe.upc.simutalk.profiles.domain.services.CredentialVerificationService.VerificationResult;
+import pe.upc.simutalk.services.CredentialVerificationService;
+import pe.upc.simutalk.services.CredentialVerificationService.VerificationResult;
 import pe.upc.simutalk.repositories.CandidateProfileRepository;
 import pe.upc.simutalk.repositories.CompanyProfileRepository;
 import pe.upc.simutalk.exceptions.BusinessRuleViolationException;

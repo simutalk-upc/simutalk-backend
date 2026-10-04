@@ -1,5 +1,16 @@
 package pe.upc.simutalk.interviews.interfaces.rest;
 
+import pe.upc.simutalk.interviews.domain.model.commands.CreateInterviewSessionCommand;
+import pe.upc.simutalk.interviews.domain.model.commands.CreateQuestionCommand;
+import pe.upc.simutalk.interviews.domain.model.commands.RecordAnswerCommand;
+import pe.upc.simutalk.interviews.domain.model.commands.StartInterviewSessionCommand;
+import pe.upc.simutalk.interviews.domain.model.queries.GetAnswersByInterviewSessionIdQuery;
+import pe.upc.simutalk.interviews.domain.model.queries.GetInterviewSessionByApplicationIdQuery;
+import pe.upc.simutalk.interviews.domain.model.queries.GetInterviewSessionByIdQuery;
+import pe.upc.simutalk.interviews.domain.model.queries.GetQuestionSuggestionsQuery;
+import pe.upc.simutalk.interviews.domain.model.queries.GetQuestionsByJobPostingIdQuery;
+import pe.upc.simutalk.interviews.domain.model.queries.HasInterviewSessionInProgressQuery;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,18 +32,18 @@ import pe.upc.simutalk.entities.Answer;
 import pe.upc.simutalk.interviews.domain.model.queries.*;
 import pe.upc.simutalk.enums.QuestionOrigin;
 import pe.upc.simutalk.interviews.domain.model.valueobjects.QuestionSuggestion;
-import pe.upc.simutalk.interviews.domain.services.InterviewSessionCommandService;
-import pe.upc.simutalk.interviews.domain.services.InterviewSessionQueryService;
-import pe.upc.simutalk.interviews.domain.services.QuestionCommandService;
-import pe.upc.simutalk.interviews.domain.services.QuestionQueryService;
-import pe.upc.simutalk.interviews.domain.services.QuestionSuggestionQueryService;
+import pe.upc.simutalk.services.InterviewSessionCommandService;
+import pe.upc.simutalk.services.InterviewSessionQueryService;
+import pe.upc.simutalk.services.QuestionCommandService;
+import pe.upc.simutalk.services.QuestionQueryService;
+import pe.upc.simutalk.services.QuestionSuggestionQueryService;
 import pe.upc.simutalk.interviews.interfaces.rest.authorization.InterviewsAccessPolicy;
 import pe.upc.simutalk.interviews.interfaces.rest.resources.CreateInterviewSessionResource;
 import pe.upc.simutalk.interviews.interfaces.rest.resources.CreateQuestionResource;
 import pe.upc.simutalk.interviews.interfaces.rest.resources.RecordAnswerResource;
-import pe.upc.simutalk.shared.interfaces.acl.IamContextFacade;
-import pe.upc.simutalk.shared.interfaces.acl.ProfilesContextFacade;
-import pe.upc.simutalk.shared.interfaces.acl.RecruitmentContextFacade;
+import pe.upc.simutalk.services.IamContextFacade;
+import pe.upc.simutalk.services.ProfilesContextFacade;
+import pe.upc.simutalk.services.RecruitmentContextFacade;
 
 import java.time.Instant;
 import java.time.LocalDate;

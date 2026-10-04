@@ -1,5 +1,7 @@
 package pe.upc.simutalk.shared.interfaces.acl;
 
+import pe.upc.simutalk.services.InterviewsContextFacade;
+
 /**
  * Read-only view of an interview answer, shared through {@link InterviewsContextFacade}.
  *

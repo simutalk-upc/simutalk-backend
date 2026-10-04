@@ -7,9 +7,9 @@ import pe.upc.simutalk.iam.domain.model.commands.SignUpCommand;
 import pe.upc.simutalk.entities.Role;
 import pe.upc.simutalk.iam.domain.model.queries.GetUserByIdQuery;
 import pe.upc.simutalk.iam.domain.model.queries.GetUserByUsernameQuery;
-import pe.upc.simutalk.iam.domain.services.UserCommandService;
-import pe.upc.simutalk.iam.domain.services.UserQueryService;
-import pe.upc.simutalk.shared.interfaces.acl.IamContextFacade;
+import pe.upc.simutalk.services.UserCommandService;
+import pe.upc.simutalk.services.UserQueryService;
+import pe.upc.simutalk.services.IamContextFacade;
 
 import java.util.List;
 

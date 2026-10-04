@@ -16,7 +16,7 @@ import pe.upc.simutalk.repositories.InterviewSessionRepository;
 import pe.upc.simutalk.repositories.QuestionRepository;
 import pe.upc.simutalk.exceptions.BusinessRuleViolationException;
 import pe.upc.simutalk.exceptions.ResourceNotFoundException;
-import pe.upc.simutalk.shared.interfaces.acl.RecruitmentContextFacade;
+import pe.upc.simutalk.services.RecruitmentContextFacade;
 
 import java.time.Instant;
 import java.time.LocalDate;

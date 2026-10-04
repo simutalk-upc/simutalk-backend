@@ -5,7 +5,7 @@ import com.sun.net.httpserver.HttpServer;
 import org.junit.jupiter.api.Test;
 import org.springframework.web.client.RestClient;
 import pe.upc.simutalk.assessment.application.internal.outboundservices.anonymization.TranscriptAnonymizer;
-import pe.upc.simutalk.assessment.domain.services.AnswerScoringService;
+import pe.upc.simutalk.services.AnswerScoringService;
 import pe.upc.simutalk.shared.interfaces.acl.CandidatePersonalData;
 
 import java.net.InetSocketAddress;

@@ -1,5 +1,7 @@
 package pe.upc.simutalk.iam.infrastructure.hashing.bcrypt;
 
+import pe.upc.simutalk.iam.infrastructure.authorization.sfs.configuration.WebSecurityConfiguration;
+
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import pe.upc.simutalk.iam.infrastructure.hashing.bcrypt.services.HashingService;
 

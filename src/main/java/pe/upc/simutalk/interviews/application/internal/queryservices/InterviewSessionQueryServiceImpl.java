@@ -10,7 +10,7 @@ import pe.upc.simutalk.interviews.domain.model.queries.GetInterviewSessionByAppl
 import pe.upc.simutalk.interviews.domain.model.queries.GetInterviewSessionByIdQuery;
 import pe.upc.simutalk.interviews.domain.model.queries.HasInterviewSessionInProgressQuery;
 import pe.upc.simutalk.enums.InterviewSessionStatus;
-import pe.upc.simutalk.interviews.domain.services.InterviewSessionQueryService;
+import pe.upc.simutalk.services.InterviewSessionQueryService;
 import pe.upc.simutalk.repositories.InterviewSessionRepository;
 import pe.upc.simutalk.exceptions.ResourceNotFoundException;
 

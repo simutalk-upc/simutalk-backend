@@ -1,6 +1,6 @@
 package pe.upc.simutalk.assessment.infrastructure.external.ai;
 
-import pe.upc.simutalk.assessment.domain.services.AnswerScoringService.ScoringResult;
+import pe.upc.simutalk.services.AnswerScoringService.ScoringResult;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;

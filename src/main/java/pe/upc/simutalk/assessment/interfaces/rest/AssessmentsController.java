@@ -1,5 +1,7 @@
 package pe.upc.simutalk.assessment.interfaces.rest;
 
+import pe.upc.simutalk.assessment.domain.model.valueobjects.Ranking;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -19,8 +21,8 @@ import pe.upc.simutalk.assessment.domain.model.commands.ComputeAssessmentCommand
 import pe.upc.simutalk.assessment.domain.model.queries.GetAssessmentByInterviewSessionIdQuery;
 import pe.upc.simutalk.assessment.domain.model.queries.GetEvidencesByCriterionScoreQuery;
 import pe.upc.simutalk.assessment.domain.model.queries.GetRankingByJobPostingIdQuery;
-import pe.upc.simutalk.assessment.domain.services.AssessmentCommandService;
-import pe.upc.simutalk.assessment.domain.services.AssessmentQueryService;
+import pe.upc.simutalk.services.AssessmentCommandService;
+import pe.upc.simutalk.services.AssessmentQueryService;
 import pe.upc.simutalk.assessment.interfaces.rest.authorization.AssessmentAccessPolicy;
 import pe.upc.simutalk.assessment.interfaces.rest.resources.AssessmentResource;
 import pe.upc.simutalk.assessment.interfaces.rest.resources.CandidateAssessmentResource;

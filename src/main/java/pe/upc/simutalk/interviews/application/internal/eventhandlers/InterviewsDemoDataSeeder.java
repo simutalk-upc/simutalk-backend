@@ -1,5 +1,11 @@
 package pe.upc.simutalk.interviews.application.internal.eventhandlers;
 
+import pe.upc.simutalk.interviews.domain.model.commands.CompleteInterviewSessionCommand;
+import pe.upc.simutalk.interviews.domain.model.commands.CreateInterviewSessionCommand;
+import pe.upc.simutalk.interviews.domain.model.commands.CreateQuestionCommand;
+import pe.upc.simutalk.interviews.domain.model.commands.RecordAnswerCommand;
+import pe.upc.simutalk.interviews.domain.model.commands.StartInterviewSessionCommand;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
@@ -12,13 +18,13 @@ import pe.upc.simutalk.interviews.domain.model.commands.*;
 import pe.upc.simutalk.interviews.domain.model.queries.GetInterviewSessionByApplicationIdQuery;
 import pe.upc.simutalk.interviews.domain.model.queries.GetQuestionsByJobPostingIdQuery;
 import pe.upc.simutalk.enums.QuestionOrigin;
-import pe.upc.simutalk.interviews.domain.services.InterviewSessionCommandService;
-import pe.upc.simutalk.interviews.domain.services.InterviewSessionQueryService;
-import pe.upc.simutalk.interviews.domain.services.QuestionCommandService;
-import pe.upc.simutalk.interviews.domain.services.QuestionQueryService;
-import pe.upc.simutalk.shared.interfaces.acl.IamContextFacade;
-import pe.upc.simutalk.shared.interfaces.acl.ProfilesContextFacade;
-import pe.upc.simutalk.shared.interfaces.acl.RecruitmentContextFacade;
+import pe.upc.simutalk.services.InterviewSessionCommandService;
+import pe.upc.simutalk.services.InterviewSessionQueryService;
+import pe.upc.simutalk.services.QuestionCommandService;
+import pe.upc.simutalk.services.QuestionQueryService;
+import pe.upc.simutalk.services.IamContextFacade;
+import pe.upc.simutalk.services.ProfilesContextFacade;
+import pe.upc.simutalk.services.RecruitmentContextFacade;
 
 import java.time.LocalDate;
 import java.util.List;

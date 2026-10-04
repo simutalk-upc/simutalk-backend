@@ -15,7 +15,7 @@ import pe.upc.simutalk.analytics.domain.model.queries.GetCarbonSavingsReportQuer
 import pe.upc.simutalk.analytics.domain.model.queries.GetCompanySummaryReportQuery;
 import pe.upc.simutalk.analytics.domain.model.queries.GetCriterionAveragesReportQuery;
 import pe.upc.simutalk.analytics.domain.model.queries.GetFunnelReportQuery;
-import pe.upc.simutalk.analytics.domain.services.ReportQueryService;
+import pe.upc.simutalk.services.ReportQueryService;
 import pe.upc.simutalk.analytics.interfaces.rest.resources.CarbonSavingsReportResource;
 import pe.upc.simutalk.analytics.interfaces.rest.resources.CompanySummaryReportResource;
 import pe.upc.simutalk.analytics.interfaces.rest.resources.CriterionAveragesReportResource;

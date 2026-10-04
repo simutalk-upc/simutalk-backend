@@ -7,7 +7,7 @@ import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientResponseException;
-import pe.upc.simutalk.profiles.domain.services.CredentialVerificationService;
+import pe.upc.simutalk.services.CredentialVerificationService;
 
 import java.time.Duration;
 import java.util.Locale;

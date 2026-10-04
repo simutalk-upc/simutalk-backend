@@ -10,7 +10,7 @@ import pe.upc.simutalk.recruitment.domain.model.queries.GetPublishedJobPostingCo
 import pe.upc.simutalk.enums.JobPostingStatus;
 import pe.upc.simutalk.recruitment.domain.model.queries.SearchJobPostingsQuery;
 import pe.upc.simutalk.entities.CompanyId;
-import pe.upc.simutalk.recruitment.domain.services.JobPostingQueryService;
+import pe.upc.simutalk.services.JobPostingQueryService;
 import pe.upc.simutalk.repositories.JobPostingRepository;
 
 import java.util.List;

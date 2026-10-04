@@ -1,15 +1,18 @@
 package pe.upc.simutalk.interviews.interfaces.rest.authorization;
 
+import pe.upc.simutalk.profiles.interfaces.rest.authorization.ProfileAccessPolicy;
+import pe.upc.simutalk.recruitment.interfaces.rest.authorization.RecruitmentAccessPolicy;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 import pe.upc.simutalk.entities.InterviewSession;
 import pe.upc.simutalk.interviews.domain.model.queries.GetInterviewSessionByIdQuery;
 import pe.upc.simutalk.interviews.domain.model.queries.HasInterviewSessionInProgressQuery;
-import pe.upc.simutalk.interviews.domain.services.InterviewSessionQueryService;
-import pe.upc.simutalk.shared.interfaces.acl.IamContextFacade;
-import pe.upc.simutalk.shared.interfaces.acl.ProfilesContextFacade;
-import pe.upc.simutalk.shared.interfaces.acl.RecruitmentContextFacade;
+import pe.upc.simutalk.services.InterviewSessionQueryService;
+import pe.upc.simutalk.services.IamContextFacade;
+import pe.upc.simutalk.services.ProfilesContextFacade;
+import pe.upc.simutalk.services.RecruitmentContextFacade;
 
 import java.util.Optional;
 import java.util.function.Predicate;

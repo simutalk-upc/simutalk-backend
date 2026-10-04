@@ -1,5 +1,16 @@
 package pe.upc.simutalk.recruitment.interfaces.rest;
 
+import pe.upc.simutalk.recruitment.domain.model.commands.AddEvaluationCriterionCommand;
+import pe.upc.simutalk.recruitment.domain.model.commands.ChangeJobPostingStatusCommand;
+import pe.upc.simutalk.recruitment.domain.model.commands.CreateJobPostingCommand;
+import pe.upc.simutalk.recruitment.domain.model.commands.UpdateEvaluationCriterionCommand;
+import pe.upc.simutalk.recruitment.domain.model.commands.UpdateJobPostingCommand;
+import pe.upc.simutalk.recruitment.interfaces.rest.resources.CreateEvaluationCriterionResource;
+import pe.upc.simutalk.recruitment.interfaces.rest.resources.CreateJobPostingResource;
+import pe.upc.simutalk.recruitment.interfaces.rest.resources.UpdateEvaluationCriterionResource;
+import pe.upc.simutalk.recruitment.interfaces.rest.resources.UpdateJobPostingResource;
+import pe.upc.simutalk.recruitment.interfaces.rest.resources.UpdateJobPostingStatusResource;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
@@ -23,18 +34,18 @@ import pe.upc.simutalk.recruitment.domain.model.queries.GetJobPostingByIdQuery;
 import pe.upc.simutalk.enums.CriterionType;
 import pe.upc.simutalk.enums.JobPostingStatus;
 import pe.upc.simutalk.entities.Weight;
-import pe.upc.simutalk.recruitment.domain.services.ApplicationQueryService;
+import pe.upc.simutalk.services.ApplicationQueryService;
 import pe.upc.simutalk.recruitment.domain.model.queries.GetCriterionSuggestionsQuery;
 import pe.upc.simutalk.enums.CriterionOrigin;
 import pe.upc.simutalk.recruitment.domain.model.valueobjects.CriterionSuggestion;
-import pe.upc.simutalk.recruitment.domain.services.CriterionSuggestionQueryService;
-import pe.upc.simutalk.recruitment.domain.services.JobPostingCommandService;
-import pe.upc.simutalk.recruitment.domain.services.JobPostingQueryService;
+import pe.upc.simutalk.services.CriterionSuggestionQueryService;
+import pe.upc.simutalk.services.JobPostingCommandService;
+import pe.upc.simutalk.services.JobPostingQueryService;
 import pe.upc.simutalk.recruitment.interfaces.rest.authorization.RecruitmentAccessPolicy;
 import pe.upc.simutalk.recruitment.interfaces.rest.resources.*;
 import pe.upc.simutalk.exceptions.BusinessRuleViolationException;
-import pe.upc.simutalk.shared.interfaces.acl.IamContextFacade;
-import pe.upc.simutalk.shared.interfaces.acl.ProfilesContextFacade;
+import pe.upc.simutalk.services.IamContextFacade;
+import pe.upc.simutalk.services.ProfilesContextFacade;
 
 import java.time.LocalDate;
 import java.util.List;

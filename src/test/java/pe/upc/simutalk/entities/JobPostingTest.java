@@ -10,7 +10,7 @@ import pe.upc.simutalk.enums.CriterionType;
 import pe.upc.simutalk.enums.JobPostingStatus;
 import pe.upc.simutalk.recruitment.domain.model.valueobjects.JobPostingViewer;
 import pe.upc.simutalk.entities.Weight;
-import pe.upc.simutalk.recruitment.domain.services.InterviewQuestionCounter;
+import pe.upc.simutalk.services.InterviewQuestionCounter;
 import pe.upc.simutalk.exceptions.BusinessRuleViolationException;
 import pe.upc.simutalk.exceptions.ResourceNotFoundException;
 

@@ -9,9 +9,9 @@ import pe.upc.simutalk.entities.JobPosting;
 import pe.upc.simutalk.recruitment.domain.model.events.ApplicationStatusChangedEvent;
 import pe.upc.simutalk.recruitment.domain.model.valueobjects.CandidateNotification;
 import pe.upc.simutalk.enums.NotificationType;
-import pe.upc.simutalk.recruitment.domain.services.NotificationService;
+import pe.upc.simutalk.services.NotificationService;
 import pe.upc.simutalk.repositories.JobPostingRepository;
-import pe.upc.simutalk.shared.interfaces.acl.ProfilesContextFacade;
+import pe.upc.simutalk.services.ProfilesContextFacade;
 
 /**
  * US-24: e-mails the candidate when their application reaches INTERVIEWING (interview invitation),

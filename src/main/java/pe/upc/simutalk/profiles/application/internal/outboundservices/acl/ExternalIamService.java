@@ -2,7 +2,7 @@ package pe.upc.simutalk.profiles.application.internal.outboundservices.acl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import pe.upc.simutalk.shared.interfaces.acl.IamContextFacade;
+import pe.upc.simutalk.services.IamContextFacade;
 
 /**
  * Anti-corruption layer from profiles to iam. Goes through the IamContextFacade
