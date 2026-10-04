@@ -2,9 +2,9 @@ package pe.upc.simutalk.services;
 
 import org.springframework.data.domain.Page;
 import pe.upc.simutalk.entities.CompanyProfile;
-import pe.upc.simutalk.profiles.domain.model.queries.GetAllCompanyProfilesQuery;
-import pe.upc.simutalk.profiles.domain.model.queries.GetCompanyProfileByIdQuery;
-import pe.upc.simutalk.profiles.domain.model.queries.GetCompanyProfileByUserIdQuery;
+import pe.upc.simutalk.dtos.GetAllCompanyProfilesQuery;
+import pe.upc.simutalk.dtos.GetCompanyProfileByIdQuery;
+import pe.upc.simutalk.dtos.GetCompanyProfileByUserIdQuery;
 
 import java.util.Optional;
 

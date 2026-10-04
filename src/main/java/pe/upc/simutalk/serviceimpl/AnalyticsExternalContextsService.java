@@ -3,7 +3,7 @@ package pe.upc.simutalk.serviceimpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import pe.upc.simutalk.services.AssessmentContextFacade;
-import pe.upc.simutalk.shared.interfaces.acl.CriterionAverageView;
+import pe.upc.simutalk.dtos.CriterionAverageView;
 import pe.upc.simutalk.services.ProfilesContextFacade;
 import pe.upc.simutalk.services.RecruitmentContextFacade;
 

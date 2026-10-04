@@ -1,6 +1,6 @@
 package pe.upc.simutalk.services;
 
-import pe.upc.simutalk.shared.interfaces.acl.CriterionView;
+import pe.upc.simutalk.dtos.CriterionView;
 
 import pe.upc.simutalk.enums.ApplicationStatus;
 

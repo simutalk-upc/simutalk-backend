@@ -1,8 +1,8 @@
 package pe.upc.simutalk.services;
 
 import pe.upc.simutalk.entities.Application;
-import pe.upc.simutalk.recruitment.domain.model.commands.ChangeApplicationStatusCommand;
-import pe.upc.simutalk.recruitment.domain.model.commands.SubmitApplicationCommand;
+import pe.upc.simutalk.dtos.ChangeApplicationStatusCommand;
+import pe.upc.simutalk.dtos.SubmitApplicationCommand;
 
 public interface ApplicationCommandService {
 

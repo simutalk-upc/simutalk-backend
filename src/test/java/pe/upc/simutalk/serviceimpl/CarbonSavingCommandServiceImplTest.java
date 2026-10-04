@@ -3,7 +3,7 @@ package pe.upc.simutalk.serviceimpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import pe.upc.simutalk.serviceimpl.AnalyticsExternalContextsService;
-import pe.upc.simutalk.analytics.domain.model.commands.RecordCarbonSavingCommand;
+import pe.upc.simutalk.dtos.RecordCarbonSavingCommand;
 import pe.upc.simutalk.config.SustainabilityProperties;
 import pe.upc.simutalk.repositories.CarbonSavingRepository;
 

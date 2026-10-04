@@ -1,7 +1,7 @@
 package pe.upc.simutalk.serviceimpl;
 
 import pe.upc.simutalk.entities.Question;
-import pe.upc.simutalk.interviews.domain.model.valueobjects.QuestionSuggestion;
+import pe.upc.simutalk.dtos.QuestionSuggestion;
 
 import java.text.Normalizer;
 import java.util.ArrayList;

@@ -3,11 +3,11 @@ package pe.upc.simutalk.services;
 import pe.upc.simutalk.entities.CandidateProfile;
 import org.springframework.data.domain.Page;
 import pe.upc.simutalk.entities.Certification;
-import pe.upc.simutalk.profiles.domain.model.queries.GetAllCandidateProfilesQuery;
-import pe.upc.simutalk.profiles.domain.model.queries.GetCandidateProfileByIdQuery;
-import pe.upc.simutalk.profiles.domain.model.queries.GetCandidateProfileByUserIdQuery;
-import pe.upc.simutalk.profiles.domain.model.queries.GetCertificationsByCandidateIdQuery;
-import pe.upc.simutalk.profiles.domain.model.queries.GetVerifiedCertificationCountQuery;
+import pe.upc.simutalk.dtos.GetAllCandidateProfilesQuery;
+import pe.upc.simutalk.dtos.GetCandidateProfileByIdQuery;
+import pe.upc.simutalk.dtos.GetCandidateProfileByUserIdQuery;
+import pe.upc.simutalk.dtos.GetCertificationsByCandidateIdQuery;
+import pe.upc.simutalk.dtos.GetVerifiedCertificationCountQuery;
 
 import java.util.List;
 import java.util.Optional;

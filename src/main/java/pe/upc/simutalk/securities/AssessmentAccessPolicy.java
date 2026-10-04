@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
-import pe.upc.simutalk.assessment.domain.model.queries.GetAssessmentByIdQuery;
+import pe.upc.simutalk.dtos.GetAssessmentByIdQuery;
 import pe.upc.simutalk.services.AssessmentQueryService;
 import pe.upc.simutalk.services.IamContextFacade;
 import pe.upc.simutalk.services.InterviewsContextFacade;

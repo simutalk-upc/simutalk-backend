@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.BatchSize;
 import pe.upc.simutalk.entities.CriterionScore;
 import pe.upc.simutalk.entities.IntegrityFlag;
-import pe.upc.simutalk.assessment.domain.model.valueobjects.InterviewSessionSnapshot;
+import pe.upc.simutalk.dtos.InterviewSessionSnapshot;
 import pe.upc.simutalk.exceptions.BusinessRuleViolationException;
 import pe.upc.simutalk.exceptions.ResourceNotFoundException;
 import pe.upc.simutalk.entities.AuditableAggregateRoot;

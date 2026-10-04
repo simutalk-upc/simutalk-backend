@@ -1,7 +1,7 @@
 package pe.upc.simutalk.interviews.interfaces.rest.transform;
 
-import pe.upc.simutalk.interviews.domain.model.commands.RecordAnswerCommand;
-import pe.upc.simutalk.interviews.interfaces.rest.resources.RecordAnswerResource;
+import pe.upc.simutalk.dtos.RecordAnswerCommand;
+import pe.upc.simutalk.dtos.RecordAnswerResource;
 
 public class RecordAnswerCommandFromResourceAssembler {
 

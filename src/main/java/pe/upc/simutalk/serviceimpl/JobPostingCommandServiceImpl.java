@@ -1,19 +1,18 @@
 package pe.upc.simutalk.serviceimpl;
 
-import pe.upc.simutalk.recruitment.domain.model.commands.AddEvaluationCriterionCommand;
-import pe.upc.simutalk.recruitment.domain.model.commands.ChangeJobPostingStatusCommand;
-import pe.upc.simutalk.recruitment.domain.model.commands.CreateJobPostingCommand;
-import pe.upc.simutalk.recruitment.domain.model.commands.DeleteJobPostingCommand;
-import pe.upc.simutalk.recruitment.domain.model.commands.RemoveEvaluationCriterionCommand;
-import pe.upc.simutalk.recruitment.domain.model.commands.UpdateEvaluationCriterionCommand;
-import pe.upc.simutalk.recruitment.domain.model.commands.UpdateJobPostingCommand;
+import pe.upc.simutalk.dtos.AddEvaluationCriterionCommand;
+import pe.upc.simutalk.dtos.ChangeJobPostingStatusCommand;
+import pe.upc.simutalk.dtos.CreateJobPostingCommand;
+import pe.upc.simutalk.dtos.DeleteJobPostingCommand;
+import pe.upc.simutalk.dtos.RemoveEvaluationCriterionCommand;
+import pe.upc.simutalk.dtos.UpdateEvaluationCriterionCommand;
+import pe.upc.simutalk.dtos.UpdateJobPostingCommand;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pe.upc.simutalk.serviceimpl.ExternalInterviewsService;
 import pe.upc.simutalk.entities.JobPosting;
-import pe.upc.simutalk.recruitment.domain.model.commands.*;
 import pe.upc.simutalk.entities.EvaluationCriterion;
 import pe.upc.simutalk.entities.Weight;
 import pe.upc.simutalk.services.JobPostingCommandService;

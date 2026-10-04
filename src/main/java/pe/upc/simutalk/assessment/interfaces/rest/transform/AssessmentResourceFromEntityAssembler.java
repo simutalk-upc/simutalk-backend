@@ -1,9 +1,9 @@
 package pe.upc.simutalk.assessment.interfaces.rest.transform;
 
 import pe.upc.simutalk.entities.Assessment;
-import pe.upc.simutalk.assessment.interfaces.rest.resources.AssessmentResource;
-import pe.upc.simutalk.assessment.interfaces.rest.resources.CriterionScoreResource;
-import pe.upc.simutalk.assessment.interfaces.rest.resources.IntegrityFlagResource;
+import pe.upc.simutalk.dtos.AssessmentResource;
+import pe.upc.simutalk.dtos.CriterionScoreResource;
+import pe.upc.simutalk.dtos.IntegrityFlagResource;
 
 public class AssessmentResourceFromEntityAssembler {
 

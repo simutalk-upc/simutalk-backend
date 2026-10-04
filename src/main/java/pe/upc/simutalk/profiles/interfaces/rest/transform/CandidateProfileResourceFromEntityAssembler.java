@@ -1,7 +1,7 @@
 package pe.upc.simutalk.profiles.interfaces.rest.transform;
 
 import pe.upc.simutalk.entities.CandidateProfile;
-import pe.upc.simutalk.profiles.interfaces.rest.resources.CandidateProfileResource;
+import pe.upc.simutalk.dtos.CandidateProfileResource;
 
 import java.time.LocalDate;
 

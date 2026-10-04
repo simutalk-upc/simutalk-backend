@@ -1,6 +1,6 @@
 package pe.upc.simutalk.services;
 
-import pe.upc.simutalk.shared.interfaces.acl.CriterionAverageView;
+import pe.upc.simutalk.dtos.CriterionAverageView;
 
 import java.util.List;
 

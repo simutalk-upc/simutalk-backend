@@ -1,8 +1,8 @@
 package pe.upc.simutalk.services;
 
 import pe.upc.simutalk.entities.CompanyProfile;
-import pe.upc.simutalk.profiles.domain.model.commands.CreateCompanyProfileCommand;
-import pe.upc.simutalk.profiles.domain.model.commands.UpdateCompanyProfileCommand;
+import pe.upc.simutalk.dtos.CreateCompanyProfileCommand;
+import pe.upc.simutalk.dtos.UpdateCompanyProfileCommand;
 
 public interface CompanyProfileCommandService {
 

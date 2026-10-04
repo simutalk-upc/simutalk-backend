@@ -1,7 +1,7 @@
 package pe.upc.simutalk.iam.interfaces.rest.transform;
 
 import pe.upc.simutalk.entities.Role;
-import pe.upc.simutalk.iam.interfaces.rest.resources.RoleResource;
+import pe.upc.simutalk.dtos.RoleResource;
 
 public class RoleResourceFromEntityAssembler {
 

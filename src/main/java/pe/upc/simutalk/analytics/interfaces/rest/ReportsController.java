@@ -11,15 +11,15 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import pe.upc.simutalk.analytics.domain.model.queries.GetCarbonSavingsReportQuery;
-import pe.upc.simutalk.analytics.domain.model.queries.GetCompanySummaryReportQuery;
-import pe.upc.simutalk.analytics.domain.model.queries.GetCriterionAveragesReportQuery;
-import pe.upc.simutalk.analytics.domain.model.queries.GetFunnelReportQuery;
+import pe.upc.simutalk.dtos.GetCarbonSavingsReportQuery;
+import pe.upc.simutalk.dtos.GetCompanySummaryReportQuery;
+import pe.upc.simutalk.dtos.GetCriterionAveragesReportQuery;
+import pe.upc.simutalk.dtos.GetFunnelReportQuery;
 import pe.upc.simutalk.services.ReportQueryService;
-import pe.upc.simutalk.analytics.interfaces.rest.resources.CarbonSavingsReportResource;
-import pe.upc.simutalk.analytics.interfaces.rest.resources.CompanySummaryReportResource;
-import pe.upc.simutalk.analytics.interfaces.rest.resources.CriterionAveragesReportResource;
-import pe.upc.simutalk.analytics.interfaces.rest.resources.FunnelReportResource;
+import pe.upc.simutalk.dtos.CarbonSavingsReportResource;
+import pe.upc.simutalk.dtos.CompanySummaryReportResource;
+import pe.upc.simutalk.dtos.CriterionAveragesReportResource;
+import pe.upc.simutalk.dtos.FunnelReportResource;
 import pe.upc.simutalk.analytics.interfaces.rest.transform.ReportResourceAssembler;
 
 @RestController

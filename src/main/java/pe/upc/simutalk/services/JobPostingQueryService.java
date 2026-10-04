@@ -1,10 +1,10 @@
 package pe.upc.simutalk.services;
 
 import pe.upc.simutalk.entities.JobPosting;
-import pe.upc.simutalk.recruitment.domain.model.queries.GetJobPostingByIdQuery;
-import pe.upc.simutalk.recruitment.domain.model.queries.GetJobPostingIdsByCompanyIdQuery;
-import pe.upc.simutalk.recruitment.domain.model.queries.GetPublishedJobPostingCountByCompanyIdQuery;
-import pe.upc.simutalk.recruitment.domain.model.queries.SearchJobPostingsQuery;
+import pe.upc.simutalk.dtos.GetJobPostingByIdQuery;
+import pe.upc.simutalk.dtos.GetJobPostingIdsByCompanyIdQuery;
+import pe.upc.simutalk.dtos.GetPublishedJobPostingCountByCompanyIdQuery;
+import pe.upc.simutalk.dtos.SearchJobPostingsQuery;
 
 import java.util.List;
 import java.util.Optional;

@@ -1,9 +1,9 @@
 package pe.upc.simutalk.assessment.interfaces.rest.transform;
 
-import pe.upc.simutalk.assessment.domain.model.valueobjects.Ranking;
-import pe.upc.simutalk.assessment.interfaces.rest.resources.RankingResource;
-import pe.upc.simutalk.assessment.interfaces.rest.resources.RankingResource.CriterionBreakdownResource;
-import pe.upc.simutalk.assessment.interfaces.rest.resources.RankingResource.RankingEntryResource;
+import pe.upc.simutalk.dtos.Ranking;
+import pe.upc.simutalk.dtos.RankingResource;
+import pe.upc.simutalk.dtos.RankingResource.CriterionBreakdownResource;
+import pe.upc.simutalk.dtos.RankingResource.RankingEntryResource;
 
 public class RankingResourceFromEntityAssembler {
 

@@ -1,9 +1,9 @@
 package pe.upc.simutalk.services;
 
 import pe.upc.simutalk.entities.Question;
-import pe.upc.simutalk.interviews.domain.model.queries.CountQuestionsByCriterionIdQuery;
-import pe.upc.simutalk.interviews.domain.model.queries.GetQuestionByIdQuery;
-import pe.upc.simutalk.interviews.domain.model.queries.GetQuestionsByJobPostingIdQuery;
+import pe.upc.simutalk.dtos.CountQuestionsByCriterionIdQuery;
+import pe.upc.simutalk.dtos.GetQuestionByIdQuery;
+import pe.upc.simutalk.dtos.GetQuestionsByJobPostingIdQuery;
 
 import java.util.List;
 import java.util.Optional;

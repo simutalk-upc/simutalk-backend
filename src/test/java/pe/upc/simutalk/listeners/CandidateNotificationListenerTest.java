@@ -4,14 +4,14 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import pe.upc.simutalk.entities.JobPosting;
-import pe.upc.simutalk.recruitment.domain.model.commands.CreateJobPostingCommand;
+import pe.upc.simutalk.dtos.CreateJobPostingCommand;
 import pe.upc.simutalk.events.ApplicationStatusChangedEvent;
 import pe.upc.simutalk.enums.ApplicationStatus;
-import pe.upc.simutalk.recruitment.domain.model.valueobjects.CandidateNotification;
+import pe.upc.simutalk.dtos.CandidateNotification;
 import pe.upc.simutalk.enums.NotificationType;
 import pe.upc.simutalk.services.NotificationService;
 import pe.upc.simutalk.repositories.JobPostingRepository;
-import pe.upc.simutalk.shared.interfaces.acl.CandidateContact;
+import pe.upc.simutalk.dtos.CandidateContact;
 import pe.upc.simutalk.services.ProfilesContextFacade;
 
 import java.time.LocalDate;

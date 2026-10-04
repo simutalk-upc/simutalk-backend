@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.test.util.ReflectionTestUtils;
-import pe.upc.simutalk.recruitment.domain.model.commands.CreateJobPostingCommand;
+import pe.upc.simutalk.dtos.CreateJobPostingCommand;
 import pe.upc.simutalk.enums.ApplicationStatus;
 import pe.upc.simutalk.enums.CriterionType;
 import pe.upc.simutalk.entities.Weight;

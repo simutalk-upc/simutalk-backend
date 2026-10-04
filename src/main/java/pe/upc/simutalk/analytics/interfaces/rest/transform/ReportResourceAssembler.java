@@ -1,13 +1,13 @@
 package pe.upc.simutalk.analytics.interfaces.rest.transform;
 
-import pe.upc.simutalk.analytics.domain.model.valueobjects.CarbonSavingsReport;
-import pe.upc.simutalk.analytics.domain.model.valueobjects.CompanySummaryReport;
-import pe.upc.simutalk.analytics.domain.model.valueobjects.CriterionAveragesReport;
-import pe.upc.simutalk.analytics.domain.model.valueobjects.FunnelReport;
-import pe.upc.simutalk.analytics.interfaces.rest.resources.CarbonSavingsReportResource;
-import pe.upc.simutalk.analytics.interfaces.rest.resources.CompanySummaryReportResource;
-import pe.upc.simutalk.analytics.interfaces.rest.resources.CriterionAveragesReportResource;
-import pe.upc.simutalk.analytics.interfaces.rest.resources.FunnelReportResource;
+import pe.upc.simutalk.dtos.CarbonSavingsReport;
+import pe.upc.simutalk.dtos.CompanySummaryReport;
+import pe.upc.simutalk.dtos.CriterionAveragesReport;
+import pe.upc.simutalk.dtos.FunnelReport;
+import pe.upc.simutalk.dtos.CarbonSavingsReportResource;
+import pe.upc.simutalk.dtos.CompanySummaryReportResource;
+import pe.upc.simutalk.dtos.CriterionAveragesReportResource;
+import pe.upc.simutalk.dtos.FunnelReportResource;
 
 public class ReportResourceAssembler {
 

@@ -8,12 +8,12 @@ import pe.upc.simutalk.serviceimpl.TranscriptAnonymizer;
 import pe.upc.simutalk.entities.Assessment;
 import pe.upc.simutalk.entities.CriterionScore;
 import pe.upc.simutalk.entities.Evidence;
-import pe.upc.simutalk.assessment.domain.model.queries.GetEvidencesByCriterionScoreQuery;
-import pe.upc.simutalk.assessment.domain.model.queries.GetRankingByJobPostingIdQuery;
+import pe.upc.simutalk.dtos.GetEvidencesByCriterionScoreQuery;
+import pe.upc.simutalk.dtos.GetRankingByJobPostingIdQuery;
 import pe.upc.simutalk.enums.CriterionKind;
-import pe.upc.simutalk.assessment.domain.model.valueobjects.InterviewSessionSnapshot;
+import pe.upc.simutalk.dtos.InterviewSessionSnapshot;
 import pe.upc.simutalk.repositories.AssessmentRepository;
-import pe.upc.simutalk.shared.interfaces.acl.CandidatePersonalData;
+import pe.upc.simutalk.dtos.CandidatePersonalData;
 
 import java.math.BigDecimal;
 import java.time.Instant;

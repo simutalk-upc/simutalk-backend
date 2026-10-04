@@ -4,11 +4,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 import pe.upc.simutalk.entities.JobPosting;
-import pe.upc.simutalk.recruitment.domain.model.commands.CreateJobPostingCommand;
-import pe.upc.simutalk.recruitment.domain.model.queries.GetJobPostingByIdQuery;
-import pe.upc.simutalk.recruitment.domain.model.queries.SearchJobPostingsQuery;
+import pe.upc.simutalk.dtos.CreateJobPostingCommand;
+import pe.upc.simutalk.dtos.GetJobPostingByIdQuery;
+import pe.upc.simutalk.dtos.SearchJobPostingsQuery;
 import pe.upc.simutalk.enums.CriterionType;
-import pe.upc.simutalk.recruitment.domain.model.valueobjects.JobPostingViewer;
+import pe.upc.simutalk.dtos.JobPostingViewer;
 import pe.upc.simutalk.entities.Weight;
 import pe.upc.simutalk.repositories.JobPostingRepository;
 

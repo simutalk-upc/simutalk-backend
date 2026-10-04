@@ -1,7 +1,7 @@
 package pe.upc.simutalk.recruitment.interfaces.rest.transform;
 
-import pe.upc.simutalk.recruitment.domain.model.commands.UpdateEvaluationCriterionCommand;
-import pe.upc.simutalk.recruitment.interfaces.rest.resources.UpdateEvaluationCriterionResource;
+import pe.upc.simutalk.dtos.UpdateEvaluationCriterionCommand;
+import pe.upc.simutalk.dtos.UpdateEvaluationCriterionResource;
 
 public class UpdateEvaluationCriterionCommandFromResourceAssembler {
 

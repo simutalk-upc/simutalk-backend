@@ -1,10 +1,10 @@
 package pe.upc.simutalk.profiles.interfaces.rest;
 
-import pe.upc.simutalk.profiles.domain.model.queries.GetAllCandidateProfilesQuery;
-import pe.upc.simutalk.profiles.domain.model.queries.GetAllCompanyProfilesQuery;
-import pe.upc.simutalk.profiles.domain.model.queries.GetCandidateProfileByIdQuery;
-import pe.upc.simutalk.profiles.domain.model.queries.GetCandidateProfileByUserIdQuery;
-import pe.upc.simutalk.profiles.domain.model.queries.GetCompanyProfileByUserIdQuery;
+import pe.upc.simutalk.dtos.GetAllCandidateProfilesQuery;
+import pe.upc.simutalk.dtos.GetAllCompanyProfilesQuery;
+import pe.upc.simutalk.dtos.GetCandidateProfileByIdQuery;
+import pe.upc.simutalk.dtos.GetCandidateProfileByUserIdQuery;
+import pe.upc.simutalk.dtos.GetCompanyProfileByUserIdQuery;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,9 +24,8 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import pe.upc.simutalk.entities.CandidateProfile;
 import pe.upc.simutalk.entities.CompanyProfile;
-import pe.upc.simutalk.profiles.domain.model.commands.CreateCandidateProfileCommand;
-import pe.upc.simutalk.profiles.domain.model.commands.CreateCompanyProfileCommand;
-import pe.upc.simutalk.profiles.domain.model.queries.*;
+import pe.upc.simutalk.dtos.CreateCandidateProfileCommand;
+import pe.upc.simutalk.dtos.CreateCompanyProfileCommand;
 import pe.upc.simutalk.enums.CompanySize;
 import pe.upc.simutalk.services.CandidateProfileCommandService;
 import pe.upc.simutalk.services.CandidateProfileQueryService;

@@ -1,8 +1,8 @@
 package pe.upc.simutalk.interviews.interfaces.rest.transform;
 
-import pe.upc.simutalk.interviews.domain.model.commands.UpdateQuestionCommand;
+import pe.upc.simutalk.dtos.UpdateQuestionCommand;
 import pe.upc.simutalk.enums.QuestionOrigin;
-import pe.upc.simutalk.interviews.interfaces.rest.resources.UpdateQuestionResource;
+import pe.upc.simutalk.dtos.UpdateQuestionResource;
 
 public class UpdateQuestionCommandFromResourceAssembler {
 

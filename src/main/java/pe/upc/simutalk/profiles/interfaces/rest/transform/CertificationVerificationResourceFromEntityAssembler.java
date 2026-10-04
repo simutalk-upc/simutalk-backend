@@ -1,7 +1,7 @@
 package pe.upc.simutalk.profiles.interfaces.rest.transform;
 
-import pe.upc.simutalk.profiles.domain.model.valueobjects.CertificationVerification;
-import pe.upc.simutalk.profiles.interfaces.rest.resources.CertificationVerificationResource;
+import pe.upc.simutalk.dtos.CertificationVerification;
+import pe.upc.simutalk.dtos.CertificationVerificationResource;
 
 public class CertificationVerificationResourceFromEntityAssembler {
 

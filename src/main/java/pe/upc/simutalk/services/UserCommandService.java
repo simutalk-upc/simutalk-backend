@@ -1,10 +1,10 @@
 package pe.upc.simutalk.services;
 
 import pe.upc.simutalk.entities.User;
-import pe.upc.simutalk.iam.domain.model.commands.SeedAdminUserCommand;
-import pe.upc.simutalk.iam.domain.model.commands.SignInCommand;
-import pe.upc.simutalk.iam.domain.model.commands.SignUpCommand;
-import pe.upc.simutalk.iam.domain.model.valueobjects.AuthenticatedUser;
+import pe.upc.simutalk.dtos.SeedAdminUserCommand;
+import pe.upc.simutalk.dtos.SignInCommand;
+import pe.upc.simutalk.dtos.SignUpCommand;
+import pe.upc.simutalk.dtos.AuthenticatedUser;
 
 import java.util.Optional;
 

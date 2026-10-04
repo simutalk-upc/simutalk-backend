@@ -9,8 +9,8 @@ import org.springframework.context.event.EventListener;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
-import pe.upc.simutalk.iam.domain.model.commands.SeedAdminUserCommand;
-import pe.upc.simutalk.iam.domain.model.commands.SeedRolesCommand;
+import pe.upc.simutalk.dtos.SeedAdminUserCommand;
+import pe.upc.simutalk.dtos.SeedRolesCommand;
 import pe.upc.simutalk.services.RoleCommandService;
 import pe.upc.simutalk.services.UserCommandService;
 

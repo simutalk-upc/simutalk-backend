@@ -1,15 +1,14 @@
 package pe.upc.simutalk.services;
 
-import pe.upc.simutalk.recruitment.domain.model.commands.AddEvaluationCriterionCommand;
-import pe.upc.simutalk.recruitment.domain.model.commands.ChangeJobPostingStatusCommand;
-import pe.upc.simutalk.recruitment.domain.model.commands.CreateJobPostingCommand;
-import pe.upc.simutalk.recruitment.domain.model.commands.DeleteJobPostingCommand;
-import pe.upc.simutalk.recruitment.domain.model.commands.RemoveEvaluationCriterionCommand;
-import pe.upc.simutalk.recruitment.domain.model.commands.UpdateEvaluationCriterionCommand;
-import pe.upc.simutalk.recruitment.domain.model.commands.UpdateJobPostingCommand;
+import pe.upc.simutalk.dtos.AddEvaluationCriterionCommand;
+import pe.upc.simutalk.dtos.ChangeJobPostingStatusCommand;
+import pe.upc.simutalk.dtos.CreateJobPostingCommand;
+import pe.upc.simutalk.dtos.DeleteJobPostingCommand;
+import pe.upc.simutalk.dtos.RemoveEvaluationCriterionCommand;
+import pe.upc.simutalk.dtos.UpdateEvaluationCriterionCommand;
+import pe.upc.simutalk.dtos.UpdateJobPostingCommand;
 
 import pe.upc.simutalk.entities.JobPosting;
-import pe.upc.simutalk.recruitment.domain.model.commands.*;
 import pe.upc.simutalk.entities.EvaluationCriterion;
 
 public interface JobPostingCommandService {

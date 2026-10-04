@@ -2,10 +2,10 @@ package pe.upc.simutalk.services;
 
 import pe.upc.simutalk.entities.InterviewSession;
 import pe.upc.simutalk.entities.Answer;
-import pe.upc.simutalk.interviews.domain.model.queries.GetAnswersByInterviewSessionIdQuery;
-import pe.upc.simutalk.interviews.domain.model.queries.GetInterviewSessionByApplicationIdQuery;
-import pe.upc.simutalk.interviews.domain.model.queries.GetInterviewSessionByIdQuery;
-import pe.upc.simutalk.interviews.domain.model.queries.HasInterviewSessionInProgressQuery;
+import pe.upc.simutalk.dtos.GetAnswersByInterviewSessionIdQuery;
+import pe.upc.simutalk.dtos.GetInterviewSessionByApplicationIdQuery;
+import pe.upc.simutalk.dtos.GetInterviewSessionByIdQuery;
+import pe.upc.simutalk.dtos.HasInterviewSessionInProgressQuery;
 
 import java.util.List;
 import java.util.Optional;

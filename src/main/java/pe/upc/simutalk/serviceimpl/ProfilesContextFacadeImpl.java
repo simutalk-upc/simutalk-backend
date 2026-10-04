@@ -4,15 +4,15 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import pe.upc.simutalk.entities.CandidateProfile;
 import pe.upc.simutalk.entities.CompanyProfile;
-import pe.upc.simutalk.profiles.domain.model.queries.GetCandidateProfileByIdQuery;
-import pe.upc.simutalk.profiles.domain.model.queries.GetCandidateProfileByUserIdQuery;
-import pe.upc.simutalk.profiles.domain.model.queries.GetCompanyProfileByIdQuery;
-import pe.upc.simutalk.profiles.domain.model.queries.GetCompanyProfileByUserIdQuery;
-import pe.upc.simutalk.profiles.domain.model.queries.GetVerifiedCertificationCountQuery;
+import pe.upc.simutalk.dtos.GetCandidateProfileByIdQuery;
+import pe.upc.simutalk.dtos.GetCandidateProfileByUserIdQuery;
+import pe.upc.simutalk.dtos.GetCompanyProfileByIdQuery;
+import pe.upc.simutalk.dtos.GetCompanyProfileByUserIdQuery;
+import pe.upc.simutalk.dtos.GetVerifiedCertificationCountQuery;
 import pe.upc.simutalk.services.CandidateProfileQueryService;
 import pe.upc.simutalk.services.CompanyProfileQueryService;
-import pe.upc.simutalk.shared.interfaces.acl.CandidateContact;
-import pe.upc.simutalk.shared.interfaces.acl.CandidatePersonalData;
+import pe.upc.simutalk.dtos.CandidateContact;
+import pe.upc.simutalk.dtos.CandidatePersonalData;
 import pe.upc.simutalk.services.ProfilesContextFacade;
 
 /**

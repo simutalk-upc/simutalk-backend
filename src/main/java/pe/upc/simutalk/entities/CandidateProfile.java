@@ -5,7 +5,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.BatchSize;
-import pe.upc.simutalk.profiles.domain.model.commands.CreateCandidateProfileCommand;
+import pe.upc.simutalk.dtos.CreateCandidateProfileCommand;
 import pe.upc.simutalk.entities.Certification;
 import pe.upc.simutalk.entities.EmailAddress;
 import pe.upc.simutalk.entities.DocumentNumber;

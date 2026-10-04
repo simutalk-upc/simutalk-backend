@@ -1,6 +1,6 @@
 package pe.upc.simutalk.services;
 
-import pe.upc.simutalk.analytics.domain.model.valueobjects.GeoPoint;
+import pe.upc.simutalk.dtos.GeoPoint;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;

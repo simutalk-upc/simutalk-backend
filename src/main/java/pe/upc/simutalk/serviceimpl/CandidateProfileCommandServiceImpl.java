@@ -1,10 +1,10 @@
 package pe.upc.simutalk.serviceimpl;
 
-import pe.upc.simutalk.profiles.domain.model.commands.AddCertificationCommand;
-import pe.upc.simutalk.profiles.domain.model.commands.CreateCandidateProfileCommand;
-import pe.upc.simutalk.profiles.domain.model.commands.DeleteCertificationCommand;
-import pe.upc.simutalk.profiles.domain.model.commands.UpdateCandidateProfileCommand;
-import pe.upc.simutalk.profiles.domain.model.commands.VerifyCertificationCommand;
+import pe.upc.simutalk.dtos.AddCertificationCommand;
+import pe.upc.simutalk.dtos.CreateCandidateProfileCommand;
+import pe.upc.simutalk.dtos.DeleteCertificationCommand;
+import pe.upc.simutalk.dtos.UpdateCandidateProfileCommand;
+import pe.upc.simutalk.dtos.VerifyCertificationCommand;
 
 import pe.upc.simutalk.entities.User;
 
@@ -13,9 +13,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pe.upc.simutalk.serviceimpl.ExternalIamService;
 import pe.upc.simutalk.entities.CandidateProfile;
-import pe.upc.simutalk.profiles.domain.model.commands.*;
 import pe.upc.simutalk.entities.Certification;
-import pe.upc.simutalk.profiles.domain.model.valueobjects.CertificationVerification;
+import pe.upc.simutalk.dtos.CertificationVerification;
 import pe.upc.simutalk.entities.DocumentNumber;
 import pe.upc.simutalk.entities.PersonName;
 import pe.upc.simutalk.services.CandidateProfileCommandService;

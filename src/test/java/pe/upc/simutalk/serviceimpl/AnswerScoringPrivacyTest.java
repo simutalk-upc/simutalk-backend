@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.web.client.RestClient;
 import pe.upc.simutalk.serviceimpl.TranscriptAnonymizer;
 import pe.upc.simutalk.services.AnswerScoringService;
-import pe.upc.simutalk.shared.interfaces.acl.CandidatePersonalData;
+import pe.upc.simutalk.dtos.CandidatePersonalData;
 
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;

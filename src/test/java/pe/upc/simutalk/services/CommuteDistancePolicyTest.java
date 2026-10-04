@@ -1,7 +1,7 @@
 package pe.upc.simutalk.services;
 
 import org.junit.jupiter.api.Test;
-import pe.upc.simutalk.analytics.domain.model.valueobjects.GeoPoint;
+import pe.upc.simutalk.dtos.GeoPoint;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;

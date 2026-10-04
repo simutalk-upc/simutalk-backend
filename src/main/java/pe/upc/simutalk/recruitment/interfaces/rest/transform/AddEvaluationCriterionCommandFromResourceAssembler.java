@@ -1,8 +1,8 @@
 package pe.upc.simutalk.recruitment.interfaces.rest.transform;
 
-import pe.upc.simutalk.recruitment.domain.model.commands.AddEvaluationCriterionCommand;
+import pe.upc.simutalk.dtos.AddEvaluationCriterionCommand;
 import pe.upc.simutalk.enums.CriterionOrigin;
-import pe.upc.simutalk.recruitment.interfaces.rest.resources.CreateEvaluationCriterionResource;
+import pe.upc.simutalk.dtos.CreateEvaluationCriterionResource;
 
 public class AddEvaluationCriterionCommandFromResourceAssembler {
 

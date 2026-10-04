@@ -1,7 +1,7 @@
 package pe.upc.simutalk.serviceimpl;
 
 import org.junit.jupiter.api.Test;
-import pe.upc.simutalk.shared.interfaces.acl.CandidatePersonalData;
+import pe.upc.simutalk.dtos.CandidatePersonalData;
 
 import java.time.LocalDate;
 

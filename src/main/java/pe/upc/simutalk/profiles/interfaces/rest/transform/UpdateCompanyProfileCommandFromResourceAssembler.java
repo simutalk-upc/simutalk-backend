@@ -1,7 +1,7 @@
 package pe.upc.simutalk.profiles.interfaces.rest.transform;
 
-import pe.upc.simutalk.profiles.domain.model.commands.UpdateCompanyProfileCommand;
-import pe.upc.simutalk.profiles.interfaces.rest.resources.UpdateCompanyProfileResource;
+import pe.upc.simutalk.dtos.UpdateCompanyProfileCommand;
+import pe.upc.simutalk.dtos.UpdateCompanyProfileResource;
 
 public class UpdateCompanyProfileCommandFromResourceAssembler {
 

@@ -4,9 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pe.upc.simutalk.entities.Question;
-import pe.upc.simutalk.interviews.domain.model.queries.CountQuestionsByCriterionIdQuery;
-import pe.upc.simutalk.interviews.domain.model.queries.GetQuestionByIdQuery;
-import pe.upc.simutalk.interviews.domain.model.queries.GetQuestionsByJobPostingIdQuery;
+import pe.upc.simutalk.dtos.CountQuestionsByCriterionIdQuery;
+import pe.upc.simutalk.dtos.GetQuestionByIdQuery;
+import pe.upc.simutalk.dtos.GetQuestionsByJobPostingIdQuery;
 import pe.upc.simutalk.services.QuestionQueryService;
 import pe.upc.simutalk.repositories.QuestionRepository;
 

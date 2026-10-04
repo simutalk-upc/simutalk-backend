@@ -1,4 +1,0 @@
-package pe.upc.simutalk.analytics.domain.model.queries;
-
-public record GetCriterionAveragesReportQuery(Long jobPostingId) {
-}

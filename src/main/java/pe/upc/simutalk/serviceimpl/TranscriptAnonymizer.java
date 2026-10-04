@@ -1,9 +1,9 @@
 package pe.upc.simutalk.serviceimpl;
 
-import pe.upc.simutalk.assessment.application.internal.outboundservices.anonymization.AnonymizedText;
+import pe.upc.simutalk.dtos.AnonymizedText;
 
 import org.springframework.stereotype.Component;
-import pe.upc.simutalk.shared.interfaces.acl.CandidatePersonalData;
+import pe.upc.simutalk.dtos.CandidatePersonalData;
 
 import java.text.Normalizer;
 import java.util.ArrayList;

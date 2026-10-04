@@ -7,7 +7,7 @@ import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 import pe.upc.simutalk.entities.JobPosting;
 import pe.upc.simutalk.events.ApplicationStatusChangedEvent;
-import pe.upc.simutalk.recruitment.domain.model.valueobjects.CandidateNotification;
+import pe.upc.simutalk.dtos.CandidateNotification;
 import pe.upc.simutalk.enums.NotificationType;
 import pe.upc.simutalk.services.NotificationService;
 import pe.upc.simutalk.repositories.JobPostingRepository;

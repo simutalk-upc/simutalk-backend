@@ -1,6 +1,6 @@
 package pe.upc.simutalk.services;
 
-import pe.upc.simutalk.shared.interfaces.acl.InterviewAnswerView;
+import pe.upc.simutalk.dtos.InterviewAnswerView;
 
 import pe.upc.simutalk.enums.InterviewSessionStatus;
 

@@ -7,9 +7,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pe.upc.simutalk.entities.CompanyProfile;
-import pe.upc.simutalk.profiles.domain.model.queries.GetAllCompanyProfilesQuery;
-import pe.upc.simutalk.profiles.domain.model.queries.GetCompanyProfileByIdQuery;
-import pe.upc.simutalk.profiles.domain.model.queries.GetCompanyProfileByUserIdQuery;
+import pe.upc.simutalk.dtos.GetAllCompanyProfilesQuery;
+import pe.upc.simutalk.dtos.GetCompanyProfileByIdQuery;
+import pe.upc.simutalk.dtos.GetCompanyProfileByUserIdQuery;
 import pe.upc.simutalk.services.CompanyProfileQueryService;
 import pe.upc.simutalk.repositories.CompanyProfileRepository;
 

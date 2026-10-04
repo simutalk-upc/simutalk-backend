@@ -1,18 +1,17 @@
 package pe.upc.simutalk.services;
 
-import pe.upc.simutalk.assessment.domain.model.queries.CountAssessmentsByJobPostingIdsQuery;
-import pe.upc.simutalk.assessment.domain.model.queries.CountEvidencesByJobPostingIdsQuery;
-import pe.upc.simutalk.assessment.domain.model.queries.GetAssessmentByIdQuery;
-import pe.upc.simutalk.assessment.domain.model.queries.GetCriterionAveragesQuery;
+import pe.upc.simutalk.dtos.CountAssessmentsByJobPostingIdsQuery;
+import pe.upc.simutalk.dtos.CountEvidencesByJobPostingIdsQuery;
+import pe.upc.simutalk.dtos.GetAssessmentByIdQuery;
+import pe.upc.simutalk.dtos.GetCriterionAveragesQuery;
 
 import pe.upc.simutalk.entities.Assessment;
 import pe.upc.simutalk.entities.Evidence;
-import pe.upc.simutalk.assessment.domain.model.queries.*;
-import pe.upc.simutalk.assessment.domain.model.valueobjects.CriterionAverage;
-import pe.upc.simutalk.assessment.domain.model.queries.GetAssessmentByInterviewSessionIdQuery;
-import pe.upc.simutalk.assessment.domain.model.queries.GetEvidencesByCriterionScoreQuery;
-import pe.upc.simutalk.assessment.domain.model.queries.GetRankingByJobPostingIdQuery;
-import pe.upc.simutalk.assessment.domain.model.valueobjects.Ranking;
+import pe.upc.simutalk.dtos.CriterionAverage;
+import pe.upc.simutalk.dtos.GetAssessmentByInterviewSessionIdQuery;
+import pe.upc.simutalk.dtos.GetEvidencesByCriterionScoreQuery;
+import pe.upc.simutalk.dtos.GetRankingByJobPostingIdQuery;
+import pe.upc.simutalk.dtos.Ranking;
 
 import java.util.List;
 import java.util.Optional;

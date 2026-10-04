@@ -1,7 +1,7 @@
 package pe.upc.simutalk.services;
 
-import pe.upc.simutalk.shared.interfaces.acl.CandidateContact;
-import pe.upc.simutalk.shared.interfaces.acl.CandidatePersonalData;
+import pe.upc.simutalk.dtos.CandidateContact;
+import pe.upc.simutalk.dtos.CandidatePersonalData;
 
 /**
  * Contract other bounded contexts (e.g. assessment, interviews) use to ask profiles

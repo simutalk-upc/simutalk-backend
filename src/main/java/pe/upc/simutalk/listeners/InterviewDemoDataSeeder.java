@@ -1,10 +1,10 @@
 package pe.upc.simutalk.listeners;
 
-import pe.upc.simutalk.interviews.domain.model.commands.CompleteInterviewSessionCommand;
-import pe.upc.simutalk.interviews.domain.model.commands.CreateInterviewSessionCommand;
-import pe.upc.simutalk.interviews.domain.model.commands.CreateQuestionCommand;
-import pe.upc.simutalk.interviews.domain.model.commands.RecordAnswerCommand;
-import pe.upc.simutalk.interviews.domain.model.commands.StartInterviewSessionCommand;
+import pe.upc.simutalk.dtos.CompleteInterviewSessionCommand;
+import pe.upc.simutalk.dtos.CreateInterviewSessionCommand;
+import pe.upc.simutalk.dtos.CreateQuestionCommand;
+import pe.upc.simutalk.dtos.RecordAnswerCommand;
+import pe.upc.simutalk.dtos.StartInterviewSessionCommand;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,9 +14,8 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionTemplate;
 import pe.upc.simutalk.entities.Question;
-import pe.upc.simutalk.interviews.domain.model.commands.*;
-import pe.upc.simutalk.interviews.domain.model.queries.GetInterviewSessionByApplicationIdQuery;
-import pe.upc.simutalk.interviews.domain.model.queries.GetQuestionsByJobPostingIdQuery;
+import pe.upc.simutalk.dtos.GetInterviewSessionByApplicationIdQuery;
+import pe.upc.simutalk.dtos.GetQuestionsByJobPostingIdQuery;
 import pe.upc.simutalk.enums.QuestionOrigin;
 import pe.upc.simutalk.services.InterviewSessionCommandService;
 import pe.upc.simutalk.services.InterviewSessionQueryService;

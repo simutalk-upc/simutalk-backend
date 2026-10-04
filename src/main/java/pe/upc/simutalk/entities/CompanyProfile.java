@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import pe.upc.simutalk.profiles.domain.model.commands.CreateCompanyProfileCommand;
+import pe.upc.simutalk.dtos.CreateCompanyProfileCommand;
 import pe.upc.simutalk.entities.EmailAddress;
 import pe.upc.simutalk.enums.CompanySize;
 import pe.upc.simutalk.entities.Ruc;

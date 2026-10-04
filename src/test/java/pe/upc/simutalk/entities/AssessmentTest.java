@@ -9,7 +9,7 @@ import pe.upc.simutalk.entities.IntegrityFlag;
 import pe.upc.simutalk.enums.CriterionKind;
 import pe.upc.simutalk.enums.FlagSeverity;
 import pe.upc.simutalk.enums.IntegrityFlagType;
-import pe.upc.simutalk.assessment.domain.model.valueobjects.InterviewSessionSnapshot;
+import pe.upc.simutalk.dtos.InterviewSessionSnapshot;
 import pe.upc.simutalk.exceptions.BusinessRuleViolationException;
 
 import java.math.BigDecimal;

@@ -4,13 +4,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import pe.upc.simutalk.entities.InterviewSession;
 import pe.upc.simutalk.entities.Question;
-import pe.upc.simutalk.interviews.domain.model.queries.CountQuestionsByCriterionIdQuery;
-import pe.upc.simutalk.interviews.domain.model.queries.GetInterviewSessionByApplicationIdQuery;
-import pe.upc.simutalk.interviews.domain.model.queries.GetInterviewSessionByIdQuery;
-import pe.upc.simutalk.interviews.domain.model.queries.GetQuestionsByJobPostingIdQuery;
+import pe.upc.simutalk.dtos.CountQuestionsByCriterionIdQuery;
+import pe.upc.simutalk.dtos.GetInterviewSessionByApplicationIdQuery;
+import pe.upc.simutalk.dtos.GetInterviewSessionByIdQuery;
+import pe.upc.simutalk.dtos.GetQuestionsByJobPostingIdQuery;
 import pe.upc.simutalk.services.InterviewSessionQueryService;
 import pe.upc.simutalk.services.QuestionQueryService;
-import pe.upc.simutalk.shared.interfaces.acl.InterviewAnswerView;
+import pe.upc.simutalk.dtos.InterviewAnswerView;
 import pe.upc.simutalk.services.InterviewsContextFacade;
 
 import java.util.List;

@@ -1,7 +1,7 @@
 package pe.upc.simutalk.interviews.interfaces.rest.transform;
 
-import pe.upc.simutalk.interviews.domain.model.commands.ReorderQuestionsCommand;
-import pe.upc.simutalk.interviews.interfaces.rest.resources.ReorderQuestionsResource;
+import pe.upc.simutalk.dtos.ReorderQuestionsCommand;
+import pe.upc.simutalk.dtos.ReorderQuestionsResource;
 
 public class ReorderQuestionsCommandFromResourceAssembler {
 

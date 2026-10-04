@@ -1,7 +1,7 @@
 package pe.upc.simutalk.services;
 
-import pe.upc.simutalk.recruitment.domain.model.queries.GetCriterionSuggestionsQuery;
-import pe.upc.simutalk.recruitment.domain.model.valueobjects.CriterionSuggestion;
+import pe.upc.simutalk.dtos.GetCriterionSuggestionsQuery;
+import pe.upc.simutalk.dtos.CriterionSuggestion;
 
 import java.util.List;
 

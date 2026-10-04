@@ -17,20 +17,20 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-import pe.upc.simutalk.profiles.domain.model.queries.GetAllCandidateProfilesQuery;
-import pe.upc.simutalk.profiles.domain.model.queries.GetCandidateProfileByIdQuery;
-import pe.upc.simutalk.profiles.domain.model.queries.GetCandidateProfileByUserIdQuery;
+import pe.upc.simutalk.dtos.GetAllCandidateProfilesQuery;
+import pe.upc.simutalk.dtos.GetCandidateProfileByIdQuery;
+import pe.upc.simutalk.dtos.GetCandidateProfileByUserIdQuery;
 import pe.upc.simutalk.services.CandidateProfileCommandService;
 import pe.upc.simutalk.services.CandidateProfileQueryService;
 import pe.upc.simutalk.securities.ProfileAccessPolicy;
-import pe.upc.simutalk.profiles.interfaces.rest.resources.CandidateProfileResource;
-import pe.upc.simutalk.profiles.interfaces.rest.resources.CreateCandidateProfileResource;
-import pe.upc.simutalk.profiles.interfaces.rest.resources.UpdateCandidateProfileResource;
+import pe.upc.simutalk.dtos.CandidateProfileResource;
+import pe.upc.simutalk.dtos.CreateCandidateProfileResource;
+import pe.upc.simutalk.dtos.UpdateCandidateProfileResource;
 import pe.upc.simutalk.profiles.interfaces.rest.transform.CandidateProfileResourceFromEntityAssembler;
 import pe.upc.simutalk.profiles.interfaces.rest.transform.CreateCandidateProfileCommandFromResourceAssembler;
 import pe.upc.simutalk.profiles.interfaces.rest.transform.UpdateCandidateProfileCommandFromResourceAssembler;
 import pe.upc.simutalk.exceptions.ResourceNotFoundException;
-import pe.upc.simutalk.shared.interfaces.rest.resources.PageResource;
+import pe.upc.simutalk.dtos.PageResource;
 
 @RestController
 @RequestMapping(value = "/api/v1/candidate-profiles", produces = MediaType.APPLICATION_JSON_VALUE)

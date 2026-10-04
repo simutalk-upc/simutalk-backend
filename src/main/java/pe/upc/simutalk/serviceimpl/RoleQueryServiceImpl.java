@@ -4,8 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pe.upc.simutalk.entities.Role;
-import pe.upc.simutalk.iam.domain.model.queries.GetAllRolesQuery;
-import pe.upc.simutalk.iam.domain.model.queries.GetRoleByNameQuery;
+import pe.upc.simutalk.dtos.GetAllRolesQuery;
+import pe.upc.simutalk.dtos.GetRoleByNameQuery;
 import pe.upc.simutalk.services.RoleQueryService;
 import pe.upc.simutalk.repositories.RoleRepository;
 

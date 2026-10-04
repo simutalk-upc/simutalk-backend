@@ -1,10 +1,10 @@
 package pe.upc.simutalk.services;
 
 import pe.upc.simutalk.entities.Question;
-import pe.upc.simutalk.interviews.domain.model.commands.CreateQuestionCommand;
-import pe.upc.simutalk.interviews.domain.model.commands.DeleteQuestionCommand;
-import pe.upc.simutalk.interviews.domain.model.commands.ReorderQuestionsCommand;
-import pe.upc.simutalk.interviews.domain.model.commands.UpdateQuestionCommand;
+import pe.upc.simutalk.dtos.CreateQuestionCommand;
+import pe.upc.simutalk.dtos.DeleteQuestionCommand;
+import pe.upc.simutalk.dtos.ReorderQuestionsCommand;
+import pe.upc.simutalk.dtos.UpdateQuestionCommand;
 
 import java.util.List;
 

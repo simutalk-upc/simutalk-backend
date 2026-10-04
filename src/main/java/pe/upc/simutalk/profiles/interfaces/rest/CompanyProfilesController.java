@@ -17,20 +17,20 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-import pe.upc.simutalk.profiles.domain.model.queries.GetAllCompanyProfilesQuery;
-import pe.upc.simutalk.profiles.domain.model.queries.GetCompanyProfileByIdQuery;
-import pe.upc.simutalk.profiles.domain.model.queries.GetCompanyProfileByUserIdQuery;
+import pe.upc.simutalk.dtos.GetAllCompanyProfilesQuery;
+import pe.upc.simutalk.dtos.GetCompanyProfileByIdQuery;
+import pe.upc.simutalk.dtos.GetCompanyProfileByUserIdQuery;
 import pe.upc.simutalk.services.CompanyProfileCommandService;
 import pe.upc.simutalk.services.CompanyProfileQueryService;
 import pe.upc.simutalk.securities.ProfileAccessPolicy;
-import pe.upc.simutalk.profiles.interfaces.rest.resources.CompanyProfileResource;
-import pe.upc.simutalk.profiles.interfaces.rest.resources.CreateCompanyProfileResource;
-import pe.upc.simutalk.profiles.interfaces.rest.resources.UpdateCompanyProfileResource;
+import pe.upc.simutalk.dtos.CompanyProfileResource;
+import pe.upc.simutalk.dtos.CreateCompanyProfileResource;
+import pe.upc.simutalk.dtos.UpdateCompanyProfileResource;
 import pe.upc.simutalk.profiles.interfaces.rest.transform.CompanyProfileResourceFromEntityAssembler;
 import pe.upc.simutalk.profiles.interfaces.rest.transform.CreateCompanyProfileCommandFromResourceAssembler;
 import pe.upc.simutalk.profiles.interfaces.rest.transform.UpdateCompanyProfileCommandFromResourceAssembler;
 import pe.upc.simutalk.exceptions.ResourceNotFoundException;
-import pe.upc.simutalk.shared.interfaces.rest.resources.PageResource;
+import pe.upc.simutalk.dtos.PageResource;
 
 @RestController
 @RequestMapping(value = "/api/v1/company-profiles", produces = MediaType.APPLICATION_JSON_VALUE)

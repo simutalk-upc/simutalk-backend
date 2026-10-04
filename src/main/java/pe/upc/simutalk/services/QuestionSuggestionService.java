@@ -1,6 +1,6 @@
 package pe.upc.simutalk.services;
 
-import pe.upc.simutalk.interviews.domain.model.valueobjects.QuestionSuggestion;
+import pe.upc.simutalk.dtos.QuestionSuggestion;
 
 import java.util.List;
 

@@ -3,9 +3,9 @@ package pe.upc.simutalk.serviceimpl;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 import pe.upc.simutalk.entities.User;
-import pe.upc.simutalk.iam.domain.model.queries.GetUserByIdQuery;
-import pe.upc.simutalk.iam.domain.model.queries.GetUserByUsernameQuery;
-import pe.upc.simutalk.iam.domain.model.commands.SignUpCommand;
+import pe.upc.simutalk.dtos.GetUserByIdQuery;
+import pe.upc.simutalk.dtos.GetUserByUsernameQuery;
+import pe.upc.simutalk.dtos.SignUpCommand;
 import pe.upc.simutalk.services.UserCommandService;
 import pe.upc.simutalk.services.UserQueryService;
 

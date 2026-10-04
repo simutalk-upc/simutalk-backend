@@ -1,7 +1,7 @@
 package pe.upc.simutalk.iam.interfaces.rest.transform;
 
-import pe.upc.simutalk.iam.domain.model.valueobjects.AuthenticatedUser;
-import pe.upc.simutalk.iam.interfaces.rest.resources.AuthenticatedUserResource;
+import pe.upc.simutalk.dtos.AuthenticatedUser;
+import pe.upc.simutalk.dtos.AuthenticatedUserResource;
 
 public class AuthenticatedUserResourceFromEntityAssembler {
 

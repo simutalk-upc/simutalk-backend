@@ -1,6 +1,6 @@
 package pe.upc.simutalk.serviceimpl;
 
-import pe.upc.simutalk.recruitment.domain.model.valueobjects.CandidateNotification;
+import pe.upc.simutalk.dtos.CandidateNotification;
 
 /** Subject and plain-text body of each candidate e-mail. */
 final class NotificationTemplates {

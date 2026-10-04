@@ -4,9 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pe.upc.simutalk.entities.User;
-import pe.upc.simutalk.iam.domain.model.queries.GetAllUsersQuery;
-import pe.upc.simutalk.iam.domain.model.queries.GetUserByIdQuery;
-import pe.upc.simutalk.iam.domain.model.queries.GetUserByUsernameQuery;
+import pe.upc.simutalk.dtos.GetAllUsersQuery;
+import pe.upc.simutalk.dtos.GetUserByIdQuery;
+import pe.upc.simutalk.dtos.GetUserByUsernameQuery;
 import pe.upc.simutalk.services.UserQueryService;
 import pe.upc.simutalk.repositories.UserRepository;
 

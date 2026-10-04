@@ -1,12 +1,12 @@
 package pe.upc.simutalk.services;
 
 import pe.upc.simutalk.entities.Application;
-import pe.upc.simutalk.recruitment.domain.model.queries.GetApplicationCountByStatusQuery;
-import pe.upc.simutalk.recruitment.domain.model.queries.GetAverageTimeToShortlistQuery;
+import pe.upc.simutalk.dtos.GetApplicationCountByStatusQuery;
+import pe.upc.simutalk.dtos.GetAverageTimeToShortlistQuery;
 import pe.upc.simutalk.enums.ApplicationStatus;
-import pe.upc.simutalk.recruitment.domain.model.queries.GetApplicationByIdQuery;
-import pe.upc.simutalk.recruitment.domain.model.queries.GetApplicationsByCandidateIdQuery;
-import pe.upc.simutalk.recruitment.domain.model.queries.GetApplicationsByJobPostingIdQuery;
+import pe.upc.simutalk.dtos.GetApplicationByIdQuery;
+import pe.upc.simutalk.dtos.GetApplicationsByCandidateIdQuery;
+import pe.upc.simutalk.dtos.GetApplicationsByJobPostingIdQuery;
 
 import java.time.Duration;
 import java.util.List;

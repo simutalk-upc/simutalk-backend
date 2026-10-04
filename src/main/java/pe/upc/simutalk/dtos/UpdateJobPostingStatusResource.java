@@ -1,0 +1,10 @@
+package pe.upc.simutalk.dtos;
+
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotNull;
+import pe.upc.simutalk.enums.JobPostingStatus;
+
+public record UpdateJobPostingStatusResource(
+        @Schema(example = "PUBLISHED", description = "Estado destino: PUBLISHED o CLOSED")
+        @NotNull JobPostingStatus status) {
+}

@@ -4,7 +4,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.junit.jupiter.api.Test;
-import pe.upc.simutalk.profiles.domain.model.commands.CreateCompanyProfileCommand;
+import pe.upc.simutalk.dtos.CreateCompanyProfileCommand;
 import pe.upc.simutalk.enums.CompanySize;
 
 import static org.assertj.core.api.Assertions.assertThat;

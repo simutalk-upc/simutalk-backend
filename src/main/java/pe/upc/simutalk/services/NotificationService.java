@@ -1,6 +1,6 @@
 package pe.upc.simutalk.services;
 
-import pe.upc.simutalk.recruitment.domain.model.valueobjects.CandidateNotification;
+import pe.upc.simutalk.dtos.CandidateNotification;
 
 /**
  * Port to the e-mail provider. Adapters live in infrastructure/external/mail. Sending is best effort: a

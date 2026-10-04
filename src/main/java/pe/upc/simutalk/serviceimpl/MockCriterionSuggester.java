@@ -1,6 +1,6 @@
 package pe.upc.simutalk.serviceimpl;
 
-import pe.upc.simutalk.recruitment.domain.model.valueobjects.CriterionSuggestion;
+import pe.upc.simutalk.dtos.CriterionSuggestion;
 
 import java.text.Normalizer;
 import java.util.ArrayList;

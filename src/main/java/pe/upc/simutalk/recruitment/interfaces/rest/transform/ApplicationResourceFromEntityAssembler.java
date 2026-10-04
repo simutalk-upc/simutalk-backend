@@ -1,7 +1,7 @@
 package pe.upc.simutalk.recruitment.interfaces.rest.transform;
 
 import pe.upc.simutalk.entities.Application;
-import pe.upc.simutalk.recruitment.interfaces.rest.resources.ApplicationResource;
+import pe.upc.simutalk.dtos.ApplicationResource;
 
 public class ApplicationResourceFromEntityAssembler {
 

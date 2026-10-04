@@ -7,7 +7,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
-import pe.upc.simutalk.analytics.domain.model.commands.RecordCarbonSavingCommand;
+import pe.upc.simutalk.dtos.RecordCarbonSavingCommand;
 import pe.upc.simutalk.services.CarbonSavingCommandService;
 import pe.upc.simutalk.events.InterviewSessionCompletedEvent;
 

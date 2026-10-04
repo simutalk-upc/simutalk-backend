@@ -1,9 +1,9 @@
 package pe.upc.simutalk.services;
 
 import pe.upc.simutalk.entities.User;
-import pe.upc.simutalk.iam.domain.model.queries.GetAllUsersQuery;
-import pe.upc.simutalk.iam.domain.model.queries.GetUserByIdQuery;
-import pe.upc.simutalk.iam.domain.model.queries.GetUserByUsernameQuery;
+import pe.upc.simutalk.dtos.GetAllUsersQuery;
+import pe.upc.simutalk.dtos.GetUserByIdQuery;
+import pe.upc.simutalk.dtos.GetUserByUsernameQuery;
 
 import java.util.List;
 import java.util.Optional;

@@ -1,6 +1,6 @@
 package pe.upc.simutalk.assessment.interfaces.rest;
 
-import pe.upc.simutalk.assessment.domain.model.valueobjects.Ranking;
+import pe.upc.simutalk.dtos.Ranking;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -17,17 +17,17 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-import pe.upc.simutalk.assessment.domain.model.commands.ComputeAssessmentCommand;
-import pe.upc.simutalk.assessment.domain.model.queries.GetAssessmentByInterviewSessionIdQuery;
-import pe.upc.simutalk.assessment.domain.model.queries.GetEvidencesByCriterionScoreQuery;
-import pe.upc.simutalk.assessment.domain.model.queries.GetRankingByJobPostingIdQuery;
+import pe.upc.simutalk.dtos.ComputeAssessmentCommand;
+import pe.upc.simutalk.dtos.GetAssessmentByInterviewSessionIdQuery;
+import pe.upc.simutalk.dtos.GetEvidencesByCriterionScoreQuery;
+import pe.upc.simutalk.dtos.GetRankingByJobPostingIdQuery;
 import pe.upc.simutalk.services.AssessmentCommandService;
 import pe.upc.simutalk.services.AssessmentQueryService;
 import pe.upc.simutalk.securities.AssessmentAccessPolicy;
-import pe.upc.simutalk.assessment.interfaces.rest.resources.AssessmentResource;
-import pe.upc.simutalk.assessment.interfaces.rest.resources.CandidateAssessmentResource;
-import pe.upc.simutalk.assessment.interfaces.rest.resources.EvidenceResource;
-import pe.upc.simutalk.assessment.interfaces.rest.resources.RankingResource;
+import pe.upc.simutalk.dtos.AssessmentResource;
+import pe.upc.simutalk.dtos.CandidateAssessmentResource;
+import pe.upc.simutalk.dtos.EvidenceResource;
+import pe.upc.simutalk.dtos.RankingResource;
 import pe.upc.simutalk.assessment.interfaces.rest.transform.AssessmentResourceFromEntityAssembler;
 import pe.upc.simutalk.assessment.interfaces.rest.transform.CandidateAssessmentResourceFromEntityAssembler;
 import pe.upc.simutalk.assessment.interfaces.rest.transform.EvidenceResourceFromEntityAssembler;

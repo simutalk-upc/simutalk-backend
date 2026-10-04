@@ -1,13 +1,13 @@
 package pe.upc.simutalk.services;
 
-import pe.upc.simutalk.analytics.domain.model.queries.GetCarbonSavingsReportQuery;
-import pe.upc.simutalk.analytics.domain.model.queries.GetCompanySummaryReportQuery;
-import pe.upc.simutalk.analytics.domain.model.queries.GetCriterionAveragesReportQuery;
-import pe.upc.simutalk.analytics.domain.model.queries.GetFunnelReportQuery;
-import pe.upc.simutalk.analytics.domain.model.valueobjects.CarbonSavingsReport;
-import pe.upc.simutalk.analytics.domain.model.valueobjects.CompanySummaryReport;
-import pe.upc.simutalk.analytics.domain.model.valueobjects.CriterionAveragesReport;
-import pe.upc.simutalk.analytics.domain.model.valueobjects.FunnelReport;
+import pe.upc.simutalk.dtos.GetCarbonSavingsReportQuery;
+import pe.upc.simutalk.dtos.GetCompanySummaryReportQuery;
+import pe.upc.simutalk.dtos.GetCriterionAveragesReportQuery;
+import pe.upc.simutalk.dtos.GetFunnelReportQuery;
+import pe.upc.simutalk.dtos.CarbonSavingsReport;
+import pe.upc.simutalk.dtos.CompanySummaryReport;
+import pe.upc.simutalk.dtos.CriterionAveragesReport;
+import pe.upc.simutalk.dtos.FunnelReport;
 
 public interface ReportQueryService {
 

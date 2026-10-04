@@ -3,15 +3,14 @@ package pe.upc.simutalk.serviceimpl;
 import pe.upc.simutalk.services.InterviewsContextFacade;
 import pe.upc.simutalk.services.ProfilesContextFacade;
 import pe.upc.simutalk.services.RecruitmentContextFacade;
-import pe.upc.simutalk.shared.interfaces.acl.CandidatePersonalData;
-import pe.upc.simutalk.shared.interfaces.acl.CriterionView;
-import pe.upc.simutalk.shared.interfaces.acl.InterviewAnswerView;
+import pe.upc.simutalk.dtos.CandidatePersonalData;
+import pe.upc.simutalk.dtos.CriterionView;
+import pe.upc.simutalk.dtos.InterviewAnswerView;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import pe.upc.simutalk.assessment.domain.model.valueobjects.InterviewSessionSnapshot;
+import pe.upc.simutalk.dtos.InterviewSessionSnapshot;
 import pe.upc.simutalk.exceptions.ResourceNotFoundException;
-import pe.upc.simutalk.shared.interfaces.acl.*;
 
 import java.util.List;
 import java.util.Optional;

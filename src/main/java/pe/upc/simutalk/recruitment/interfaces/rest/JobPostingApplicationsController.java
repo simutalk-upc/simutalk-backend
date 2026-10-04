@@ -13,13 +13,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-import pe.upc.simutalk.recruitment.domain.model.commands.SubmitApplicationCommand;
-import pe.upc.simutalk.recruitment.domain.model.queries.GetApplicationsByJobPostingIdQuery;
+import pe.upc.simutalk.dtos.SubmitApplicationCommand;
+import pe.upc.simutalk.dtos.GetApplicationsByJobPostingIdQuery;
 import pe.upc.simutalk.enums.ApplicationStatus;
 import pe.upc.simutalk.services.ApplicationCommandService;
 import pe.upc.simutalk.services.ApplicationQueryService;
 import pe.upc.simutalk.securities.RecruitmentAccessPolicy;
-import pe.upc.simutalk.recruitment.interfaces.rest.resources.ApplicationResource;
+import pe.upc.simutalk.dtos.ApplicationResource;
 import pe.upc.simutalk.recruitment.interfaces.rest.transform.ApplicationResourceFromEntityAssembler;
 import pe.upc.simutalk.exceptions.BusinessRuleViolationException;
 

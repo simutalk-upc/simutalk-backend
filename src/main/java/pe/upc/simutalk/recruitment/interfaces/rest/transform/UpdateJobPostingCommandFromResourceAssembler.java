@@ -1,7 +1,7 @@
 package pe.upc.simutalk.recruitment.interfaces.rest.transform;
 
-import pe.upc.simutalk.recruitment.domain.model.commands.UpdateJobPostingCommand;
-import pe.upc.simutalk.recruitment.interfaces.rest.resources.UpdateJobPostingResource;
+import pe.upc.simutalk.dtos.UpdateJobPostingCommand;
+import pe.upc.simutalk.dtos.UpdateJobPostingResource;
 
 public class UpdateJobPostingCommandFromResourceAssembler {
 

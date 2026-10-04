@@ -1,8 +1,8 @@
 package pe.upc.simutalk.services;
 
 import pe.upc.simutalk.entities.Role;
-import pe.upc.simutalk.iam.domain.model.queries.GetAllRolesQuery;
-import pe.upc.simutalk.iam.domain.model.queries.GetRoleByNameQuery;
+import pe.upc.simutalk.dtos.GetAllRolesQuery;
+import pe.upc.simutalk.dtos.GetRoleByNameQuery;
 
 import java.util.List;
 import java.util.Optional;

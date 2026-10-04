@@ -8,7 +8,7 @@ import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
-import pe.upc.simutalk.assessment.domain.model.commands.ComputeAssessmentCommand;
+import pe.upc.simutalk.dtos.ComputeAssessmentCommand;
 import pe.upc.simutalk.services.AnswerScoringService;
 import pe.upc.simutalk.services.AssessmentCommandService;
 import pe.upc.simutalk.repositories.AssessmentRepository;

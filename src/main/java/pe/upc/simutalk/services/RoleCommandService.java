@@ -1,6 +1,6 @@
 package pe.upc.simutalk.services;
 
-import pe.upc.simutalk.iam.domain.model.commands.SeedRolesCommand;
+import pe.upc.simutalk.dtos.SeedRolesCommand;
 
 public interface RoleCommandService {
 

@@ -1,9 +1,9 @@
 package pe.upc.simutalk.listeners;
 
-import pe.upc.simutalk.recruitment.domain.model.commands.AddEvaluationCriterionCommand;
-import pe.upc.simutalk.recruitment.domain.model.commands.ChangeJobPostingStatusCommand;
-import pe.upc.simutalk.recruitment.domain.model.commands.CreateJobPostingCommand;
-import pe.upc.simutalk.recruitment.domain.model.commands.SubmitApplicationCommand;
+import pe.upc.simutalk.dtos.AddEvaluationCriterionCommand;
+import pe.upc.simutalk.dtos.ChangeJobPostingStatusCommand;
+import pe.upc.simutalk.dtos.CreateJobPostingCommand;
+import pe.upc.simutalk.dtos.SubmitApplicationCommand;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,12 +12,11 @@ import org.springframework.context.event.EventListener;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionTemplate;
-import pe.upc.simutalk.recruitment.domain.model.commands.*;
-import pe.upc.simutalk.recruitment.domain.model.queries.GetJobPostingByIdQuery;
-import pe.upc.simutalk.recruitment.domain.model.queries.GetJobPostingIdsByCompanyIdQuery;
+import pe.upc.simutalk.dtos.GetJobPostingByIdQuery;
+import pe.upc.simutalk.dtos.GetJobPostingIdsByCompanyIdQuery;
 import pe.upc.simutalk.enums.CriterionType;
 import pe.upc.simutalk.enums.JobPostingStatus;
-import pe.upc.simutalk.recruitment.domain.model.valueobjects.JobPostingViewer;
+import pe.upc.simutalk.dtos.JobPostingViewer;
 import pe.upc.simutalk.services.ApplicationCommandService;
 import pe.upc.simutalk.services.JobPostingCommandService;
 import pe.upc.simutalk.services.JobPostingQueryService;

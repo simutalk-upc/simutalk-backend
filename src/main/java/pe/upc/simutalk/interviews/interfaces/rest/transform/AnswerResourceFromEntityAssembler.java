@@ -1,7 +1,7 @@
 package pe.upc.simutalk.interviews.interfaces.rest.transform;
 
 import pe.upc.simutalk.entities.Answer;
-import pe.upc.simutalk.interviews.interfaces.rest.resources.AnswerResource;
+import pe.upc.simutalk.dtos.AnswerResource;
 
 public class AnswerResourceFromEntityAssembler {
 

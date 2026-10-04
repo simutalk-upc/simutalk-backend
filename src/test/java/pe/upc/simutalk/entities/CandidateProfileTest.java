@@ -2,7 +2,7 @@ package pe.upc.simutalk.entities;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
-import pe.upc.simutalk.profiles.domain.model.commands.CreateCandidateProfileCommand;
+import pe.upc.simutalk.dtos.CreateCandidateProfileCommand;
 import pe.upc.simutalk.entities.Certification;
 import pe.upc.simutalk.entities.PersonName;
 import pe.upc.simutalk.enums.VerificationStatus;
