@@ -2,8 +2,8 @@ package pe.upc.simutalk.interviews.interfaces.acl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import pe.upc.simutalk.interviews.domain.model.aggregates.InterviewSession;
-import pe.upc.simutalk.interviews.domain.model.aggregates.Question;
+import pe.upc.simutalk.entities.InterviewSession;
+import pe.upc.simutalk.entities.Question;
 import pe.upc.simutalk.interviews.domain.model.queries.CountQuestionsByCriterionIdQuery;
 import pe.upc.simutalk.interviews.domain.model.queries.GetInterviewSessionByApplicationIdQuery;
 import pe.upc.simutalk.interviews.domain.model.queries.GetInterviewSessionByIdQuery;

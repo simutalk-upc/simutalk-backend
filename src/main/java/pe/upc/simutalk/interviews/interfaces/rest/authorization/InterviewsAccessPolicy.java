@@ -3,7 +3,7 @@ package pe.upc.simutalk.interviews.interfaces.rest.authorization;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
-import pe.upc.simutalk.interviews.domain.model.aggregates.InterviewSession;
+import pe.upc.simutalk.entities.InterviewSession;
 import pe.upc.simutalk.interviews.domain.model.queries.GetInterviewSessionByIdQuery;
 import pe.upc.simutalk.interviews.domain.model.queries.HasInterviewSessionInProgressQuery;
 import pe.upc.simutalk.interviews.domain.services.InterviewSessionQueryService;

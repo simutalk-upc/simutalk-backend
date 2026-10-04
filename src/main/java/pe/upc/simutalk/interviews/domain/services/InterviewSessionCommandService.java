@@ -1,11 +1,11 @@
 package pe.upc.simutalk.interviews.domain.services;
 
-import pe.upc.simutalk.interviews.domain.model.aggregates.InterviewSession;
+import pe.upc.simutalk.entities.InterviewSession;
 import pe.upc.simutalk.interviews.domain.model.commands.CompleteInterviewSessionCommand;
 import pe.upc.simutalk.interviews.domain.model.commands.CreateInterviewSessionCommand;
 import pe.upc.simutalk.interviews.domain.model.commands.RecordAnswerCommand;
 import pe.upc.simutalk.interviews.domain.model.commands.StartInterviewSessionCommand;
-import pe.upc.simutalk.interviews.domain.model.entities.Answer;
+import pe.upc.simutalk.entities.Answer;
 
 public interface InterviewSessionCommandService {
 

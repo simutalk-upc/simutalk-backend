@@ -1,6 +1,6 @@
 package pe.upc.simutalk.assessment.interfaces.rest.transform;
 
-import pe.upc.simutalk.assessment.domain.model.entities.Evidence;
+import pe.upc.simutalk.entities.Evidence;
 import pe.upc.simutalk.assessment.interfaces.rest.resources.EvidenceResource;
 
 public class EvidenceResourceFromEntityAssembler {

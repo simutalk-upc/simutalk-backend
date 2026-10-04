@@ -1,8 +1,8 @@
 package pe.upc.simutalk.recruitment.domain.services;
 
-import pe.upc.simutalk.recruitment.domain.model.aggregates.JobPosting;
+import pe.upc.simutalk.entities.JobPosting;
 import pe.upc.simutalk.recruitment.domain.model.commands.*;
-import pe.upc.simutalk.recruitment.domain.model.entities.EvaluationCriterion;
+import pe.upc.simutalk.entities.EvaluationCriterion;
 
 public interface JobPostingCommandService {
 

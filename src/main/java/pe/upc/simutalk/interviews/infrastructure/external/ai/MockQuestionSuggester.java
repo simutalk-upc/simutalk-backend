@@ -1,6 +1,6 @@
 package pe.upc.simutalk.interviews.infrastructure.external.ai;
 
-import pe.upc.simutalk.interviews.domain.model.aggregates.Question;
+import pe.upc.simutalk.entities.Question;
 import pe.upc.simutalk.interviews.domain.model.valueobjects.QuestionSuggestion;
 
 import java.text.Normalizer;

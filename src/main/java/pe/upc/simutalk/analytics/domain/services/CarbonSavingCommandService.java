@@ -1,6 +1,6 @@
 package pe.upc.simutalk.analytics.domain.services;
 
-import pe.upc.simutalk.analytics.domain.model.aggregates.CarbonSaving;
+import pe.upc.simutalk.entities.CarbonSaving;
 import pe.upc.simutalk.analytics.domain.model.commands.RecordCarbonSavingCommand;
 
 import java.util.Optional;

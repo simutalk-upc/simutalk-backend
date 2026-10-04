@@ -1,7 +1,7 @@
 package pe.upc.simutalk.interviews.domain.services;
 
-import pe.upc.simutalk.interviews.domain.model.aggregates.InterviewSession;
-import pe.upc.simutalk.interviews.domain.model.entities.Answer;
+import pe.upc.simutalk.entities.InterviewSession;
+import pe.upc.simutalk.entities.Answer;
 import pe.upc.simutalk.interviews.domain.model.queries.GetAnswersByInterviewSessionIdQuery;
 import pe.upc.simutalk.interviews.domain.model.queries.GetInterviewSessionByApplicationIdQuery;
 import pe.upc.simutalk.interviews.domain.model.queries.GetInterviewSessionByIdQuery;

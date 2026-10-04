@@ -1,6 +1,6 @@
 package pe.upc.simutalk.profiles.interfaces.rest.transform;
 
-import pe.upc.simutalk.profiles.domain.model.aggregates.CandidateProfile;
+import pe.upc.simutalk.entities.CandidateProfile;
 import pe.upc.simutalk.profiles.interfaces.rest.resources.CandidateProfileResource;
 
 import java.time.LocalDate;

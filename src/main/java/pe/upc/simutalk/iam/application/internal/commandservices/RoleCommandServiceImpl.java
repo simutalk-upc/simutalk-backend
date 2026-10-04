@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pe.upc.simutalk.iam.domain.model.commands.SeedRolesCommand;
-import pe.upc.simutalk.iam.domain.model.entities.Role;
+import pe.upc.simutalk.entities.Role;
 import pe.upc.simutalk.enums.Roles;
 import pe.upc.simutalk.iam.domain.services.RoleCommandService;
 import pe.upc.simutalk.iam.infrastructure.persistence.jpa.repositories.RoleRepository;

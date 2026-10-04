@@ -3,7 +3,7 @@ package pe.upc.simutalk.recruitment.application.internal.eventhandlers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
-import pe.upc.simutalk.recruitment.domain.model.aggregates.JobPosting;
+import pe.upc.simutalk.entities.JobPosting;
 import pe.upc.simutalk.recruitment.domain.model.commands.CreateJobPostingCommand;
 import pe.upc.simutalk.recruitment.domain.model.events.ApplicationStatusChangedEvent;
 import pe.upc.simutalk.enums.ApplicationStatus;

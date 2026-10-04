@@ -1,5 +1,7 @@
 package pe.upc.simutalk.assessment.application.internal.eventhandlers;
 
+import pe.upc.simutalk.entities.Assessment;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.event.ApplicationReadyEvent;

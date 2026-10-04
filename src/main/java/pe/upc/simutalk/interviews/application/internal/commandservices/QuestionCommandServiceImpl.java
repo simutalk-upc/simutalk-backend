@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pe.upc.simutalk.interviews.application.internal.outboundservices.acl.ExternalRecruitmentService;
-import pe.upc.simutalk.interviews.domain.model.aggregates.Question;
+import pe.upc.simutalk.entities.Question;
 import pe.upc.simutalk.interviews.domain.model.commands.CreateQuestionCommand;
 import pe.upc.simutalk.interviews.domain.model.commands.DeleteQuestionCommand;
 import pe.upc.simutalk.interviews.domain.model.commands.ReorderQuestionsCommand;

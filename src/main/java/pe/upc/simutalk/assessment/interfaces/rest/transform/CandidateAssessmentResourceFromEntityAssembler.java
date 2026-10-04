@@ -1,6 +1,6 @@
 package pe.upc.simutalk.assessment.interfaces.rest.transform;
 
-import pe.upc.simutalk.assessment.domain.model.aggregates.Assessment;
+import pe.upc.simutalk.entities.Assessment;
 import pe.upc.simutalk.assessment.interfaces.rest.resources.CandidateAssessmentResource;
 import pe.upc.simutalk.assessment.interfaces.rest.resources.CandidateCriterionScoreResource;
 

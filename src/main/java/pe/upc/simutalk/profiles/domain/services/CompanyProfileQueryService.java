@@ -1,7 +1,7 @@
 package pe.upc.simutalk.profiles.domain.services;
 
 import org.springframework.data.domain.Page;
-import pe.upc.simutalk.profiles.domain.model.aggregates.CompanyProfile;
+import pe.upc.simutalk.entities.CompanyProfile;
 import pe.upc.simutalk.profiles.domain.model.queries.GetAllCompanyProfilesQuery;
 import pe.upc.simutalk.profiles.domain.model.queries.GetCompanyProfileByIdQuery;
 import pe.upc.simutalk.profiles.domain.model.queries.GetCompanyProfileByUserIdQuery;

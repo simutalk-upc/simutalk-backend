@@ -1,6 +1,6 @@
 package pe.upc.simutalk.iam.domain.model.valueobjects;
 
-import pe.upc.simutalk.iam.domain.model.aggregates.User;
+import pe.upc.simutalk.entities.User;
 
 /**
  * Result of a successful sign-in: the user and the token issued for it.

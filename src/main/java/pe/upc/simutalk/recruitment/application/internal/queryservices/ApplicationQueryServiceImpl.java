@@ -3,7 +3,7 @@ package pe.upc.simutalk.recruitment.application.internal.queryservices;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import pe.upc.simutalk.recruitment.domain.model.aggregates.Application;
+import pe.upc.simutalk.entities.Application;
 import pe.upc.simutalk.recruitment.domain.model.queries.GetApplicationCountByStatusQuery;
 import pe.upc.simutalk.recruitment.domain.model.queries.GetAverageTimeToShortlistQuery;
 import pe.upc.simutalk.enums.ApplicationStatus;

@@ -2,10 +2,10 @@ package pe.upc.simutalk.recruitment.interfaces.acl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import pe.upc.simutalk.recruitment.domain.model.aggregates.Application;
-import pe.upc.simutalk.recruitment.domain.model.aggregates.JobPosting;
+import pe.upc.simutalk.entities.Application;
+import pe.upc.simutalk.entities.JobPosting;
 import pe.upc.simutalk.recruitment.domain.model.commands.ChangeApplicationStatusCommand;
-import pe.upc.simutalk.recruitment.domain.model.entities.EvaluationCriterion;
+import pe.upc.simutalk.entities.EvaluationCriterion;
 import pe.upc.simutalk.recruitment.domain.model.queries.GetApplicationByIdQuery;
 import pe.upc.simutalk.recruitment.domain.model.queries.GetApplicationCountByStatusQuery;
 import pe.upc.simutalk.recruitment.domain.model.queries.GetApplicationsByJobPostingIdQuery;

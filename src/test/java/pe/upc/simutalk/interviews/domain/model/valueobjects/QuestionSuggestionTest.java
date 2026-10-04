@@ -1,7 +1,7 @@
 package pe.upc.simutalk.interviews.domain.model.valueobjects;
 
 import org.junit.jupiter.api.Test;
-import pe.upc.simutalk.interviews.domain.model.aggregates.Question;
+import pe.upc.simutalk.entities.Question;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;

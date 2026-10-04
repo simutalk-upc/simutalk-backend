@@ -2,8 +2,8 @@ package pe.upc.simutalk.profiles.interfaces.acl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import pe.upc.simutalk.profiles.domain.model.aggregates.CandidateProfile;
-import pe.upc.simutalk.profiles.domain.model.aggregates.CompanyProfile;
+import pe.upc.simutalk.entities.CandidateProfile;
+import pe.upc.simutalk.entities.CompanyProfile;
 import pe.upc.simutalk.profiles.domain.model.queries.GetCandidateProfileByIdQuery;
 import pe.upc.simutalk.profiles.domain.model.queries.GetCandidateProfileByUserIdQuery;
 import pe.upc.simutalk.profiles.domain.model.queries.GetCompanyProfileByIdQuery;

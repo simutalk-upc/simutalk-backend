@@ -2,7 +2,7 @@ package pe.upc.simutalk.interviews.infrastructure.persistence.jpa.repositories;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import pe.upc.simutalk.interviews.domain.model.aggregates.Question;
+import pe.upc.simutalk.entities.Question;
 
 import java.util.List;
 

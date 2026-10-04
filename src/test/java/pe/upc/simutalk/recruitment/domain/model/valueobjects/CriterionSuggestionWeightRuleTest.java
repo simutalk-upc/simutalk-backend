@@ -5,7 +5,7 @@ import pe.upc.simutalk.enums.CriterionOrigin;
 import pe.upc.simutalk.enums.CriterionType;
 
 import org.junit.jupiter.api.Test;
-import pe.upc.simutalk.recruitment.domain.model.aggregates.JobPosting;
+import pe.upc.simutalk.entities.JobPosting;
 import pe.upc.simutalk.recruitment.domain.model.commands.CreateJobPostingCommand;
 import pe.upc.simutalk.recruitment.interfaces.rest.resources.CriterionSuggestionResource;
 import pe.upc.simutalk.recruitment.interfaces.rest.transform.CriterionSuggestionResourceFromValueAssembler;

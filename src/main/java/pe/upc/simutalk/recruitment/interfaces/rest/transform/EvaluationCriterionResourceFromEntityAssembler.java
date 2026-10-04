@@ -1,6 +1,6 @@
 package pe.upc.simutalk.recruitment.interfaces.rest.transform;
 
-import pe.upc.simutalk.recruitment.domain.model.entities.EvaluationCriterion;
+import pe.upc.simutalk.entities.EvaluationCriterion;
 import pe.upc.simutalk.recruitment.interfaces.rest.resources.EvaluationCriterionResource;
 
 public class EvaluationCriterionResourceFromEntityAssembler {

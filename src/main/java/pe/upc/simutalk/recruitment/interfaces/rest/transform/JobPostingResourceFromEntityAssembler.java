@@ -1,6 +1,6 @@
 package pe.upc.simutalk.recruitment.interfaces.rest.transform;
 
-import pe.upc.simutalk.recruitment.domain.model.aggregates.JobPosting;
+import pe.upc.simutalk.entities.JobPosting;
 import pe.upc.simutalk.recruitment.interfaces.rest.resources.JobPostingResource;
 
 public class JobPostingResourceFromEntityAssembler {

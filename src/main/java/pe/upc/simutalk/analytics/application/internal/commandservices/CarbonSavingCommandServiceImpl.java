@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pe.upc.simutalk.analytics.application.internal.outboundservices.acl.ExternalContextsService;
-import pe.upc.simutalk.analytics.domain.model.aggregates.CarbonSaving;
+import pe.upc.simutalk.entities.CarbonSaving;
 import pe.upc.simutalk.analytics.domain.model.commands.RecordCarbonSavingCommand;
 import pe.upc.simutalk.analytics.domain.model.valueobjects.GeoPoint;
 import pe.upc.simutalk.analytics.domain.services.CarbonSavingCommandService;

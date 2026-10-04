@@ -1,10 +1,12 @@
 package pe.upc.simutalk.profiles.application.internal.commandservices;
 
+import pe.upc.simutalk.entities.User;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pe.upc.simutalk.profiles.application.internal.outboundservices.acl.ExternalIamService;
-import pe.upc.simutalk.profiles.domain.model.aggregates.CompanyProfile;
+import pe.upc.simutalk.entities.CompanyProfile;
 import pe.upc.simutalk.profiles.domain.model.commands.CreateCompanyProfileCommand;
 import pe.upc.simutalk.profiles.domain.model.commands.UpdateCompanyProfileCommand;
 import pe.upc.simutalk.entities.Ruc;

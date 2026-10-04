@@ -11,10 +11,10 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
-import pe.upc.simutalk.assessment.domain.model.aggregates.Assessment;
-import pe.upc.simutalk.assessment.domain.model.entities.CriterionScore;
-import pe.upc.simutalk.assessment.domain.model.entities.Evidence;
-import pe.upc.simutalk.assessment.domain.model.entities.IntegrityFlag;
+import pe.upc.simutalk.entities.Assessment;
+import pe.upc.simutalk.entities.CriterionScore;
+import pe.upc.simutalk.entities.Evidence;
+import pe.upc.simutalk.entities.IntegrityFlag;
 import pe.upc.simutalk.assessment.domain.model.queries.GetAssessmentByInterviewSessionIdQuery;
 import pe.upc.simutalk.enums.CriterionKind;
 import pe.upc.simutalk.enums.FlagSeverity;

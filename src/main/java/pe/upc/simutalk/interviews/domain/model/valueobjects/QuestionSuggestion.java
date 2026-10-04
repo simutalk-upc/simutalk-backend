@@ -1,6 +1,6 @@
 package pe.upc.simutalk.interviews.domain.model.valueobjects;
 
-import pe.upc.simutalk.interviews.domain.model.aggregates.Question;
+import pe.upc.simutalk.entities.Question;
 
 /**
  * An interview question proposed for a COMPETENCY criterion. It is never persisted: to accept it, the

@@ -1,6 +1,6 @@
 package pe.upc.simutalk.iam.domain.model.commands;
 
-import pe.upc.simutalk.iam.domain.model.entities.Role;
+import pe.upc.simutalk.entities.Role;
 
 import java.util.List;
 

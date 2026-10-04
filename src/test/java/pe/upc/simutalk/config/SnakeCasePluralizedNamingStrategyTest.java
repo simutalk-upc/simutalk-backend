@@ -1,5 +1,10 @@
 package pe.upc.simutalk.config;
 
+import pe.upc.simutalk.entities.EvaluationCriterion;
+import pe.upc.simutalk.entities.JobPosting;
+import pe.upc.simutalk.entities.Role;
+import pe.upc.simutalk.entities.User;
+
 import org.hibernate.boot.model.naming.Identifier;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;

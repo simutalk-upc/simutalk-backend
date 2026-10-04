@@ -1,7 +1,7 @@
 package pe.upc.simutalk.assessment.domain.services;
 
-import pe.upc.simutalk.assessment.domain.model.aggregates.Assessment;
-import pe.upc.simutalk.assessment.domain.model.entities.Evidence;
+import pe.upc.simutalk.entities.Assessment;
+import pe.upc.simutalk.entities.Evidence;
 import pe.upc.simutalk.assessment.domain.model.queries.*;
 import pe.upc.simutalk.assessment.domain.model.valueobjects.CriterionAverage;
 import pe.upc.simutalk.assessment.domain.model.queries.GetAssessmentByInterviewSessionIdQuery;

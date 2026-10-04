@@ -2,9 +2,9 @@ package pe.upc.simutalk.iam.interfaces.acl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import pe.upc.simutalk.iam.domain.model.aggregates.User;
+import pe.upc.simutalk.entities.User;
 import pe.upc.simutalk.iam.domain.model.commands.SignUpCommand;
-import pe.upc.simutalk.iam.domain.model.entities.Role;
+import pe.upc.simutalk.entities.Role;
 import pe.upc.simutalk.iam.domain.model.queries.GetUserByIdQuery;
 import pe.upc.simutalk.iam.domain.model.queries.GetUserByUsernameQuery;
 import pe.upc.simutalk.iam.domain.services.UserCommandService;

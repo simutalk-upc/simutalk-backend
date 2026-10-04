@@ -3,7 +3,7 @@ package pe.upc.simutalk.recruitment.application.internal.queryservices;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
-import pe.upc.simutalk.recruitment.domain.model.aggregates.JobPosting;
+import pe.upc.simutalk.entities.JobPosting;
 import pe.upc.simutalk.recruitment.domain.model.commands.CreateJobPostingCommand;
 import pe.upc.simutalk.recruitment.domain.model.queries.GetJobPostingByIdQuery;
 import pe.upc.simutalk.recruitment.domain.model.queries.SearchJobPostingsQuery;

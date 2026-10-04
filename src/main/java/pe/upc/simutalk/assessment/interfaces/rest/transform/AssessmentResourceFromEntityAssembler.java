@@ -1,6 +1,6 @@
 package pe.upc.simutalk.assessment.interfaces.rest.transform;
 
-import pe.upc.simutalk.assessment.domain.model.aggregates.Assessment;
+import pe.upc.simutalk.entities.Assessment;
 import pe.upc.simutalk.assessment.interfaces.rest.resources.AssessmentResource;
 import pe.upc.simutalk.assessment.interfaces.rest.resources.CriterionScoreResource;
 import pe.upc.simutalk.assessment.interfaces.rest.resources.IntegrityFlagResource;

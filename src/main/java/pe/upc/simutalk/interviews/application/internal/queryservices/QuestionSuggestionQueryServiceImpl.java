@@ -3,7 +3,7 @@ package pe.upc.simutalk.interviews.application.internal.queryservices;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import pe.upc.simutalk.interviews.application.internal.outboundservices.acl.ExternalRecruitmentService;
-import pe.upc.simutalk.interviews.domain.model.aggregates.Question;
+import pe.upc.simutalk.entities.Question;
 import pe.upc.simutalk.interviews.domain.model.queries.GetQuestionSuggestionsQuery;
 import pe.upc.simutalk.interviews.domain.model.valueobjects.QuestionSuggestion;
 import pe.upc.simutalk.interviews.domain.services.QuestionSuggestionQueryService;

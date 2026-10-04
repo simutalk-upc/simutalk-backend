@@ -1,6 +1,6 @@
 package pe.upc.simutalk.recruitment.domain.services;
 
-import pe.upc.simutalk.recruitment.domain.model.aggregates.JobPosting;
+import pe.upc.simutalk.entities.JobPosting;
 import pe.upc.simutalk.recruitment.domain.model.queries.GetJobPostingByIdQuery;
 import pe.upc.simutalk.recruitment.domain.model.queries.GetJobPostingIdsByCompanyIdQuery;
 import pe.upc.simutalk.recruitment.domain.model.queries.GetPublishedJobPostingCountByCompanyIdQuery;

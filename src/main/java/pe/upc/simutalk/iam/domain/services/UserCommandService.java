@@ -1,6 +1,6 @@
 package pe.upc.simutalk.iam.domain.services;
 
-import pe.upc.simutalk.iam.domain.model.aggregates.User;
+import pe.upc.simutalk.entities.User;
 import pe.upc.simutalk.iam.domain.model.commands.SeedAdminUserCommand;
 import pe.upc.simutalk.iam.domain.model.commands.SignInCommand;
 import pe.upc.simutalk.iam.domain.model.commands.SignUpCommand;

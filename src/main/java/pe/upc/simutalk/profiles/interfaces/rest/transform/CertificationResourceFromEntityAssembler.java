@@ -1,6 +1,6 @@
 package pe.upc.simutalk.profiles.interfaces.rest.transform;
 
-import pe.upc.simutalk.profiles.domain.model.entities.Certification;
+import pe.upc.simutalk.entities.Certification;
 import pe.upc.simutalk.profiles.interfaces.rest.resources.CertificationResource;
 
 import java.time.LocalDate;

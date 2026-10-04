@@ -8,10 +8,10 @@ import pe.upc.simutalk.enums.RankingBadge;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import pe.upc.simutalk.assessment.domain.model.aggregates.Assessment;
-import pe.upc.simutalk.assessment.domain.model.entities.CriterionScore;
-import pe.upc.simutalk.assessment.domain.model.entities.Evidence;
-import pe.upc.simutalk.assessment.domain.model.entities.IntegrityFlag;
+import pe.upc.simutalk.entities.Assessment;
+import pe.upc.simutalk.entities.CriterionScore;
+import pe.upc.simutalk.entities.Evidence;
+import pe.upc.simutalk.entities.IntegrityFlag;
 import pe.upc.simutalk.assessment.domain.model.valueobjects.*;
 
 import java.math.BigDecimal;

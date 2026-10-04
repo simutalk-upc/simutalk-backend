@@ -7,7 +7,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionTemplate;
-import pe.upc.simutalk.interviews.domain.model.aggregates.Question;
+import pe.upc.simutalk.entities.Question;
 import pe.upc.simutalk.interviews.domain.model.commands.*;
 import pe.upc.simutalk.interviews.domain.model.queries.GetInterviewSessionByApplicationIdQuery;
 import pe.upc.simutalk.interviews.domain.model.queries.GetQuestionsByJobPostingIdQuery;

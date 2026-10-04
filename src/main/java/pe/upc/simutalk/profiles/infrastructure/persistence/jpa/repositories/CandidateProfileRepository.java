@@ -3,7 +3,7 @@ package pe.upc.simutalk.profiles.infrastructure.persistence.jpa.repositories;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import pe.upc.simutalk.profiles.domain.model.aggregates.CandidateProfile;
+import pe.upc.simutalk.entities.CandidateProfile;
 import pe.upc.simutalk.entities.DocumentNumber;
 
 import java.util.Optional;

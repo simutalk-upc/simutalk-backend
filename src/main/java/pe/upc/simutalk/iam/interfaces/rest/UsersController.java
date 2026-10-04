@@ -1,5 +1,7 @@
 package pe.upc.simutalk.iam.interfaces.rest;
 
+import pe.upc.simutalk.entities.User;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;

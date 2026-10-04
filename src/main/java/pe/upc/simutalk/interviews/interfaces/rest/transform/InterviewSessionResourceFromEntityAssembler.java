@@ -1,6 +1,6 @@
 package pe.upc.simutalk.interviews.interfaces.rest.transform;
 
-import pe.upc.simutalk.interviews.domain.model.aggregates.InterviewSession;
+import pe.upc.simutalk.entities.InterviewSession;
 import pe.upc.simutalk.interviews.interfaces.rest.resources.InterviewSessionResource;
 
 public class InterviewSessionResourceFromEntityAssembler {

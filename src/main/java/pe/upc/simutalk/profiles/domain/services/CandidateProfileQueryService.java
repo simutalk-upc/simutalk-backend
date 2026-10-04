@@ -1,8 +1,8 @@
 package pe.upc.simutalk.profiles.domain.services;
 
-import pe.upc.simutalk.profiles.domain.model.aggregates.CandidateProfile;
+import pe.upc.simutalk.entities.CandidateProfile;
 import org.springframework.data.domain.Page;
-import pe.upc.simutalk.profiles.domain.model.entities.Certification;
+import pe.upc.simutalk.entities.Certification;
 import pe.upc.simutalk.profiles.domain.model.queries.GetAllCandidateProfilesQuery;
 import pe.upc.simutalk.profiles.domain.model.queries.GetCandidateProfileByIdQuery;
 import pe.upc.simutalk.profiles.domain.model.queries.GetCandidateProfileByUserIdQuery;

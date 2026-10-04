@@ -1,6 +1,6 @@
 package pe.upc.simutalk.profiles.domain.model.valueobjects;
 
-import pe.upc.simutalk.profiles.domain.model.entities.Certification;
+import pe.upc.simutalk.entities.Certification;
 import pe.upc.simutalk.profiles.domain.services.CredentialVerificationService.VerificationResult;
 
 /**

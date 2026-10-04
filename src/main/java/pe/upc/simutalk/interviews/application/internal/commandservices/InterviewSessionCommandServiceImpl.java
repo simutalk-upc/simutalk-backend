@@ -1,16 +1,18 @@
 package pe.upc.simutalk.interviews.application.internal.commandservices;
 
+import pe.upc.simutalk.entities.Question;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pe.upc.simutalk.interviews.application.internal.outboundservices.acl.ExternalRecruitmentService;
-import pe.upc.simutalk.interviews.domain.model.aggregates.InterviewSession;
+import pe.upc.simutalk.entities.InterviewSession;
 import pe.upc.simutalk.interviews.domain.model.commands.CompleteInterviewSessionCommand;
 import pe.upc.simutalk.interviews.domain.model.commands.CreateInterviewSessionCommand;
 import pe.upc.simutalk.interviews.domain.model.commands.RecordAnswerCommand;
 import pe.upc.simutalk.interviews.domain.model.commands.StartInterviewSessionCommand;
-import pe.upc.simutalk.interviews.domain.model.entities.Answer;
+import pe.upc.simutalk.entities.Answer;
 import pe.upc.simutalk.interviews.domain.services.InterviewSessionCommandService;
 import pe.upc.simutalk.interviews.infrastructure.persistence.jpa.repositories.InterviewSessionRepository;
 import pe.upc.simutalk.interviews.infrastructure.persistence.jpa.repositories.QuestionRepository;

@@ -3,7 +3,7 @@ package pe.upc.simutalk.recruitment.application.internal.queryservices;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import pe.upc.simutalk.recruitment.domain.model.aggregates.JobPosting;
+import pe.upc.simutalk.entities.JobPosting;
 import pe.upc.simutalk.recruitment.domain.model.queries.GetJobPostingByIdQuery;
 import pe.upc.simutalk.recruitment.domain.model.queries.GetJobPostingIdsByCompanyIdQuery;
 import pe.upc.simutalk.recruitment.domain.model.queries.GetPublishedJobPostingCountByCompanyIdQuery;

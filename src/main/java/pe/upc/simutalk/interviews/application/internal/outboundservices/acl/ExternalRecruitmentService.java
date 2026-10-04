@@ -1,5 +1,7 @@
 package pe.upc.simutalk.interviews.application.internal.outboundservices.acl;
 
+import pe.upc.simutalk.entities.Application;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import pe.upc.simutalk.exceptions.BusinessRuleViolationException;

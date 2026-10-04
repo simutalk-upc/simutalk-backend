@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import pe.upc.simutalk.recruitment.domain.model.aggregates.Application;
+import pe.upc.simutalk.entities.Application;
 import pe.upc.simutalk.recruitment.domain.model.commands.ChangeApplicationStatusCommand;
 import pe.upc.simutalk.recruitment.domain.model.commands.SubmitApplicationCommand;
 import pe.upc.simutalk.recruitment.domain.model.events.ApplicationStatusChangedEvent;

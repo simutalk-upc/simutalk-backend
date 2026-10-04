@@ -1,6 +1,6 @@
 package pe.upc.simutalk.profiles.domain.services;
 
-import pe.upc.simutalk.profiles.domain.model.aggregates.CompanyProfile;
+import pe.upc.simutalk.entities.CompanyProfile;
 import pe.upc.simutalk.profiles.domain.model.commands.CreateCompanyProfileCommand;
 import pe.upc.simutalk.profiles.domain.model.commands.UpdateCompanyProfileCommand;
 

@@ -1,12 +1,14 @@
 package pe.upc.simutalk.profiles.application.internal.commandservices;
 
+import pe.upc.simutalk.entities.User;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pe.upc.simutalk.profiles.application.internal.outboundservices.acl.ExternalIamService;
-import pe.upc.simutalk.profiles.domain.model.aggregates.CandidateProfile;
+import pe.upc.simutalk.entities.CandidateProfile;
 import pe.upc.simutalk.profiles.domain.model.commands.*;
-import pe.upc.simutalk.profiles.domain.model.entities.Certification;
+import pe.upc.simutalk.entities.Certification;
 import pe.upc.simutalk.profiles.domain.model.valueobjects.CertificationVerification;
 import pe.upc.simutalk.entities.DocumentNumber;
 import pe.upc.simutalk.entities.PersonName;

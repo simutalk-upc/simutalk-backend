@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
-import pe.upc.simutalk.recruitment.domain.model.aggregates.JobPosting;
+import pe.upc.simutalk.entities.JobPosting;
 import pe.upc.simutalk.recruitment.domain.model.events.ApplicationStatusChangedEvent;
 import pe.upc.simutalk.recruitment.domain.model.valueobjects.CandidateNotification;
 import pe.upc.simutalk.enums.NotificationType;

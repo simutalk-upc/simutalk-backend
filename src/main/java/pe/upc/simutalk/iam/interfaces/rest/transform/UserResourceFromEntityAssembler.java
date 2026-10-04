@@ -1,6 +1,6 @@
 package pe.upc.simutalk.iam.interfaces.rest.transform;
 
-import pe.upc.simutalk.iam.domain.model.aggregates.User;
+import pe.upc.simutalk.entities.User;
 import pe.upc.simutalk.iam.interfaces.rest.resources.UserResource;
 
 public class UserResourceFromEntityAssembler {

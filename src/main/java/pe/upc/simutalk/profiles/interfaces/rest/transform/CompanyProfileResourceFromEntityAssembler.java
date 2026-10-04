@@ -1,6 +1,6 @@
 package pe.upc.simutalk.profiles.interfaces.rest.transform;
 
-import pe.upc.simutalk.profiles.domain.model.aggregates.CompanyProfile;
+import pe.upc.simutalk.entities.CompanyProfile;
 import pe.upc.simutalk.profiles.interfaces.rest.resources.CompanyProfileResource;
 
 public class CompanyProfileResourceFromEntityAssembler {

@@ -3,7 +3,7 @@ package pe.upc.simutalk.interviews.application.internal.queryservices;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import pe.upc.simutalk.interviews.domain.model.aggregates.Question;
+import pe.upc.simutalk.entities.Question;
 import pe.upc.simutalk.interviews.domain.model.queries.CountQuestionsByCriterionIdQuery;
 import pe.upc.simutalk.interviews.domain.model.queries.GetQuestionByIdQuery;
 import pe.upc.simutalk.interviews.domain.model.queries.GetQuestionsByJobPostingIdQuery;

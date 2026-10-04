@@ -2,8 +2,8 @@ package pe.upc.simutalk.profiles.interfaces.acl;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
-import pe.upc.simutalk.profiles.domain.model.aggregates.CandidateProfile;
-import pe.upc.simutalk.profiles.domain.model.aggregates.CompanyProfile;
+import pe.upc.simutalk.entities.CandidateProfile;
+import pe.upc.simutalk.entities.CompanyProfile;
 import pe.upc.simutalk.profiles.domain.model.commands.CreateCandidateProfileCommand;
 import pe.upc.simutalk.profiles.domain.model.commands.CreateCompanyProfileCommand;
 import pe.upc.simutalk.profiles.domain.model.queries.*;

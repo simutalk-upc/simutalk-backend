@@ -4,7 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-import pe.upc.simutalk.recruitment.domain.model.aggregates.Application;
+import pe.upc.simutalk.entities.Application;
 import pe.upc.simutalk.enums.ApplicationStatus;
 
 import java.util.List;
