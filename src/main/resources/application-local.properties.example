@@ -1,0 +1,24 @@
+# Plantilla del perfil local. Cada integrante la copia como application-local.properties
+# (ese nombre esta en .gitignore) y ajusta lo suyo. Se activa con SPRING_PROFILES_ACTIVE=local.
+#
+#   cp src/main/resources/application-local.properties.example \
+#      src/main/resources/application-local.properties
+#
+# Las credenciales reales van aqui o en el .env de la raiz, nunca en application.properties.
+
+spring.datasource.url=jdbc:postgresql://localhost:5432/simutalk_db
+spring.datasource.username=
+spring.datasource.password=
+
+# Base64 de al menos 256 bits. Generar uno propio:
+#   openssl rand -base64 48
+authorization.jwt.secret=
+
+# Administrador local opcional.
+authorization.bootstrap-admin.username=
+authorization.bootstrap-admin.password=
+
+spring.jpa.show-sql=true
+logging.level.pe.upc.simutalk=DEBUG
+app.seed-demo-data=true
+app.demo-users-password=
