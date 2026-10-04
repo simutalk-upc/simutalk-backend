@@ -9,7 +9,7 @@ import pe.upc.simutalk.entities.JobPosting;
 import pe.upc.simutalk.recruitment.domain.model.commands.ChangeApplicationStatusCommand;
 import pe.upc.simutalk.recruitment.domain.model.commands.CreateJobPostingCommand;
 import pe.upc.simutalk.recruitment.domain.model.commands.SubmitApplicationCommand;
-import pe.upc.simutalk.recruitment.domain.model.events.ApplicationStatusChangedEvent;
+import pe.upc.simutalk.events.ApplicationStatusChangedEvent;
 import pe.upc.simutalk.enums.ApplicationStatus;
 import pe.upc.simutalk.enums.CriterionType;
 import pe.upc.simutalk.entities.Weight;

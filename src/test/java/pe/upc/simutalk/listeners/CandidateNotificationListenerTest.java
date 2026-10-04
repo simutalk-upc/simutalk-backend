@@ -1,11 +1,11 @@
-package pe.upc.simutalk.recruitment.application.internal.eventhandlers;
+package pe.upc.simutalk.listeners;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import pe.upc.simutalk.entities.JobPosting;
 import pe.upc.simutalk.recruitment.domain.model.commands.CreateJobPostingCommand;
-import pe.upc.simutalk.recruitment.domain.model.events.ApplicationStatusChangedEvent;
+import pe.upc.simutalk.events.ApplicationStatusChangedEvent;
 import pe.upc.simutalk.enums.ApplicationStatus;
 import pe.upc.simutalk.recruitment.domain.model.valueobjects.CandidateNotification;
 import pe.upc.simutalk.enums.NotificationType;
@@ -22,13 +22,13 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-class CandidateNotificationEventHandlerTest {
+class CandidateNotificationListenerTest {
 
     private final NotificationService notificationService = mock(NotificationService.class);
     private final ProfilesContextFacade profiles = mock(ProfilesContextFacade.class);
     private final JobPostingRepository postings = mock(JobPostingRepository.class);
-    private final CandidateNotificationEventHandler handler =
-            new CandidateNotificationEventHandler(notificationService, profiles, postings);
+    private final CandidateNotificationListener handler =
+            new CandidateNotificationListener(notificationService, profiles, postings);
 
     @BeforeEach
     void setUp() {

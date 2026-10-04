@@ -1,4 +1,4 @@
-package pe.upc.simutalk.recruitment.domain.model.events;
+package pe.upc.simutalk.events;
 
 import pe.upc.simutalk.enums.ApplicationStatus;
 

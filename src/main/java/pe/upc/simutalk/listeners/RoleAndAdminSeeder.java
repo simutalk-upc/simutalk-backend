@@ -1,4 +1,4 @@
-package pe.upc.simutalk.iam.application.internal.eventhandlers;
+package pe.upc.simutalk.listeners;
 
 import pe.upc.simutalk.enums.Roles;
 
@@ -20,14 +20,14 @@ import pe.upc.simutalk.services.UserCommandService;
  */
 @Slf4j
 @Service
-public class ApplicationReadyEventHandler {
+public class RoleAndAdminSeeder {
 
     private final RoleCommandService roleCommandService;
     private final UserCommandService userCommandService;
     private final String adminUsername;
     private final String adminPassword;
 
-    public ApplicationReadyEventHandler(RoleCommandService roleCommandService,
+    public RoleAndAdminSeeder(RoleCommandService roleCommandService,
                                         UserCommandService userCommandService,
                                         @Value("${authorization.bootstrap-admin.username:}") String adminUsername,
                                         @Value("${authorization.bootstrap-admin.password:}") String adminPassword) {

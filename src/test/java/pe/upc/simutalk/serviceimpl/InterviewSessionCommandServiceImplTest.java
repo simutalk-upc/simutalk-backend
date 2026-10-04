@@ -106,7 +106,7 @@ class InterviewSessionCommandServiceImplTest {
 
         assertThat(completed.getStatus()).isEqualTo(InterviewSessionStatus.COMPLETED);
         verify(recruitment).markApplicationAsAssessed(50L);
-        verify(events).publishEvent(new pe.upc.simutalk.shared.interfaces.events.InterviewSessionCompletedEvent(
+        verify(events).publishEvent(new pe.upc.simutalk.events.InterviewSessionCompletedEvent(
                 900L, 50L, 1L, 7L, completed.getFinishedAt()));
     }
 }

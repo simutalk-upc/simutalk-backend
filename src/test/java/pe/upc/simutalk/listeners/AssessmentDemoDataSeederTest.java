@@ -1,4 +1,4 @@
-package pe.upc.simutalk.assessment.application.internal.eventhandlers;
+package pe.upc.simutalk.listeners;
 
 import org.junit.jupiter.api.Test;
 import pe.upc.simutalk.services.AnswerScoringService;

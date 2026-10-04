@@ -1,4 +1,4 @@
-package pe.upc.simutalk.recruitment.application.internal.eventhandlers;
+package pe.upc.simutalk.listeners;
 
 import pe.upc.simutalk.recruitment.domain.model.commands.AddEvaluationCriterionCommand;
 import pe.upc.simutalk.recruitment.domain.model.commands.ChangeJobPostingStatusCommand;

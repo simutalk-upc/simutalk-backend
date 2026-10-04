@@ -1,4 +1,4 @@
-package pe.upc.simutalk.assessment.application.internal.eventhandlers;
+package pe.upc.simutalk.listeners;
 
 import pe.upc.simutalk.entities.Assessment;
 

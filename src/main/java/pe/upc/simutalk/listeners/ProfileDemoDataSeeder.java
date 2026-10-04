@@ -1,4 +1,4 @@
-package pe.upc.simutalk.profiles.application.internal.eventhandlers;
+package pe.upc.simutalk.listeners;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,7 +30,7 @@ import java.util.UUID;
  */
 @Slf4j
 @Service
-public class DemoDataSeeder {
+public class ProfileDemoDataSeeder {
 
     private static final String COMPANY_USERNAME = "consultora.andina";
     /** Reserved domain (RFC 2606): demo notifications can never reach a real inbox. */
@@ -45,7 +45,7 @@ public class DemoDataSeeder {
     private final CandidateProfileRepository candidateProfileRepository;
     private final TransactionTemplate transactionTemplate;
 
-    public DemoDataSeeder(@Value("${app.seed-demo-data:false}") boolean enabled,
+    public ProfileDemoDataSeeder(@Value("${app.seed-demo-data:false}") boolean enabled,
                           @Value("${app.demo-users-password:}") String demoPassword,
                           IamContextFacade iamContextFacade,
                           CompanyProfileCommandService companyProfileCommandService,

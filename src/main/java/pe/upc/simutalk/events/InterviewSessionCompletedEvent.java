@@ -1,4 +1,4 @@
-package pe.upc.simutalk.shared.interfaces.events;
+package pe.upc.simutalk.events;
 
 import java.time.Instant;
 

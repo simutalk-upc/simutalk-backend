@@ -1,4 +1,4 @@
-package pe.upc.simutalk.profiles.application.internal.eventhandlers;
+package pe.upc.simutalk.listeners;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -14,13 +14,13 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
-class DemoDataSeederTest {
+class ProfileDemoDataSeederTest {
 
     private final IamContextFacade iam = mock(IamContextFacade.class);
     private final CompanyProfileRepository companyProfileRepository = mock(CompanyProfileRepository.class);
     private final CandidateProfileRepository candidateProfileRepository = mock(CandidateProfileRepository.class);
 
-    private final DemoDataSeeder seeder = new DemoDataSeeder(true, "Demo12345", iam,
+    private final ProfileDemoDataSeeder seeder = new ProfileDemoDataSeeder(true, "Demo12345", iam,
             mock(CompanyProfileCommandService.class), mock(CandidateProfileCommandService.class),
             companyProfileRepository, candidateProfileRepository,
             new TransactionTemplate(mock(PlatformTransactionManager.class)));

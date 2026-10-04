@@ -1,4 +1,4 @@
-package pe.upc.simutalk.analytics.application.internal.eventhandlers;
+package pe.upc.simutalk.listeners;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -9,7 +9,7 @@ import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 import pe.upc.simutalk.analytics.domain.model.commands.RecordCarbonSavingCommand;
 import pe.upc.simutalk.services.CarbonSavingCommandService;
-import pe.upc.simutalk.shared.interfaces.events.InterviewSessionCompletedEvent;
+import pe.upc.simutalk.events.InterviewSessionCompletedEvent;
 
 /**
  * Records the carbon saving of a completed interview once interviews' transaction has
@@ -19,7 +19,7 @@ import pe.upc.simutalk.shared.interfaces.events.InterviewSessionCompletedEvent;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class InterviewSessionCompletedEventHandler {
+public class InterviewSessionCompletedListener {
 
     private final CarbonSavingCommandService carbonSavingCommandService;
 

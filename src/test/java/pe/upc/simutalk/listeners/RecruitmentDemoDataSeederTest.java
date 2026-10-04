@@ -1,4 +1,4 @@
-package pe.upc.simutalk.recruitment.application.internal.eventhandlers;
+package pe.upc.simutalk.listeners;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.transaction.PlatformTransactionManager;

@@ -7,7 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import pe.upc.simutalk.entities.Application;
 import pe.upc.simutalk.recruitment.domain.model.commands.ChangeApplicationStatusCommand;
 import pe.upc.simutalk.recruitment.domain.model.commands.SubmitApplicationCommand;
-import pe.upc.simutalk.recruitment.domain.model.events.ApplicationStatusChangedEvent;
+import pe.upc.simutalk.events.ApplicationStatusChangedEvent;
 import pe.upc.simutalk.services.ApplicationCommandService;
 import pe.upc.simutalk.repositories.ApplicationRepository;
 import pe.upc.simutalk.repositories.JobPostingRepository;

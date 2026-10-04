@@ -1,4 +1,4 @@
-package pe.upc.simutalk.interviews.application.internal.eventhandlers;
+package pe.upc.simutalk.listeners;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -27,7 +27,7 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-class InterviewsDemoDataSeederTest {
+class InterviewDemoDataSeederTest {
 
     private static final long JOB_POSTING_ID = 5L;
     private static final long ROSA_APPLICATION = 100L;
@@ -41,7 +41,7 @@ class InterviewsDemoDataSeederTest {
     private final ProfilesContextFacade profiles = mock(ProfilesContextFacade.class);
     private final RecruitmentContextFacade recruitment = mock(RecruitmentContextFacade.class);
 
-    private final InterviewsDemoDataSeeder seeder = new InterviewsDemoDataSeeder(true, questionCommandService,
+    private final InterviewDemoDataSeeder seeder = new InterviewDemoDataSeeder(true, questionCommandService,
             questionQueryService, sessionCommandService, sessionQueryService, iam, profiles, recruitment,
             new TransactionTemplate(mock(PlatformTransactionManager.class)));
 
@@ -115,7 +115,7 @@ class InterviewsDemoDataSeederTest {
 
     @Test
     void doesNothingWhenDemoDataIsDisabled() {
-        var disabled = new InterviewsDemoDataSeeder(false, questionCommandService, questionQueryService,
+        var disabled = new InterviewDemoDataSeeder(false, questionCommandService, questionQueryService,
                 sessionCommandService, sessionQueryService, iam, profiles, recruitment,
                 new TransactionTemplate(mock(PlatformTransactionManager.class)));
 

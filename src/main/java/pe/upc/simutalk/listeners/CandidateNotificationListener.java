@@ -1,4 +1,4 @@
-package pe.upc.simutalk.recruitment.application.internal.eventhandlers;
+package pe.upc.simutalk.listeners;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 import pe.upc.simutalk.entities.JobPosting;
-import pe.upc.simutalk.recruitment.domain.model.events.ApplicationStatusChangedEvent;
+import pe.upc.simutalk.events.ApplicationStatusChangedEvent;
 import pe.upc.simutalk.recruitment.domain.model.valueobjects.CandidateNotification;
 import pe.upc.simutalk.enums.NotificationType;
 import pe.upc.simutalk.services.NotificationService;
@@ -21,7 +21,7 @@ import pe.upc.simutalk.services.ProfilesContextFacade;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class CandidateNotificationEventHandler {
+public class CandidateNotificationListener {
 
     private final NotificationService notificationService;
     private final ProfilesContextFacade profilesContextFacade;

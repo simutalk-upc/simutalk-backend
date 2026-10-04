@@ -1,4 +1,4 @@
-package pe.upc.simutalk.interviews.application.internal.eventhandlers;
+package pe.upc.simutalk.listeners;
 
 import pe.upc.simutalk.interviews.domain.model.commands.CompleteInterviewSessionCommand;
 import pe.upc.simutalk.interviews.domain.model.commands.CreateInterviewSessionCommand;
@@ -48,7 +48,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 @Slf4j
 @Service
-public class InterviewsDemoDataSeeder {
+public class InterviewDemoDataSeeder {
 
     private static final String COMPANY_USERNAME = "consultora.andina";
     private static final int DEMO_SESSION_VALIDITY_DAYS = 14;
@@ -69,7 +69,7 @@ public class InterviewsDemoDataSeeder {
     private final RecruitmentContextFacade recruitmentContextFacade;
     private final TransactionTemplate transactionTemplate;
 
-    public InterviewsDemoDataSeeder(@Value("${app.seed-demo-data:false}") boolean enabled,
+    public InterviewDemoDataSeeder(@Value("${app.seed-demo-data:false}") boolean enabled,
                                     QuestionCommandService questionCommandService,
                                     QuestionQueryService questionQueryService,
                                     InterviewSessionCommandService interviewSessionCommandService,
